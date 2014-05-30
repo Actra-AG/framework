@@ -1,0 +1,20 @@
+/*******************************************************************************
+Titel:  Patches fuer IE
+Update: 09.09.2008
+*******************************************************************************/
+
+body {
+  font-size: x-small;
+  fon\t-size: small;
+}
+
+#content {width: 74.8%;}
+
+#sidebar {word-wrap: break-word;}
+
+/* hasLayout IE6 */
+* html form dl,
+* html #navi a {height: 1%;}
+
+/* hasLayout IE7 */
+form dl {min-height: 1px;}

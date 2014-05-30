@@ -1,0 +1,82 @@
+<h2>{{TITLE}}</h2>
+
+<!-- UG_VISITOR START -->
+<p>Sie besitzen keine Rechte um den Inhalt dieser Seite anzuzeigen.</p>
+<!-- UG_VISITOR ENDE -->
+
+<!-- UG_AKTIV START -->
+{{STATUS}}
+
+<p class="form-required-note"><em>*</em> erforderliche Angaben</p>
+
+<form method="post" action="anlassMod-{{ID}}.html?send=1" class="form-edit">
+
+    <fieldset>
+        <h3>Grunddaten</h3>
+        <dl>
+            <dt><label for="vereinID">Durchführender Verein<em>*</em></label></dt>
+            <dd><select name="vereinID" id="vereinID">{{VEREINE}}</select></dd>
+        </dl>
+
+        <dl>
+            <dt><label for="datumVon">Datum von<em title="erforderlich">*</em></label></dt>
+            <dd><input type="text" class="text" name="datumVon" id="datumVon" value="{{DATUMVON}}"/></dd>
+        </dl>
+
+        <dl>
+            <dt><label for="datumBis">Datum bis</label></dt>
+            <dd><input type="text" class="text" name="datumBis" id="datumBis" value="{{DATUMBIS}}"/><em>Eintätiger
+                Anlass = Datum von eintragen</em></dd>
+        </dl>
+
+        <dl>
+            <dt><label for="titel">Titel/Anlass<em title="erforderlich">*</em></label></dt>
+            <dd><input type="text" class="text" name="titel" id="titel" value="{{TITEL}}"/></dd>
+        </dl>
+
+        <dl>
+            <dt><label for="ort">Ort/Schiessplatz<em title="erforderlich">*</em></label></dt>
+            <dd><input type="text" class="text" name="ort" id="ort" value="{{ORT}}"/></dd>
+        </dl>
+
+        <dl>
+            <dt>Kategorie(n)</dt>
+            <dd>
+                <ul>{{KATEGORIEN}}</ul>
+            </dd>
+        </dl>
+
+        <dl>
+            <dt>Kalenderexport</dt>
+            <dd><input type="checkbox" name="export" value="1"{{CHKEXPORT}} /></dd>
+        </dl>
+
+    </fieldset>
+
+    <fieldset>
+        <h3>Weitere Angaben</h3>
+
+        <dl>
+            <dt><label for="zeitVon">Zeit von<abbr title="erforderlich">*</abbr></label></dt>
+            <dd><input type="text" class="text" name="zeitVon" id="zeitVon" value="{{ZEITVON}}" placeholder="00:00" /><em>Für Kalenderexport</em></dd>
+        </dl>
+
+        <dl>
+            <dt><label for="zeitBis">Zeit bis<abbr title="erforderlich">*</abbr></label></dt>
+            <dd><input type="text" class="text" name="zeitBis" id="zeitBis" value="{{ZEITBIS}}" placeholder="00:00" /><em>Für Kalenderexport</em></dd>
+        </dl>
+
+        <dl>
+            <dt><label for="zeit">Zeit</label></dt>
+            <dd><input type="text" class="text" name="zeit" id="zeit" value="{{ZEIT}}" /><em>Für Anzeige auf Website</em></dd>
+        </dl>
+
+        <dl>
+            <dt><label for="bemerkungen">Bemerkungen</label></dt>
+            <dd><textarea name="bemerkungen" id="bemerkungen" cols="40" rows="10">{{BEMERKUNGEN}}</textarea></dd>
+        </dl>
+    </fieldset>
+
+    <fieldset class="submit"><input type="submit" name="save" value="speichern"/></fieldset>
+</form>
+<!-- UG_AKTIV ENDE -->

@@ -1,0 +1,132 @@
+<h2>{{TITLE}}</h2>
+
+<!-- NOTUG_ADMIN START -->
+<p>Sie besitzen keine Rechte um den Inhalt dieser Seite anzuzeigen.</p>
+<!-- NOTUG_ADMIN ENDE -->
+
+<!-- UG_ADMIN START -->
+{{STATUS}}
+
+<p class="form-required-note"><em>*</em> erforderliche Angaben</p>
+
+<form method="post" action="benutzerMod-{{ID}}.html?send=1" class="form-edit">
+
+<fieldset>
+	<h3>Persönliche Daten</h3>
+  <dl>
+    <dt><label for="vereinID">Verein<em>*</em></label></dt>
+    <dd><select name="vereinID" id="vereinID">{{VEREINE}}</select></dd>
+  </dl>
+
+  <dl>
+    <dt>Anrede<em>*</em></dt>
+    <dd><input type="radio" class="radio" name="anrede" id="Frau" value="Frau"{{FRAU}} /><label for="Frau">Frau</label> <input type="radio" class="radio" name="anrede" id="Herr" value="Herr"{{HERR}} /><label for="Herr">Herr</label></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="vorname">Vorname<em>*</em></label></dt>
+    <dd><input type="text" class="text" name="vorname" id="vorname" value="{{VORNAME}}"  /></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="nachname">Nachname<em>*</em></label></dt>
+   <dd><input type="text" class="text" name="nachname" id="nachname" value="{{NACHNAME}}"  /></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="strasse">Strasse<em>*</em></label></dt>
+    <dd><input type="text" class="text" name="strasse" id="strasse" value="{{STRASSE}}"  /></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="plz">PLZ<em>*</em></label></dt>
+    <dd><input type="text" class="text" name="plz" id="plz" value="{{PLZ}}"  /></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="ort">Ort<em>*</em></label></dt>
+    <dd><input type="text" class="text" name="ort" id="ort" value="{{ORT}}"  /></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="lizenz">Lizenznummer</label></dt>
+    <dd><input type="text" class="text" name="lizenz" id="lizenz" value="{{LIZENZ}}"  /></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="telefon">Telefon</label></dt>
+    <dd><input type="text" class="text" name="telefon" id="telefon" value="{{TELEFON}}"  /></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="email">E-Mail<em>*</em></label></dt>
+    <dd><input type="text" class="text" name="email" id="email" value="{{EMAIL}}"  /></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="geburtsdatum">Geburtsdatum</label></dt>
+    <dd><input type="text" class="text" name="geburtsdatum" id="geburtsdatum" value="{{GEBURTSDATUM}}" /></dd>
+  </dl>
+</fieldset>
+
+<fieldset>
+<dl>
+  <dt><label for="bemerkungen">Interne Bemerkungen</label></dt>
+  <dd><textarea cols="40" rows="10" id="bemerkungen" name="bemerkungen">{{BEMERKUNGEN}}</textarea></dd>
+</dl>
+</fieldset>
+
+<fieldset>
+	<h3>Ehremitglied?</h3>
+  <dl>
+    <dt><label for="ehren">Ehrenmitglied</label></dt>
+    <dd><select name="ehren" id="ehren">{{OPT5}}</select></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="ernannt">Ernannt</label></dt>
+    <dd><input type="text" class="text" name="ernannt" id="ernannt" value="{{ERNANNT}}"  /></dd>
+  </dl>
+</fieldset>
+
+<fieldset>
+	<h3>Zugriffseinstellungen</h3>
+  <dl>
+    <dt><label for="passwort">Neues Passwort</label></dt>
+    <dd><input type="password" class="password" name="passwort" id="passwort" value="" />{{PWINFO}}</dd>
+  </dl>
+
+  <dl>
+    <dt><label for="passwort2">Neues Passwort bestätigen</label></dt>
+    <dd><input type="password" class="password" name="passwort2" id="passwort2" value="" /></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="aktiv">Zugang Aktiv?</label></dt>
+    <dd><select name="aktiv" id="aktiv">{{OPT1}}</select></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="admin">Administrator</label></dt>
+    <dd><select name="admin" id="admin">{{OPT2}}</select></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="redaktor">Redaktor</label></dt>
+    <dd><select name="redaktor" id="redaktor">{{OPT3}}</select></dd>
+  </dl>
+
+  <dl>
+    <dt><label for="vorstand">Vorstand</label></dt>
+    <dd><select name="vorstand" id="vorstand">{{OPT4}}</select></dd>
+  </dl>
+  
+  <dl id="jprogrammlist">
+    <dt>Jahresprogramm</dt>
+    <dd><ul>{{JPWAHL}}</ul></dd>
+  </dl>
+</fieldset>
+    
+<fieldset class="submit"><input type="submit" name="save" value="speichern" /></fieldset>
+</form>
+<!-- UG_ADMIN ENDE -->

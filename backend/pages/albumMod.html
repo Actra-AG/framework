@@ -1,0 +1,24 @@
+<h2>{{TITLE}}</h2>
+
+<!-- NOTUG_REDAKTOR START -->
+<p>Sie besitzen keine Rechte um den Inhalt dieser Seite anzuzeigen.</p>
+<!-- NOTUG_REDAKTOR ENDE -->
+
+<!-- UG_REDAKTOR START -->
+
+{{STATUS}}
+
+<p class="form-required-note"><em>*</em> erforderliche Angaben</p>
+
+<form method="post" action="albumMod-{{ID}}.html?send=1" class="form-edit">
+
+<fieldset>
+<dl>
+  <dt><label for="titel">Titel<em>*</em></label></dt>
+  <dd><input type="text" class="text" name="titel" id="titel" value="{{TITEL}}" /></dd>
+</dl>
+</fieldset>
+
+<fieldset class="submit"><input type="submit" class="submit" name="save" value="speichern" /></fieldset>
+</form>
+<!-- UG_REDAKTOR ENDE -->

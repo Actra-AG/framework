@@ -1,0 +1,98 @@
+# ------------------------------
+# Actra AG - http://www.actra.ch
+# ------------------------------
+# 20.07.2009	CM	new version
+
+
+# -----------------------
+# change php.ini settings
+# -----------------------
+
+php_value allow_call_time_pass_reference 0
+php_value allow_url_fopen On
+php_value arg_separator.output &amp;
+php_value display_errors 0
+php_value enable_dl 0
+php_value error_reporting 2048
+php_value magic_quotes_gpc 0
+php_value register_globals 0
+#php_value safe_mode 1
+php_value short_open_tag 0
+php_value session.bug_compat_42 1
+php_value session.cookie_lifetime 86400
+php_value session.use_trans_sid 1
+php_value session.cache_expire 3600
+php_value session.gc_maxlifetime 900
+php_value session.gc_probability 1
+php_value session.gc_divisor 100
+php_value url_rewriter.tags a=href,area=href,frame=src,input=src,fieldset=
+
+<FilesMatch "\.(php|html?)$">
+php_value memory_limit 128M
+php_value display_errors 1
+</FilesMatch>
+
+
+# --------------------------------------------------------
+# handle default errors (that occur outside our framework)
+# --------------------------------------------------------
+
+ErrorDocument 400 /index.php?default_error=400
+ErrorDocument 401 /index.php?default_error=401
+ErrorDocument 403 /index.php?default_error=403
+ErrorDocument 404 /index.php?default_error=404
+ErrorDocument 405 /index.php?default_error=405
+ErrorDocument 406 /index.php?default_error=406
+ErrorDocument 407 /index.php?default_error=407
+ErrorDocument 408 /index.php?default_error=408
+ErrorDocument 409 /index.php?default_error=409
+ErrorDocument 410 /index.php?default_error=410
+ErrorDocument 411 /index.php?default_error=411
+ErrorDocument 412 /index.php?default_error=412
+ErrorDocument 413 /index.php?default_error=413
+ErrorDocument 414 /index.php?default_error=414
+ErrorDocument 415 /index.php?default_error=415
+ErrorDocument 500 /index.php?default_error=500
+ErrorDocument 501 /index.php?default_error=501
+ErrorDocument 502 /index.php?default_error=502
+ErrorDocument 503 /index.php?default_error=503
+ErrorDocument 504 /index.php?default_error=504
+ErrorDocument 505 /index.php?default_error=505
+
+
+# -----------------------------
+# rewriting for actra framework
+# -----------------------------
+
+RewriteEngine on
+RewriteBase /
+
+# blacklist of directories
+
+RewriteRule classes/ - [NC,F,L]
+RewriteRule errors/ - [NC,F,L]
+RewriteRule config/ - [NC,F,L]
+RewriteRule pages/ - [NC,F,L]
+RewriteRule services/ - [NC,F,L]
+RewriteRule settings/ - [NC,F,L]
+RewriteRule scripts/ - [NC,F,L]
+RewriteRule templates/ - [NC,F,L]
+
+# whitelist of files
+
+RewriteRule ^webcopy\.php$ - [L]
+RewriteRule ^patch\.php$ - [L]
+RewriteRule ^index\.php$ - [L]
+RewriteRule ^robots\.txt$ - [L]
+
+# whitelist of directories
+
+#RewriteRule ^files/ - [L]
+RewriteRule ^galerie/ - [L]
+RewriteRule ^images/ - [L]
+RewriteRule ^styles/ - [L]
+RewriteRule ^flash/ - [L]
+RewriteRule ^js/ - [L]
+
+RewriteRule ^[\s-a-z0-9_/]*(\.[a-z0-9]+)?$ /index.php [NC,L]
+RewriteRule ^.* /index.php?default_error=400 [L]

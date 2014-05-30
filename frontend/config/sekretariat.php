@@ -1,0 +1,19 @@
+<?php
+//Grundkonfiguration
+$grundkonf['templateID'] = '1';
+
+//Platzhalter
+$platzhalter['title'] = 'Sekretariat';
+$platzhalter['description'] = 'description';
+
+// Zusatzcode in Header
+$platzhalter['scripts'] = '';
+
+// Navigation
+$navistufe[1] = 'sekretariat';
+
+// Navigator / Breadcrumb
+$grundkonf['navigator']['use'] = false;
+$grundkonf['navigator']['reset'] = false;
+$grundkonf['navigator']['title'] = '';
+?>

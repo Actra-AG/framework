@@ -1,0 +1,137 @@
+<?php
+$stichwort = '';
+$liste = '';
+
+$fehlerArr = array();
+
+$fn = 'adm_visits';
+
+if($showPage -> checkUG('admin')) {
+
+  if(isset($_REQUEST['stichwort'])) {
+    $_SESSION[$fn]['stichwort'] = $_REQUEST['stichwort'];
+    $_SESSION[$fn]['pos'] = 0;
+  }
+
+  if(isset($_SESSION[$fn]['stichwort'])) {
+    $stichwort = $_SESSION[$fn]['stichwort'];
+  }
+
+  $paramsArr = array();
+  $cond = "WHERE 1=1";
+  
+  if(strlen(trim($stichwort)) != 0) {
+  	if(preg_match("/^(benutzerID|ip|sessionID)::([0-9a-zA-Z\.]*)/", $stichwort, $treffer)) {
+  		$cond .= " AND v.{$treffer[1]}='{p}'";
+  		$paramsArr[] = $treffer[2];
+
+  	} else {
+      $condSearchWord = array();
+      $sArr = explode(" ", $stichwort);
+      foreach($sArr AS $key => $val) {
+        $sx = trim($val);
+        if($sx != '') {
+          $condSearchWord[] = "(u.vorname LIKE '%{p}%' OR u.nachname LIKE '%{p}%' OR v.sessionID LIKE '%{p}%' OR v.ip LIKE '%{p}%')";
+          $paramsArr[] = $val; $paramsArr[] = $val; $paramsArr[] = $val; $paramsArr[] = $val;
+        }
+      }
+      if(count($condSearchWord) != 0) {
+        $cond .= ' AND ('.implode(' OR ', $condSearchWord).')';
+      }
+
+    }
+  }
+
+  $fArr['v.datum']['attributes'] = '';
+  $fArr['v.datum']['order'] = 1;
+  $fArr['v.datum']['ox'] = 'DESC';
+  $fArr['v.datum']['value'] = 'Datum';
+
+  $fArr['name']['attributes'] = '';
+  $fArr['name']['order'] = 1;
+  $fArr['name']['ox'] = 'ASC';
+  $fArr['name']['value'] = 'Name';
+
+  $fArr['v.sessionID']['attributes'] = '';
+  $fArr['v.sessionID']['order'] = 1;
+  $fArr['v.sessionID']['ox'] = 'ASC';
+  $fArr['v.sessionID']['value'] = 'SessionID';
+
+  $fArr['v.ip']['attributes'] = '';
+  $fArr['v.ip']['order'] = 1;
+  $fArr['v.ip']['ox'] = 'ASC';
+  $fArr['v.ip']['value'] = 'IP-Adresse';
+
+  $pos = 0;
+  $ox = "DESC";
+  $orderby = "v.datum";
+  if(isset($_GET['pos'])) { $_SESSION[$fn]['pos'] = $_GET['pos']; }
+  if(isset($_GET['orderby']) && isset($fArr[$_GET['orderby']])) { $_SESSION[$fn]['orderby'] = urldecode($_GET['orderby']); }
+  if(isset($_GET['ox']) && ($_GET['ox'] == 'ASC' || $_GET['ox'] == 'DESC')) { $_SESSION[$fn]['ox'] = $_GET['ox']; }
+  if(isset($_SESSION[$fn]['pos'])) { $pos = (int)$_SESSION[$fn]['pos']; }
+  if(isset($_SESSION[$fn]['orderby'])) { $orderby = $_SESSION[$fn]['orderby']; }
+  if(isset($_SESSION[$fn]['ox'])) { $ox = $_SESSION[$fn]['ox']; }
+
+  $sql = "
+  SELECT
+    COUNT(*) AS anz
+  
+  FROM
+    visits v
+    LEFT JOIN benutzer u ON v.benutzerID=u.ID
+  
+  {$cond}
+  
+  ";
+  $qry = $DB_LINK -> query($sql, $paramsArr);
+  $res = $qry -> fetch_object();
+  if($res -> anz == 0) {
+    $liste = "<p>Es wurden keine Einträge gefunden.</p>";
+
+  } else {
+    $pagination = $showPage -> getPagenavi("visits", $res -> anz, $pos);
+    $liste = "<p class=\"search-result\">Es wurde(n) <strong>{$res->anz}</strong> Resultat(e) gefunden.</p>\n";
+    $liste .= $pagination;
+
+    $liste .= "<div class=\"tablewrap\"><table cellspacing=\"0\">\n<thead>\n".$showPage -> dynTableHeader($fArr, $orderby, $ox)."</thead>\n<tbody>\n";
+
+    $sql = "
+    SELECT
+      DATE_FORMAT(v.datum, '%d.%m.%Y %T') AS datum, CONCAT(u.vorname, ' ', u.nachname) AS name, v.benutzerID, v.sessionID, v.ip
+      
+    FROM
+      visits v
+      LEFT JOIN benutzer u ON v.benutzerID=u.ID
+      
+    {$cond}
+    
+    ORDER BY
+      {p} {p}
+
+    LIMIT
+      {p}, {p}";
+    $paramsArr[] = $orderby;
+    $paramsArr[] = $ox;
+    $paramsArr[] = $pos;
+    $paramsArr[] = $showPage -> config['lists']['entriesPerPage'];
+
+    $qry = $DB_LINK -> query($sql, $paramsArr);
+    while($res = $qry -> fetch_object()) {
+      $liste .= "<tr><td>{$res -> datum}</td>\n<td><a href=\"benutzerDet-{$res -> benutzerID}.html\">{$res -> name}</a></td>\n<td><a href=\"visits.html?stichwort=sessionID::{$res -> sessionID}\">{$res -> sessionID}</a></td>\n<td><a href=\"visits.html?stichwort=ip::{$res -> ip}\">{$res -> ip}</a></td>\n</tr>\n";
+    }
+    $liste .= "</tbody>\n</table></div>";
+    $liste .= $pagination;
+  }
+}
+
+if(count($fehlerArr) != 0) {
+  $status = "<div id=\"formfehler\"><ul>\n";
+  foreach($fehlerArr as $key => $val)	{
+	  $status .= "<li>{$val}</li>\n";
+	}
+  $status .= "</ul></div>";
+}
+
+$platzhalter['stichwort'] = $stichwort;
+$platzhalter['liste'] = $liste;
+?>

@@ -1,0 +1,24 @@
+<h2>{{TITLE}}</h2>
+
+<!-- UG_VISITOR START -->
+<p>Sie besitzen keine Rechte um den Inhalt dieser Seite anzuzeigen.</p>
+<!-- UG_VISITOR ENDE -->
+
+<!-- UG_AKTIV START -->
+{{STATUS}}
+
+<form method="post" action="dokumentMod-{{OBJEKT}}-{{OBJEKTID}}-{{ID}}.html?send=1" enctype="multipart/form-data" class="form-edit">
+
+<fieldset>
+{{DOKUMENT}}
+</fieldset>
+
+<fieldset>
+<dl>
+  <dt><label for="titel">Titel</label></dt>
+  <dd><input type="text" class="text" name="titel" id="titel" value="{{TITEL}}" /></dd>
+</dl>
+</fieldset>
+<fieldset class="submit"><input type="submit" class="submit" name="save" value="speichern" /></fieldset>
+</form>
+<!-- UG_AKTIV ENDE -->
