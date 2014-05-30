@@ -11,7 +11,7 @@ $fn = "newsfilter1";
   
 if(isset($_GET['filter']) && $_GET['filter'] == 'reset' && isset($_SESSION[$fn])) { unset($_SESSION[$fn]); }
 if(isset($_GET['pos'])) { $_SESSION[$fn]['pos'] = (is_numeric($_GET['pos']))?$_GET['pos']:0; }
-if(isset($_SESSION[$fn]['pos'])) { (int)$pos = $_SESSION[$fn]['pos']; }
+if(isset($_SESSION[$fn]['pos'])) { $pos = (int)$_SESSION[$fn]['pos']; }
 if($pos < 0) { $pos = 0; }
 
 $sql = "

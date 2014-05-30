@@ -205,13 +205,6 @@ if($requestHandler -> reqType == 'file') {
     }
   	$showPage -> output();
 
-/*
-    if(isset($showPage -> pageArr['grundkonf'])) { echo "<pre>grundkonf\n"; print_r($showPage -> pageArr['grundkonf']); echo "</pre>"; }
-    if(isset($_SESSION['sess_navistufe'])) { echo "<pre>sess_navistufe\n"; print_r($_SESSION['sess_navistufe']); echo "</pre>"; }
-    if(isset($showPage -> pageArr['navistufe'])) { echo "<pre>navistufe\n"; print_r($showPage -> pageArr['navistufe']); echo "</pre>"; }
-    if(isset($_SESSION['sess_breadcrumb'])) { echo "<pre>sess_breadcrumb\n"; print_r($_SESSION['sess_breadcrumb']); echo "</pre>"; }
-    if(isset($_SESSION['userData'])) { echo "<pre>userData\n"; print_r($_SESSION['userData']); echo "</pre>"; }
-*/
   }
 
 

@@ -96,4 +96,3 @@ RewriteRule ^js/ - [L]
 
 RewriteRule ^[\s-a-z0-9_/]*(\.[a-z0-9]+)?$ /index.php [NC,L]
 RewriteRule ^.* /index.php?default_error=400 [L]
-AddHandler php5-fastcgi .php .php5
