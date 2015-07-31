@@ -3,36 +3,6 @@
 # ------------------------------
 # 20.07.2009	CM	new version
 
-
-# -----------------------
-# change php.ini settings
-# -----------------------
-
-php_value allow_call_time_pass_reference 0
-php_value allow_url_fopen On
-php_value arg_separator.output &amp;
-php_value display_errors 0
-php_value enable_dl 0
-php_value error_reporting 2048
-php_value magic_quotes_gpc 0
-php_value register_globals 0
-#php_value safe_mode 1
-php_value short_open_tag 0
-php_value session.bug_compat_42 1
-php_value session.cookie_lifetime 86400
-php_value session.use_trans_sid 1
-php_value session.cache_expire 3600
-php_value session.gc_maxlifetime 900
-php_value session.gc_probability 1
-php_value session.gc_divisor 100
-php_value url_rewriter.tags a=href,area=href,frame=src,input=src,fieldset=
-
-<FilesMatch "\.(php|html?)$">
-php_value memory_limit 128M
-php_value display_errors 1
-</FilesMatch>
-
-
 # --------------------------------------------------------
 # handle default errors (that occur outside our framework)
 # --------------------------------------------------------
@@ -59,7 +29,6 @@ ErrorDocument 503 /index.php?default_error=503
 ErrorDocument 504 /index.php?default_error=504
 ErrorDocument 505 /index.php?default_error=505
 
-
 # -----------------------------
 # rewriting for actra framework
 # -----------------------------
@@ -80,10 +49,10 @@ RewriteRule templates/ - [NC,F,L]
 
 # whitelist of files
 
-RewriteRule ^webcopy\.php$ - [L]
 RewriteRule ^patch\.php$ - [L]
 RewriteRule ^index\.php$ - [L]
 RewriteRule ^robots\.txt$ - [L]
+RewriteRule ^mnauth/login\.php$ - [L]
 
 # whitelist of directories
 
