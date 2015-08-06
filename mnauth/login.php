@@ -12,7 +12,7 @@ session_start();
 if(isset($_POST['auth'])) {
 	require_once('header.php');
 	$email = isset($_REQUEST['email']) ? trim($_REQUEST['email']) : '';
-	$url = "https://cron.metanet.ch/mnauth/check?site=".urlencode($site)."&email=".urlencode($email);
+	$url = "https://auth.metanet.ch/api/check?site=".urlencode($site)."&email=".urlencode($email);
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
