@@ -174,7 +174,7 @@ if($requestHandler -> reqType == 'file') {
   if(isset($_COOKIE[$sn])) if(strlen($_COOKIE[$sn])!=32 && strlen($_COOKIE[$sn])!=26) unset($_COOKIE[$sn]);
   if(isset($PHPSESSID)) if(strlen($PHPSESSID)!=32 && strlen($PHPSESSID)!=26) unset($PHPSESSID);
 
-  session_start();
+  @session_start();
 
 
   if($requestHandler -> reqType == 'service' && $requestHandler -> serviceName) {
