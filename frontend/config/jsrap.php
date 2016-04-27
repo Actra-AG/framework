@@ -3,7 +3,7 @@
 $grundkonf['templateID'] = '1';
 
 //Platzhalter
-$platzhalter['title'] = 'Jungschützen/Nachwuchs Rapporte';
+$platzhalter['title'] = 'JungschÃ¼tzen/Nachwuchs Rapporte';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
@@ -17,4 +17,4 @@ $navistufe[2] = 'jsrap';
 $grundkonf['navigator']['use'] = false;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = '';
-?>
+/* EOF */

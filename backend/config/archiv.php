@@ -16,4 +16,4 @@ $navistufe[0] = 'seiten';
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = 'Archiv';
-?>
+/* EOF */

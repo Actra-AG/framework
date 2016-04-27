@@ -16,4 +16,4 @@ $navistufe[0] = 'news';
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = 'Neuigkeit bearbeiten';
-?>
+/* EOF */

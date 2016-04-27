@@ -3,7 +3,7 @@
 $grundkonf['templateID'] = '1';
 
 //Platzhalter
-$platzhalter['title'] = 'News-Ticker zum eidgenössischen Schützenfest 2007';
+$platzhalter['title'] = 'News-Ticker zum eidgenÃ¶ssischen SchÃ¼tzenfest 2007';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
@@ -17,4 +17,4 @@ $navistufe[2] = 'eidg07news';
 $grundkonf['navigator']['use'] = false;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = '';
-?>
+/* EOF */

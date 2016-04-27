@@ -6,14 +6,15 @@ if($showPage -> checkUG('admin')) {
 
   $sql = "SELECT b.ID, b.vorname, b.nachname, DATE_FORMAT(b.registered, '%d.%m.%Y %T') AS registered FROM benutzer b WHERE b.accepted='0000-00-00 00:00:00' AND b.denied='0000-00-00 00:00:00' ORDER BY b.registered DESC";
   $qry = $DB_LINK -> query($sql);
-	if($qry -> num_rows() == 0) {
-		$unconfirmed = "<p>Zurzeit gibt es keine unbest‰tigten Registrierungen.</p>";
+	if($qry -> rowCount() == 0) {
+		$unconfirmed = "<p>Zurzeit gibt es keine unbest√§tigten Registrierungen.</p>";
 
 	} else {
 		$unconfirmed = "<ul>\n";
 
-		while($res = $qry -> fetch_assoc()) {
-			$unconfirmed .= "<li><a href=\"benutzerDet-{$res['ID']}.html\">{$res['vorname']} {$res['nachname']}</a> [{$res['registered']}]</li>\n";
+		while($res = $qry -> fetch(PDO::FETCH_ASSOC)) {
+			$href = "benutzerDet-{$res['ID']}.html";
+			$unconfirmed .= "<li><a href=\"{$href}\">{$res['vorname']} {$res['nachname']}</a> [{$res['registered']}]</li>\n";
 
 		}
 		$unconfirmed .= "</ul>";
@@ -21,14 +22,15 @@ if($showPage -> checkUG('admin')) {
 
   $sql = "SELECT p.ID, p.titel, DATE_FORMAT(p.registered, '%d.%m.%Y %T') AS registered FROM jahresprogramm p WHERE p.confirmed='0000-00-00 00:00:00' AND p.denied='0000-00-00 00:00:00' ORDER BY p.registered DESC";
   $qry = $DB_LINK -> query($sql);
-	if($qry -> num_rows() == 0) {
-		$tocheck = "<p>Zurzeit gibt es keine zu pr¸fenden Anl‰sse.</p>";
+	if($qry -> rowCount() == 0) {
+		$tocheck = "<p>Zurzeit gibt es keine zu pr√ºfenden Anl√§sse.</p>";
 
 	} else {
 		$tocheck = "<ul>\n";
 
-		while($res = $qry -> fetch_assoc()) {
-			$tocheck .= "<li><a href=\"anlassDet-{$res['ID']}.html\">{$res['titel']}</a> [{$res['registered']}]</li>\n";
+		while($res = $qry -> fetch(PDO::FETCH_ASSOC)) {
+			$href = "anlassDet-{$res['ID']}.html";
+			$tocheck .= "<li><a href=\"{$href}\">{$res['titel']}</a> [{$res['registered']}]</li>\n";
 
 		}
 		$tocheck .= "</ul>";
@@ -38,4 +40,4 @@ if($showPage -> checkUG('admin')) {
 
 $platzhalter['unconfirmed'] = $unconfirmed;
 $platzhalter['tocheck'] = $tocheck;
-?>
+/* EOF */

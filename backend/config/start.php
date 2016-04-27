@@ -16,4 +16,4 @@ $navistufe[1] = 'start';
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = true;
 $grundkonf['navigator']['title'] = 'Startseite';
-?>
+/* EOF */

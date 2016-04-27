@@ -3,7 +3,7 @@
 $grundkonf['templateID'] = '1';
 
 //Platzhalter
-$platzhalter['title'] = 'Dokument hinzuf¸gen';
+$platzhalter['title'] = 'Dokument hinzuf√ºgen';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
@@ -15,5 +15,5 @@ $navistufe[0] = 'jahresprogramm';
 // Navigator / Breadcrumb
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = false;
-$grundkonf['navigator']['title'] = 'Dokument hinzuf¸gen';
-?>
+$grundkonf['navigator']['title'] = 'Dokument hinzuf√ºgen';
+/* EOF */

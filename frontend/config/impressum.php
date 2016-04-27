@@ -16,4 +16,4 @@ $navistufe[1] = 'impressum';
 $grundkonf['navigator']['use'] = false;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = '';
-?>
+/* EOF */

@@ -39,9 +39,7 @@ if (!strpos($config['reqURI'], ".") && !strpos($config['reqURI'], "?") && substr
 
 define('CLASS_PATH', $_SERVER['DOCUMENT_ROOT'] . '/classes/');
 $config['useDB'] = true;
-$config['useCountryLang'] = false;
 $config['accessLog'] = false;
-$config['dbSessions'] = false;
 $config['defaultpage'] = 'start';
 $config['scriptsDir'] = $_SERVER['DOCUMENT_ROOT'] . '/scripts/';
 $config['rootDir'] = $_SERVER['DOCUMENT_ROOT'] . '/frontend/';

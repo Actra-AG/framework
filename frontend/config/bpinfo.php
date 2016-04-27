@@ -17,4 +17,4 @@ $navistufe[2] = 'bpinfo';
 $grundkonf['navigator']['use'] = false;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = '';
-?>
+/* EOF */

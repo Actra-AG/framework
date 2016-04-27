@@ -3,7 +3,7 @@
 $grundkonf['templateID'] = '1';
 
 //Platzhalter
-$platzhalter['title'] = 'Ranglisten vom Eidgenössischen Schützenfest 2007';
+$platzhalter['title'] = 'Ranglisten vom EidgenÃ¶ssischen SchÃ¼tzenfest 2007';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
@@ -17,4 +17,4 @@ $navistufe[2] = 'eidg07ranglisten';
 $grundkonf['navigator']['use'] = false;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = '';
-?>
+/* EOF */

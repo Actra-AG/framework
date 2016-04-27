@@ -16,4 +16,4 @@ $navistufe[0] = 'jahresprogramm';
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = 'Anlass bearbeiten';
-?>
+/* EOF */

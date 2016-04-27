@@ -3,7 +3,7 @@
 $grundkonf['templateID'] = '1';
 
 //Platzhalter
-$platzhalter['title'] = 'Jungschützen/Nachwuchs Jungschützentag';
+$platzhalter['title'] = 'JungschÃ¼tzen/Nachwuchs JungschÃ¼tzentag';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
@@ -17,4 +17,4 @@ $navistufe[2] = 'jstag';
 $grundkonf['navigator']['use'] = false;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = '';
-?>
+/* EOF */

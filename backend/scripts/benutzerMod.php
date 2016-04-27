@@ -38,10 +38,10 @@ $cjp = array();
 
 $fehlerArr = array();
 
-if($showPage -> checkUG('admin')) {
-	
-	$ID = (isset($showPage -> arrVars[1])) ? $showPage -> arrVars[1] : 0;
-	
+if ($showPage->checkUG('admin')) {
+
+	$ID = (isset($showPage->arrVars[1])) ? $showPage->arrVars[1] : 0;
+
 	$sql = "
 	SELECT
 	  vereinID, anrede, vorname, nachname, strasse, plz, ort, lizenz, telefon, email, IF(geburtsdatum='0000-00-00', '', DATE_FORMAT(geburtsdatum, '%d.%m.%Y')) AS geburtsdatum, bemerkungen, ehren, ernannt, passwort, aktiv, admin, redaktor, vorstand
@@ -50,282 +50,308 @@ if($showPage -> checkUG('admin')) {
 	  benutzer
 	  
 	WHERE
-	  ID='{p}'
+	  ID=?
 	";
-	$qry = $DB_LINK -> query($sql, array($ID));
-	if($qry -> num_rows() == 1) {
-		$showPage -> pageArr['platzhalter']['title'] = 'Benutzer bearbeiten';
+	$qry = $DB_LINK->query($sql, array($ID));
+	if ($qry->rowCount() == 1) {
+		$showPage->pageArr['platzhalter']['title'] = 'Benutzer bearbeiten';
 		$ac = 'mod';
-		$datenArr = $qry -> fetch_assoc();
-  	$pwinfo = " <em>Passwortfelder leer lassen um aktuelles Passwort zu behalten</em>";
-  	
-    $sql = "SELECT vereinID FROM benutzervereine WHERE benutzerID='{p}'";
-    $qry = $DB_LINK -> query($sql, array($ID));
-    while($res = $qry -> fetch_assoc()) {
-  	  $cjp[] = $res['vereinID'];
-    	
-    }
+		$datenArr = $qry->fetch(PDO::FETCH_ASSOC);
+		$pwinfo = " <em>Passwortfelder leer lassen um aktuelles Passwort zu behalten</em>";
+
+		$sql = "SELECT vereinID FROM benutzervereine WHERE benutzerID=?";
+		$qry = $DB_LINK->query($sql, array($ID));
+		while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
+			$cjp[] = $res['vereinID'];
+
+		}
 
 	} else {
 		$ID = 0;
 		$ac = 'add';
-		$showPage -> pageArr['platzhalter']['title'] = 'Benutzer hinzufügen';
-		
+		$showPage->pageArr['platzhalter']['title'] = 'Benutzer hinzufÃ¼gen';
+
 	}
 
-  $vArr = array();
+	$vArr = array();
 
-  $vArr[0] = 'keiner';
-  $sql = "SELECT ID, name FROM vereine ORDER BY name";
-  $qry = $DB_LINK -> query($sql);
-  while($res = $qry -> fetch_assoc()) {
-  	$vArr[$res['ID']] = $res['name'];
-  	
-  }
+	$vArr[0] = 'keiner';
+	$sql = "SELECT ID, name FROM vereine ORDER BY name";
+	$qry = $DB_LINK->query($sql);
+	while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
+		$vArr[$res['ID']] = $res['name'];
 
-  $optArr[0] = 'Nein';
-  $optArr[1] = 'Ja';
-	
-  if(isset($_GET['send'])) {
-  	$addArr = array();
-  	$delArr = array();
+	}
 
-    if(!isset($_POST['vereinID']) || !isset($vArr[$_POST['vereinID']])) {
-	 	  $fehlerArr[] = "Wählen Sie einen Verein aus";
+	$optArr[0] = 'Nein';
+	$optArr[1] = 'Ja';
 
-	  } else {
-  		$datenArr['vereinID'] = $_POST['vereinID'];
+	if (isset($_GET['send'])) {
+		$addArr = array();
+		$delArr = array();
 
-	  }
+		if (!isset($_POST['vereinID']) || !isset($vArr[$_POST['vereinID']])) {
+			$fehlerArr[] = "WÃ¤hlen Sie einen Verein aus";
 
-  	if(!isset($_POST['anrede'])) {
-		  $fehlerArr[] = 'Bitte wählen Sie eine Anrede aus.';
+		} else {
+			$datenArr['vereinID'] = $_POST['vereinID'];
 
-	  } elseif($_POST['anrede'] != 'Herr' && $_POST['anrede'] != 'Frau') {
-  		$fehlerArr[] = 'Bitte wählen Sie eine Anrede aus.';
-  	
-  	} else {
-		  $datenArr['anrede'] = $_POST['anrede'];
+		}
 
-	  }
-	
-  	if(!isset($_POST['vorname']) || trim($_POST['vorname']) == '') {
-		  $fehlerArr[] = "Geben Sie bitte Ihren Vornamen an.";
+		if (!isset($_POST['anrede'])) {
+			$fehlerArr[] = 'Bitte wÃ¤hlen Sie eine Anrede aus.';
 
-  	} else {
-		  $datenArr['vorname'] = $_POST['vorname'];
+		} elseif ($_POST['anrede'] != 'Herr' && $_POST['anrede'] != 'Frau') {
+			$fehlerArr[] = 'Bitte wÃ¤hlen Sie eine Anrede aus.';
 
-	  }
+		} else {
+			$datenArr['anrede'] = $_POST['anrede'];
 
-	  if(!isset($_POST['nachname']) || trim($_POST['nachname']) == '') {
-		  $fehlerArr[] = "Geben Sie bitte Ihren Nachnamen an.";
+		}
 
-	  } else {
-  		$datenArr['nachname'] = $_POST['nachname'];
+		if (!isset($_POST['vorname']) || trim($_POST['vorname']) == '') {
+			$fehlerArr[] = "Geben Sie bitte Ihren Vornamen an.";
 
-	  }
+		} else {
+			$datenArr['vorname'] = $_POST['vorname'];
 
-  	if(!isset($_POST['strasse']) || trim($_POST['strasse']) == '') {
-		  $fehlerArr[] = "Geben Sie bitte den Nachnamen an.";
+		}
 
-	  } else {
-  		$datenArr['strasse'] = $_POST['strasse'];
+		if (!isset($_POST['nachname']) || trim($_POST['nachname']) == '') {
+			$fehlerArr[] = "Geben Sie bitte Ihren Nachnamen an.";
 
-  	}
+		} else {
+			$datenArr['nachname'] = $_POST['nachname'];
 
-  	if(!isset($_POST['plz']) || trim($_POST['plz']) == '') {
-		  $fehlerArr[] = "Geben Sie bitte die PLZ an.";
+		}
 
-	  } else {
-  		$datenArr['plz'] = $_POST['plz'];
+		if (!isset($_POST['strasse']) || trim($_POST['strasse']) == '') {
+			$fehlerArr[] = "Geben Sie bitte den Nachnamen an.";
 
-  	}
+		} else {
+			$datenArr['strasse'] = $_POST['strasse'];
 
-  	if(!isset($_POST['ort']) || trim($_POST['ort']) == '') {
-		  $fehlerArr[] = "Geben Sie bitte den Ort an.";
-	
-	  } else {
-  		$datenArr['ort'] = $_POST['ort'];
+		}
 
-  	}
+		if (!isset($_POST['plz']) || trim($_POST['plz']) == '') {
+			$fehlerArr[] = "Geben Sie bitte die PLZ an.";
 
-	  if(isset($_POST['lizenz'])) { $datenArr['lizenz'] = $_POST['lizenz']; }
-	  if(isset($_POST['telefon'])) { $datenArr['telefon'] = $_POST['telefon']; }
+		} else {
+			$datenArr['plz'] = $_POST['plz'];
 
-  	if(!isset($_POST['email']) || $_POST['email'] == '') {
-		  $fehlerArr[] = 'Geben Sie bitte eine E-Mail-Adresse an.';
+		}
 
-	  } elseif(!$showPage -> valemail($_POST['email'])) {
-  		$fehlerArr[] = 'Geben Sie bitte eine gültige E-Mail-Adresse an.';
+		if (!isset($_POST['ort']) || trim($_POST['ort']) == '') {
+			$fehlerArr[] = "Geben Sie bitte den Ort an.";
 
-  	} else {
-	    $datenArr['email'] = $_POST['email'];
-	    $sql = "SELECT COUNT(*) AS anz FROM benutzer WHERE email='{p}' AND ID!='{p}'";
-	    $qry = $DB_LINK -> query($sql, array($_POST['email'], $ID));
-	    $res = $qry -> fetch_assoc();
-	    if($res['anz'] != 0) {
-   			$fehlerArr[] = 'Die eingegebene E-Mail-Adresse ist bereits registriert. Geben Sie bitte eine andere ein.';
+		} else {
+			$datenArr['ort'] = $_POST['ort'];
 
-		  }
-	  }
+		}
 
-    if(!isset($_POST['geburtsdatum']) || $_POST['geburtsdatum'] == '') {
-      $datenArr['geburtsdatum'] = '';
+		if (isset($_POST['lizenz'])) {
+			$datenArr['lizenz'] = $_POST['lizenz'];
+		}
+		if (isset($_POST['telefon'])) {
+			$datenArr['telefon'] = $_POST['telefon'];
+		}
 
-    } elseif(!preg_match("/[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4}/", $_POST['geburtsdatum'])) {
-      $fehlerArr[] = 'Sie haben ein ungültiges Geburtsdatum eingegeben.';
-      $datenArr['geburtsdatum'] = $_POST['geburtsdatum'];
+		if (!isset($_POST['email']) || $_POST['email'] == '') {
+			$fehlerArr[] = 'Geben Sie bitte eine E-Mail-Adresse an.';
 
-    } else {
-      $datenArr['geburtsdatum'] = $_POST['geburtsdatum'];
+		} elseif (!$showPage->valemail($_POST['email'])) {
+			$fehlerArr[] = 'Geben Sie bitte eine gÃ¼ltige E-Mail-Adresse an.';
 
-    }
+		} else {
+			$datenArr['email'] = $_POST['email'];
+			$sql = "SELECT COUNT(*) AS anz FROM benutzer WHERE email=? AND ID!=?";
+			$qry = $DB_LINK->query($sql, array($_POST['email'], $ID));
+			$res = $qry->fetch(PDO::FETCH_ASSOC);
+			if ($res['anz'] != 0) {
+				$fehlerArr[] = 'Die eingegebene E-Mail-Adresse ist bereits registriert. Geben Sie bitte eine andere ein.';
 
-	  if(isset($_POST['bemerkungen'])) { $datenArr['bemerkungen'] = $_POST['bemerkungen']; }
+			}
+		}
 
-    if(!isset($_POST['ehren']) || !array_key_exists($_POST['ehren'], $optArr)) {
-      $fehlerArr[] = 'Sie haben bei "Ehrenmitglied" eine ungültige Auswahl getroffen.';
+		if (!isset($_POST['geburtsdatum']) || $_POST['geburtsdatum'] == '') {
+			$datenArr['geburtsdatum'] = '';
 
-    } else {
-      $datenArr['ehren'] = $_POST['ehren'];
+		} elseif (!preg_match("/[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4}/", $_POST['geburtsdatum'])) {
+			$fehlerArr[] = 'Sie haben ein ungÃ¼ltiges Geburtsdatum eingegeben.';
+			$datenArr['geburtsdatum'] = $_POST['geburtsdatum'];
 
-    }
+		} else {
+			$datenArr['geburtsdatum'] = $_POST['geburtsdatum'];
 
-	  if(isset($_POST['ernannt'])) { $datenArr['ernannt'] = $_POST['ernannt']; }
+		}
 
-    if(!isset($_POST['passwort']) || $_POST['passwort'] == '') {
+		if (isset($_POST['bemerkungen'])) {
+			$datenArr['bemerkungen'] = $_POST['bemerkungen'];
+		}
+
+		if (!isset($_POST['ehren']) || !array_key_exists($_POST['ehren'], $optArr)) {
+			$fehlerArr[] = 'Sie haben bei "Ehrenmitglied" eine ungÃ¼ltige Auswahl getroffen.';
+
+		} else {
+			$datenArr['ehren'] = $_POST['ehren'];
+
+		}
+
+		if (isset($_POST['ernannt'])) {
+			$datenArr['ernannt'] = $_POST['ernannt'];
+		}
+
+		if (!isset($_POST['passwort']) || $_POST['passwort'] == '') {
 //    	$datenArr['passwort'] = '';
 
-    } elseif(!isset($_POST['passwort2']) || $_POST['passwort2'] == '' || $_POST['passwort'] != $_POST['passwort2']) {
-      $fehlerArr[] = 'Sie haben nicht zweimal dasselbe Passwort eingegeben.';
-    } else {
-      $datenArr['passwort'] = md5($_POST['passwort']);
+		} elseif (!isset($_POST['passwort2']) || $_POST['passwort2'] == '' || $_POST['passwort'] != $_POST['passwort2']) {
+			$fehlerArr[] = 'Sie haben nicht zweimal dasselbe Passwort eingegeben.';
+		} else {
+			$datenArr['passwort'] = md5($_POST['passwort']);
 
-    }
+		}
 
-    if(!isset($_POST['aktiv']) || !array_key_exists($_POST['aktiv'], $optArr)) {
-      $fehlerArr[] = 'Sie haben bei "Zugang Aktiv?" eine ungültige Auswahl getroffen.';
+		if (!isset($_POST['aktiv']) || !array_key_exists($_POST['aktiv'], $optArr)) {
+			$fehlerArr[] = 'Sie haben bei "Zugang Aktiv?" eine ungÃ¼ltige Auswahl getroffen.';
 
-    } else {
-      $datenArr['aktiv'] = $_POST['aktiv'];
+		} else {
+			$datenArr['aktiv'] = $_POST['aktiv'];
 
-    }
+		}
 
-    if(!isset($_POST['admin']) || !array_key_exists($_POST['admin'], $optArr)) {
-      $fehlerArr[] = 'Sie haben bei "Administrator" eine ungültige Auswahl getroffen.';
+		if (!isset($_POST['admin']) || !array_key_exists($_POST['admin'], $optArr)) {
+			$fehlerArr[] = 'Sie haben bei "Administrator" eine ungÃ¼ltige Auswahl getroffen.';
 
-    } else {
-      $datenArr['admin'] = $_POST['admin'];
+		} else {
+			$datenArr['admin'] = $_POST['admin'];
 
-    }
+		}
 
-    if(!isset($_POST['redaktor']) || !array_key_exists($_POST['redaktor'], $optArr)) {
-      $fehlerArr[] = 'Sie haben bei "Redaktor" eine ungültige Auswahl getroffen.';
+		if (!isset($_POST['redaktor']) || !array_key_exists($_POST['redaktor'], $optArr)) {
+			$fehlerArr[] = 'Sie haben bei "Redaktor" eine ungÃ¼ltige Auswahl getroffen.';
 
-    } else {
-      $datenArr['redaktor'] = $_POST['redaktor'];
+		} else {
+			$datenArr['redaktor'] = $_POST['redaktor'];
 
-    }
+		}
 
-    if(!isset($_POST['vorstand']) || !array_key_exists($_POST['vorstand'], $optArr)) {
-      $fehlerArr[] = 'Sie haben bei "Vorstand" eine ungültige Auswahl getroffen.';
+		if (!isset($_POST['vorstand']) || !array_key_exists($_POST['vorstand'], $optArr)) {
+			$fehlerArr[] = 'Sie haben bei "Vorstand" eine ungÃ¼ltige Auswahl getroffen.';
 
-    } else {
-      $datenArr['vorstand'] = $_POST['vorstand'];
+		} else {
+			$datenArr['vorstand'] = $_POST['vorstand'];
 
-    }
-    
-    foreach($cjp AS $key => $vID) {
-    	if(!isset($_POST['vwahl']) || !in_array($vID, $_POST['vwahl'])) {
-    		$delArr[] = $vID;
-    		unset($cjp[$key]);
-    	}
-    }
-    
-    if(isset($_POST['vwahl'])) {
-    	foreach($_POST['vwahl'] AS $vID) {
-    		if(!in_array($vID, $cjp)) {
-    			$addArr[] = $vID;
-    			$cjp[] = $vID;
-    		}
-    	}
-    }
+		}
 
-    if(count($fehlerArr) == 0) {
-   	
-    	$datenArr['ID'] = $ID;
-    	if($datenArr['geburtsdatum'] != '') {
-    		$gebArr = explode(".", $datenArr['geburtsdatum']);
-    		$datenArr['geburtsdatum'] = "{$gebArr[2]}-{$gebArr[1]}-{$gebArr[0]}";
-    	}
-    	
-    	if($ID == 0) {
-    		$datenArr['registered_by'] = $showPage -> userData -> ID;
-    		$ID = $bsvb -> insertEntry('benutzer', $datenArr);
-    		$DB_LINK -> query("UPDATE benutzer SET confirmed=NOW() WHERE ID='{p}'", array($ID));
-    		
-    	} else {
-    		$bsvb -> updateEntry('benutzer', $ID, $datenArr);
+		foreach ($cjp AS $key => $vID) {
+			if (!isset($_POST['vwahl']) || !in_array($vID, $_POST['vwahl'])) {
+				$delArr[] = $vID;
+				unset($cjp[$key]);
+			}
+		}
 
-      }
-      
-     	foreach($delArr AS $vID) {
-     		$DB_LINK -> query("DELETE FROM benutzervereine WHERE benutzerID='{p}' AND vereinID='{p}'", array($ID, $vID));
-     	}
+		if (isset($_POST['vwahl'])) {
+			foreach ($_POST['vwahl'] AS $vID) {
+				if (!in_array($vID, $cjp)) {
+					$addArr[] = $vID;
+					$cjp[] = $vID;
+				}
+			}
+		}
 
-     	foreach($addArr AS $vID) {
-     		$DB_LINK -> query("INSERT INTO benutzervereine SET benutzerID='{p}', vereinID='{p}'", array($ID, $vID));
-     	}
+		if (count($fehlerArr) == 0) {
 
-      $showPage -> redirect("benutzerDet-{$ID}.html?ac={$ac}");
-    }
-  }
+			$datenArr['ID'] = $ID;
+			if ($datenArr['geburtsdatum'] != '') {
+				$gebArr = explode(".", $datenArr['geburtsdatum']);
+				$datenArr['geburtsdatum'] = "{$gebArr[2]}-{$gebArr[1]}-{$gebArr[0]}";
+			}
 
-  foreach($vArr AS $key => $val) {
-   	$vereine .= "<option value=\"{$key}\"";
-    if($key == $datenArr['vereinID']) { $vereine .= ' selected="selected"'; }
-    $vereine .= ">{$val}</option>\n";
-    
-    if($key != 0) {
-      $jpwahl .= "<li><input type=\"checkbox\" name=\"vwahl[]\" value=\"{$key}\" id=\"vwahl{$key}\"";
-      if(in_array($key, $cjp)) { $jpwahl .= ' checked="checked"'; }
-      $jpwahl .= "/> <label for=\"vwahl{$key}\">{$val}</label></li>\n";
-    }
-  }
+			if ($ID == 0) {
+				$datenArr['registered_by'] = $showPage->userData->ID;
+				$ID = $bsvb->insertEntry('benutzer', $datenArr);
+				$DB_LINK->query("UPDATE benutzer SET confirmed=NOW() WHERE ID=?", array($ID));
 
-  if($datenArr['anrede'] == 'Frau') { $frau = ' checked="checked"'; }
-  if($datenArr['anrede'] == 'Herr') { $herr = ' checked="checked"'; }
+			} else {
+				$bsvb->updateEntry('benutzer', $ID, $datenArr);
 
-  foreach($optArr AS $key => $val) {
-    $opt1 .= "<option value=\"{$key}\"";
-    if($key == $datenArr['aktiv']) { $opt1 .= ' selected="selected"'; }
-    $opt1 .= ">{$val}</option>\n";
+			}
 
-    $opt2 .= "<option value=\"{$key}\"";
-    if($key == $datenArr['admin']) { $opt2 .= ' selected="selected"'; }
-    $opt2 .= ">{$val}</option>\n";
+			foreach ($delArr AS $vID) {
+				$DB_LINK->query("DELETE FROM benutzervereine WHERE benutzerID=? AND vereinID=?", array($ID, $vID));
+			}
 
-    $opt3 .= "<option value=\"{$key}\"";
-    if($key == $datenArr['redaktor']) { $opt3 .= ' selected="selected"'; }
-    $opt3 .= ">{$val}</option>\n";
+			foreach ($addArr AS $vID) {
+				$DB_LINK->query("INSERT INTO benutzervereine SET benutzerID=?, vereinID=?", array($ID, $vID));
+			}
 
-    $opt4 .= "<option value=\"{$key}\"";
-    if($key == $datenArr['vorstand']) { $opt4 .= ' selected="selected"'; }
-    $opt4 .= ">{$val}</option>\n";
+			$showPage->redirect("benutzerDet-{$ID}.html?ac={$ac}");
+		}
+	}
 
-    $opt5 .= "<option value=\"{$key}\"";
-    if($key == $datenArr['ehren']) { $opt5 .= ' selected="selected"'; }
-    $opt5 .= ">{$val}</option>\n";
-  }
+	foreach ($vArr AS $key => $val) {
+		$vereine .= "<option value=\"{$key}\"";
+		if ($key == $datenArr['vereinID']) {
+			$vereine .= ' selected="selected"';
+		}
+		$vereine .= ">{$val}</option>\n";
+
+		if ($key != 0) {
+			$jpwahl .= "<li><input type=\"checkbox\" name=\"vwahl[]\" value=\"{$key}\" id=\"vwahl{$key}\"";
+			if (in_array($key, $cjp)) {
+				$jpwahl .= ' checked="checked"';
+			}
+			$jpwahl .= "/> <label for=\"vwahl{$key}\">{$val}</label></li>\n";
+		}
+	}
+
+	if ($datenArr['anrede'] == 'Frau') {
+		$frau = ' checked="checked"';
+	}
+	if ($datenArr['anrede'] == 'Herr') {
+		$herr = ' checked="checked"';
+	}
+
+	foreach ($optArr AS $key => $val) {
+		$opt1 .= "<option value=\"{$key}\"";
+		if ($key == $datenArr['aktiv']) {
+			$opt1 .= ' selected="selected"';
+		}
+		$opt1 .= ">{$val}</option>\n";
+
+		$opt2 .= "<option value=\"{$key}\"";
+		if ($key == $datenArr['admin']) {
+			$opt2 .= ' selected="selected"';
+		}
+		$opt2 .= ">{$val}</option>\n";
+
+		$opt3 .= "<option value=\"{$key}\"";
+		if ($key == $datenArr['redaktor']) {
+			$opt3 .= ' selected="selected"';
+		}
+		$opt3 .= ">{$val}</option>\n";
+
+		$opt4 .= "<option value=\"{$key}\"";
+		if ($key == $datenArr['vorstand']) {
+			$opt4 .= ' selected="selected"';
+		}
+		$opt4 .= ">{$val}</option>\n";
+
+		$opt5 .= "<option value=\"{$key}\"";
+		if ($key == $datenArr['ehren']) {
+			$opt5 .= ' selected="selected"';
+		}
+		$opt5 .= ">{$val}</option>\n";
+	}
 
 }
 
-if(count($fehlerArr) != 0) {
-  $status = "<div id=\"formfehler\"><ul>\n";
-  foreach($fehlerArr as $key => $val)	{
-	  $status .= "<li>{$val}</li>\n";
+if (count($fehlerArr) != 0) {
+	$status = "<div id=\"formfehler\"><ul>\n";
+	foreach ($fehlerArr as $key => $val) {
+		$status .= "<li>{$val}</li>\n";
 	}
-  $status .= "</ul></div>";
+	$status .= "</ul></div>";
 }
 
 $platzhalter['status'] = $status;
@@ -341,5 +367,7 @@ $platzhalter['opt4'] = $opt4;
 $platzhalter['opt5'] = $opt5;
 $platzhalter['jpwahl'] = $jpwahl;
 
-foreach($datenArr AS $key => $val) { $platzhalter[$key] = $val; }
-?>
+foreach ($datenArr AS $key => $val) {
+	$platzhalter[$key] = $val;
+}
+/* EOF */

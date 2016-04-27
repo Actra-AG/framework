@@ -3,7 +3,7 @@
 $grundkonf['templateID'] = '1';
 
 //Platzhalter
-$platzhalter['title'] = 'Über uns';
+$platzhalter['title'] = 'Ãœber uns';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
@@ -17,4 +17,4 @@ $navistufe[2] = 'bsvb';
 $grundkonf['navigator']['use'] = false;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = '';
-?>
+/* EOF */

@@ -24,25 +24,25 @@ if($showPage -> checkUG('redaktor')) {
     alben
 
   WHERE
-   ID='{p}'";
+   ID=?";
   $qry = $DB_LINK -> query($sql, array($albumID));
-  if($qry -> num_rows() != 1) { $showPage -> redirect("alben.html"); }
-  $res = $qry -> fetch_assoc();
+  if($qry -> rowCount() != 1) { $showPage -> redirect("alben.html"); }
+  $res = $qry -> fetch(PDO::FETCH_ASSOC);
 
-	$sql = "SELECT text, typ FROM fotos WHERE ID='{p}'";
+	$sql = "SELECT text, typ FROM fotos WHERE ID=?";
   $qry = $DB_LINK -> query($sql, array($ID));
-	if($qry -> num_rows() == 1) {
+	if($qry -> rowCount() == 1) {
 		$showPage -> pageArr['platzhalter']['title'] = 'Foto bearbeiten';
 		$showPage -> pageArr['grundkonf']['navigator']['title'] = 'Foto bearbeiten';
 		$ac = 'mod';
-		$datenArr = $qry -> fetch_assoc();
+		$datenArr = $qry -> fetch(PDO::FETCH_ASSOC);
 
 	} else {
 
 		$ID = 0;
 		$ac = 'add';
-		$showPage -> pageArr['platzhalter']['title'] = 'Foto hinzufügen';
-		$showPage -> pageArr['grundkonf']['navigator']['title'] = 'Foto hinzufügen';
+		$showPage -> pageArr['platzhalter']['title'] = 'Foto hinzufÃ¼gen';
+		$showPage -> pageArr['grundkonf']['navigator']['title'] = 'Foto hinzufÃ¼gen';
 
 	}
 
@@ -57,13 +57,13 @@ if($showPage -> checkUG('redaktor')) {
     if(isset($_FILES['foto']) && $_FILES['foto']['name'] != '') {
      	$imgArr = getimagesize($_FILES['foto']['tmp_name']);
      	$mime = strtolower($imgArr['mime']);
-     	$sql = "SELECT extension FROM dateiformate WHERE mimetype='{p}' AND FIND_IN_SET('foto', arten)!=0";
+     	$sql = "SELECT extension FROM dateiformate WHERE mimetype=? AND FIND_IN_SET('foto', arten)!=0";
      	$qry = $DB_LINK -> query($sql, array($mime));
-     	if($qry -> num_rows() != 1) {
-     		$fehlerArr[] = 'Leider ist das Foto in einem ungültigen Dateiformat ('.$mime.').';
+     	if($qry -> rowCount() != 1) {
+     		$fehlerArr[] = 'Leider ist das Foto in einem ungÃ¼ltigen Dateiformat ('.$mime.').';
 
      	} else {
-     		$res = $qry -> fetch_assoc();
+     		$res = $qry -> fetch(PDO::FETCH_ASSOC);
      		$datenArr['typ'] = $res['extension'];
 
      		$h = 90;
@@ -76,10 +76,10 @@ if($showPage -> checkUG('redaktor')) {
         $imgRes = new ImageResize();
         $imgRes -> resize_image($_FILES['foto']['tmp_name'], $datenArr['typ'], $_SERVER['DOCUMENT_ROOT'].'/galerie/', 'foto'.$tempID, 510, 0, 90, 0, 1);
         $imgRes -> resize_image($_SERVER['DOCUMENT_ROOT'].'/galerie/orig_foto'.$tempID.'.'.$datenArr['typ'], $datenArr['typ'], $_SERVER['DOCUMENT_ROOT'].'/galerie/', 'tnfoto'.$tempID, $w, $h, 90, 1, 0);
-        if($ac == 'mod') { $DB_LINK -> query("UPDATE fotos SET typ='{p}' WHERE ID='{p}'", array($datenArr['typ'], $tempID)); }
+        if($ac == 'mod') { $DB_LINK -> query("UPDATE fotos SET typ=? WHERE ID=?", array($datenArr['typ'], $tempID)); }
      	}
     } elseif($ac == 'add') {
-    	$fehlerArr[] = 'Sie haben kein Foto ausgewählt.';
+    	$fehlerArr[] = 'Sie haben kein Foto ausgewÃ¤hlt.';
 
     }
 
@@ -88,9 +88,9 @@ if($showPage -> checkUG('redaktor')) {
 	  if(count($fehlerArr) == 0) {
 
     	if($ID == 0) {
-	  		$sql = "SELECT MAX(pos)+1 AS pos FROM fotos WHERE albumID='{p}'";
+	  		$sql = "SELECT MAX(pos)+1 AS pos FROM fotos WHERE albumID=?";
 	  		$qry = $DB_LINK -> query($sql, array($albumID));
-	  		$res = $qry -> fetch_assoc();
+	  		$res = $qry -> fetch(PDO::FETCH_ASSOC);
 	  		$datenArr['albumID'] = $albumID;
 	  		$datenArr['pos'] = $res['pos'];
 
@@ -113,9 +113,10 @@ if($showPage -> checkUG('redaktor')) {
   $fotozusatz = '';
   if(file_exists($_SERVER['DOCUMENT_ROOT'].'/galerie/tnfoto'.$tempID.'.'.$datenArr['typ'])) {
   	$imgArr = getimagesize($_SERVER['DOCUMENT_ROOT'].'/galerie/tnfoto'.$tempID.'.'.$datenArr['typ']);
-	  $foto = "<dl><dt>Aktuelles Foto</dt><dd><img src=\"/galerie/tnfoto{$tempID}.{$datenArr['typ']}?time=".time()."\" {$imgArr[3]} alt=\"\" /> <!--<input type=\"submit\" class=\"submit\" name=\"fotoDel\" value=\"l&ouml;schen\" />--></dd>\n</dl>";
+	  $src = "/galerie/tnfoto{$tempID}.{$datenArr['typ']}?time=".time();
+	  $foto = "<dl><dt>Aktuelles Foto</dt><dd><img src=\"{$src}\" {$imgArr[3]} alt=\"\" /> <!--<input type=\"submit\" class=\"submit\" name=\"fotoDel\" value=\"l&ouml;schen\" />--></dd>\n</dl>";
     $fototitel = 'Neues Foto';
-    $fotozusatz = " Lassen Sie dieses Feld leer, wenn Sie das bestehende Foto behalten möchten.";
+    $fotozusatz = " Lassen Sie dieses Feld leer, wenn Sie das bestehende Foto behalten mÃ¶chten.";
   }
   $foto .= "<dl><dt><label for=\"pfoto\">{$fototitel}</label></dt><dd><input type=\"file\" class=\"file\" name=\"foto\" id=\"pfoto\" />\n<em>Kann im *.jpg, *.gif oder *.png-Format sein. Wird automatisch verkleinert und zugeschnitten.{$fotozusatz}</em></dd><!--<input type=\"submit\" class=\"submit\" name=\"fotoAdd\" value=\"hochladen\" />--></dl>";
 }
@@ -134,4 +135,4 @@ $platzhalter['ID'] = $ID;
 $platzhalter['foto'] = $foto;
 
 foreach($datenArr AS $key => $val) { $platzhalter[$key] = htmlentities($val); }
-?>
+/* EOF */

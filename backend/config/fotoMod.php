@@ -16,4 +16,4 @@ $navistufe[0] = 'fotos';
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = 'Foto hochladen/bearbeiten';
-?>
+/* EOF */

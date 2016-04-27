@@ -4,236 +4,261 @@
 # ------------------------------
 # 20.07.2009	CM	new version
 
-class showPage extends RequestHandler {
+class ShowPage extends RequestHandler
+{
 
-  public $pageArr;
+	public $pageArr;
 
-  public function getConfig() {
-  	$grundkonf = '';
-  	$platzhalter = '';
-  	$navistufe = '';
-  	
-    $file = $this -> config['rootDir'].'config/'.$this -> reqArr['varFiletitle'].'.php';
+	public function getConfig()
+	{
+		$grundkonf = '';
+		$platzhalter = '';
+		$navistufe = '';
 
-    if(!file_exists($file)) {
-    	ErrorHandler::display_error(404);
-    }
-    require_once($file);
+		$file = $this->config['rootDir'] . 'config/' . $this->reqArr['varFiletitle'] . '.php';
 
-    $platzhalter['bodyid'] = 'body_'.$this -> reqArr['varFiletitle'];
+		if (!file_exists($file)) {
+			ErrorHandler::display_error(404);
+		}
+		require_once($file);
 
-    $this -> pageArr['grundkonf'] = $grundkonf;
-    $this -> pageArr['platzhalter'] = $platzhalter;
-    $this -> pageArr['navistufe'] = $navistufe;
-  }
+		$platzhalter['bodyid'] = 'body_' . $this->reqArr['varFiletitle'];
 
-
-  public function getContent() {
-    $file = $this -> config['rootDir'].'pages/'.$this -> reqArr['varFiletitle'].'.html';
-
-    if(!file_exists($file)) {
-    	ErrorHandler::display_error(404);
-    }
-    $this -> pageArr['contentArr'] = file($file);
-  }
+		$this->pageArr['grundkonf'] = $grundkonf;
+		$this->pageArr['platzhalter'] = $platzhalter;
+		$this->pageArr['navistufe'] = $navistufe;
+	}
 
 
-  public function checkScripts() {
-    $file = $this -> config['scriptsDir'].$this -> reqArr['varFiletitle'].'.php';
+	public function getContent()
+	{
+		$file = $this->config['rootDir'] . 'pages/' . $this->reqArr['varFiletitle'] . '.html';
 
-    if(!file_exists($file)) {
-    	return FALSE;
-    } else {
-      $this -> pageArr['dynPage'] = $file;
-      return TRUE;
-    }
-  }
-
-
-  public function getTemplate() {
-    $templateID = $this -> pageArr['grundkonf']['templateID'];
-    if($templateID == 0) {
-      $this -> pageArr['templateArr'][] = '{{CONTENT}}';
-    } else {
-      $fileS = $this -> config['rootDir'].'templates/template'.$templateID.'.html';
-      $fileD = $this -> config['scriptsDir'].'template'.$templateID.'.php';
-
-      if(!file_exists($fileS)) {
-      	ErrorHandler::display_error(404);
-      }
-      $this -> pageArr['templateArr'] = file($fileS);
-      if(file_exists($fileD)) {
-        $this -> pageArr['dynTemplate'] = $fileD;
-        return TRUE;
-      }
-    }
-    return FALSE;
-  }
+		if (!file_exists($file)) {
+			ErrorHandler::display_error(404);
+		}
+		$this->pageArr['contentArr'] = file($file);
+	}
 
 
-  public function output() {
-    $fullArr = array();
+	public function checkScripts()
+	{
+		$file = $this->config['scriptsDir'] . $this->reqArr['varFiletitle'] . '.php';
 
-    foreach($this -> pageArr['templateArr'] as $lineNum => $line) {
-      if(preg_match_all("{{CONTENT}}", $line, $matches)) {
-        foreach($this -> pageArr['contentArr'] as $lineNum1 => $line1) {
-          $fullArr[] = $line1;
-        }
-      } else {
-        $fullArr[] = $line;
-      }
-    }
-
-    $i = 0;
-    foreach($this -> pageArr['platzhalter'] as $key => $val) {
-      $i++;
-      $search[$i] = "{{".strtoupper($key)."}}";
-      $replace[$i] = $val;
-    }
-
-    foreach($this -> pageArr['navistufe'] as $stufeKey => $stufeVar) {
-      $stufen[$stufeVar] = $stufeKey;
-      $i++;
-      $search[$i] = 'id="nav_'.$stufeVar.'"';
-      $replace[$i] = 'class="nav_current"';
-    }
-
-    $fullHTML = '';
-    $dontDisplay = array();
-
-    foreach($fullArr as $lineNum => $line) {
-      if(preg_match_all("<!-- sub_([a-zA-Z0-9]*) START -->", $line, $regs)) {
-        $stufenname = $regs[1][0];
-        if(!array_key_exists($stufenname, $stufen)) { $dontDisplay[$stufenname] = 1; }
-      }
-
-      if(preg_match_all("<!-- UG_VISITOR START -->", $line, $regs2)) {
-        if($this -> checkAccess()) {
-          $dontDisplay['onlyvisitor'] = 1;
-        }
-
-      } elseif(preg_match_all("<!-- UG_([A-Z]*) START -->", $line, $regs2)) {
-        $usergroup = strtolower($regs2[1][0]);
-        if(!$this -> checkUG($usergroup)) {
-          $dontDisplay['only'.$usergroup.'content'] = 1;
-        }
-
-      } elseif(preg_match_all("<!-- NOTUG_([A-Z]*) START -->", $line, $regs2)) {
-        $usergroup = strtolower($regs2[1][0]);
-        if($this -> checkUG($usergroup)) {
-          $dontDisplay['onlynot'.$usergroup.'content'] = 1;
-        }
-
-      }
-
-      if(count($dontDisplay) == 0) {
-        $fullHTML .= $line;
-      }
-
-      if(preg_match_all("<!-- sub_([a-zA-Z0-9]*) ENDE -->", $line, $regs)) {
-        $stufenname = $regs[1][0];
-        if(array_key_exists($stufenname, $dontDisplay)) {
-          unset($dontDisplay[$stufenname]);
-        }
-      }
-
-      if(preg_match_all("<!-- UG_VISITOR ENDE -->", $line, $regs2)) {
-        if(array_key_exists('onlyvisitor', $dontDisplay)) {
-          unset($dontDisplay['onlyvisitor']);
-        }
-      } elseif(preg_match_all("<!-- UG_([A-Z]*) ENDE -->", $line, $regs2)) {
-        $usergroup = strtolower($regs2[1][0]);
-        if(array_key_exists('only'.$usergroup.'content', $dontDisplay)) {
-          unset($dontDisplay['only'.$usergroup.'content']);
-        }
-      } elseif(preg_match_all("<!-- NOTUG_([A-Z]*) ENDE -->", $line, $regs2)) {
-        $usergroup = strtolower($regs2[1][0]);
-        if(array_key_exists('onlynot'.$usergroup.'content', $dontDisplay)) {
-          unset($dontDisplay['onlynot'.$usergroup.'content']);
-        }
-      }
-    }
-
-    $fullHTML = str_replace($search, $replace, $fullHTML);
-    echo $fullHTML;
-  }
+		if (!file_exists($file)) {
+			return FALSE;
+		} else {
+			$this->pageArr['dynPage'] = $file;
+			return TRUE;
+		}
+	}
 
 
-  public function getPagenavi($link, $anzObjekte, $pos=0, $proSeite = false, $minusplus = false, $plusstartende = false) {
-  	$proSeite = (!$proSeite)?$this -> config['lists']['entriesPerPage']:$proSeite;
-  	$minusplus = (!$minusplus)?$this -> config['lists']['minusplus']:$minusplus;
-  	$plusstartende = (!$plusstartende)?$this -> config['lists']['startend']:$plusstartende;
-  	
-  	$seiten = "";
-    $sub = $anzObjekte%$proSeite;
-    if($sub == 0) {
-      $lastPos = $anzObjekte-$proSeite;
-    } else {
-      $lastPos = $anzObjekte-($anzObjekte%$proSeite);
-    }
+	public function getTemplate()
+	{
+		$templateID = $this->pageArr['grundkonf']['templateID'];
+		if ($templateID == 0) {
+			$this->pageArr['templateArr'][] = '{{CONTENT}}';
+		} else {
+			$fileS = $this->config['rootDir'] . 'templates/template' . $templateID . '.html';
+			$fileD = $this->config['scriptsDir'] . 'template' . $templateID . '.php';
 
-    if($anzObjekte > $proSeite) {
-   	  $seiten .= "<div class=\"pagination\">\n<ul>\n";
-   	  if($pos == 0) {
-     		$seiten .= "<li class=\"zurueckdisable\">&laquo; zurück</li>\n";
-   	  } else {
-     		$bl = $pos-$proSeite;
-   		  $seiten .= "<li class=\"zurueck\"><a href=\"{$link}.html?pos={$bl}\">&laquo; zurück</a></li>\n";
-   	  }
-
-   	  for($i = 0; $i < $anzObjekte; $i=$i+$proSeite) {
-   		  if($i == 0 || $i==$pos || $i==$lastPos || $i<=0+($proSeite*$plusstartende) || $i>=$lastPos-($proSeite*$plusstartende) || ($i < $pos && $i >= ($pos-($minusplus*$proSeite))) || ($i > $pos && $i <= ($pos+($minusplus*$proSeite)))) {
- 		  	
-	        if($i == $lastPos-($proSeite*$plusstartende) && $pos < $lastPos-$proSeite-($proSeite*$minusplus)-($proSeite*$plusstartende)) {
-  	      	$seiten .= "<li><span>...</span></li>\n";
-	        }
-          $nr = ($i/$proSeite)+1;
-          if($i == $pos) {
-         	  $seiten .= "<li class=\"currentpage\"><strong>{$nr}</strong></li>\n";
-	        } else {
-         	  $seiten .= "<li><a href=\"{$link}.html?pos={$i}\">{$nr}</a></li>\n";
-	        }
-	        if($i == 0+($proSeite*$plusstartende) && $pos>0+$proSeite+($proSeite*$minusplus)+($proSeite*$plusstartende)) {
-  	      	$seiten .= "<li><span>...</span></li>\n";
-	        }
-	      }
-	    }
-   	  if($pos == $lastPos) {
-     		$seiten .= "<li class=\"vordisable\">vor &raquo;</li>\n";
-   	  } else {
-     		$nl = $pos+$proSeite;
-   		  $seiten .= "<li class=\"zurueck\"><a href=\"{$link}.html?pos={$nl}\">vor &raquo;</a></li>\n";
-   	  }
-      $seiten .= "</ul></div>\n";
-    }
-    return $seiten;
-  }
-  
-  
-  public function dynTableHeader($fArr, $orderby = '', $ox = '') {
-    $th = "<tr>\n";
-    foreach($fArr AS $key => $val) {
-      $th .= "<th scope=\"col\"{$val['attributes']}>";
-      if($val['order'] == 1) {
-        $nox = $val['ox']; if($orderby == $key && $ox == $val['ox']) { if($val['ox'] == "ASC") { $nox = "DESC"; } else { $nox = "ASC"; } }
-        $th .= "<a href=\"?orderby={$key}&amp;ox={$nox}\">{$val['value']}</a>";
-      } else {
-        $th .= $val['value'];
-      }
-      $th .= "</th>\n";
-    }
-    $th .= "</tr>\n";
-    return $th;
-	
-  }
+			if (!file_exists($fileS)) {
+				ErrorHandler::display_error(404);
+			}
+			$this->pageArr['templateArr'] = file($fileS);
+			if (file_exists($fileD)) {
+				$this->pageArr['dynTemplate'] = $fileD;
+				return TRUE;
+			}
+		}
+		return FALSE;
+	}
 
 
-  function bytestostring($size, $precision = 3) {
-    $sizes = array('YB', 'ZB', 'EB', 'PB', 'TB', 'GB', 'MB', 'KB', 'B');
-    $total = count($sizes);
+	public function output()
+	{
+		$fullArr = array();
 
-    while($total-- && $size > 1024) $size /= 1024;
-    return round($size, $precision).$sizes[$total];
-  }
+		foreach ($this->pageArr['templateArr'] as $lineNum => $line) {
+			if (preg_match_all("{{CONTENT}}", $line, $matches)) {
+				foreach ($this->pageArr['contentArr'] as $lineNum1 => $line1) {
+					$fullArr[] = $line1;
+				}
+			} else {
+				$fullArr[] = $line;
+			}
+		}
+
+		$search = array();
+		$replace = array();
+		$i = 0;
+		foreach ($this->pageArr['platzhalter'] as $key => $val) {
+			$i++;
+			$search[$i] = "{{" . strtoupper($key) . "}}";
+			$replace[$i] = $val;
+		}
+
+		$stufen = array();
+		foreach ($this->pageArr['navistufe'] as $stufeKey => $stufeVar) {
+			$stufen[$stufeVar] = $stufeKey;
+			$i++;
+			$search[$i] = 'id="nav_' . $stufeVar . '"';
+			$replace[$i] = 'class="nav_current"';
+		}
+
+		$fullHTML = '';
+		$dontDisplay = array();
+
+		foreach ($fullArr as $lineNum => $line) {
+			if (preg_match_all("<!-- sub_([a-zA-Z0-9]*) START -->", $line, $regs)) {
+				$stufenname = $regs[1][0];
+				if (!array_key_exists($stufenname, $stufen)) {
+					$dontDisplay[$stufenname] = 1;
+				}
+			}
+
+			if (preg_match_all("<!-- UG_VISITOR START -->", $line, $regs2)) {
+				if ($this->checkAccess()) {
+					$dontDisplay['onlyvisitor'] = 1;
+				}
+
+			} elseif (preg_match_all("<!-- UG_([A-Z]*) START -->", $line, $regs2)) {
+				$usergroup = strtolower($regs2[1][0]);
+				if (!$this->checkUG($usergroup)) {
+					$dontDisplay['only' . $usergroup . 'content'] = 1;
+				}
+
+			} elseif (preg_match_all("<!-- NOTUG_([A-Z]*) START -->", $line, $regs2)) {
+				$usergroup = strtolower($regs2[1][0]);
+				if ($this->checkUG($usergroup)) {
+					$dontDisplay['onlynot' . $usergroup . 'content'] = 1;
+				}
+
+			}
+
+			if (count($dontDisplay) == 0) {
+				$fullHTML .= $line;
+			}
+
+			if (preg_match_all("<!-- sub_([a-zA-Z0-9]*) ENDE -->", $line, $regs)) {
+				$stufenname = $regs[1][0];
+				if (array_key_exists($stufenname, $dontDisplay)) {
+					unset($dontDisplay[$stufenname]);
+				}
+			}
+
+			if (preg_match_all("<!-- UG_VISITOR ENDE -->", $line, $regs2)) {
+				if (array_key_exists('onlyvisitor', $dontDisplay)) {
+					unset($dontDisplay['onlyvisitor']);
+				}
+			} elseif (preg_match_all("<!-- UG_([A-Z]*) ENDE -->", $line, $regs2)) {
+				$usergroup = strtolower($regs2[1][0]);
+				if (array_key_exists('only' . $usergroup . 'content', $dontDisplay)) {
+					unset($dontDisplay['only' . $usergroup . 'content']);
+				}
+			} elseif (preg_match_all("<!-- NOTUG_([A-Z]*) ENDE -->", $line, $regs2)) {
+				$usergroup = strtolower($regs2[1][0]);
+				if (array_key_exists('onlynot' . $usergroup . 'content', $dontDisplay)) {
+					unset($dontDisplay['onlynot' . $usergroup . 'content']);
+				}
+			}
+		}
+
+		$fullHTML = str_replace($search, $replace, $fullHTML);
+		echo $fullHTML;
+	}
+
+
+	public function getPagenavi($link, $anzObjekte, $pos = 0, $proSeite = false, $minusplus = false, $plusstartende = false)
+	{
+		$proSeite = (!$proSeite) ? $this->config['lists']['entriesPerPage'] : $proSeite;
+		$minusplus = (!$minusplus) ? $this->config['lists']['minusplus'] : $minusplus;
+		$plusstartende = (!$plusstartende) ? $this->config['lists']['startend'] : $plusstartende;
+
+		$seiten = "";
+		$sub = $anzObjekte % $proSeite;
+		if ($sub == 0) {
+			$lastPos = $anzObjekte - $proSeite;
+		} else {
+			$lastPos = $anzObjekte - ($anzObjekte % $proSeite);
+		}
+
+		if ($anzObjekte > $proSeite) {
+			$seiten .= "<div class=\"pagination\">\n<ul>\n";
+			if ($pos == 0) {
+				$seiten .= "<li class=\"zurueckdisable\">&laquo; zurÃ¼ck</li>\n";
+			} else {
+				$bl = $pos - $proSeite;
+				$href = "{$link}.html?pos={$bl}";
+				$seiten .= "<li class=\"zurueck\"><a href=\"{$href}\">&laquo; zurÃ¼ck</a></li>\n";
+			}
+
+			for ($i = 0; $i < $anzObjekte; $i = $i + $proSeite) {
+				if ($i == 0 || $i == $pos || $i == $lastPos || $i <= 0 + ($proSeite * $plusstartende) || $i >= $lastPos - ($proSeite * $plusstartende) || ($i < $pos && $i >= ($pos - ($minusplus * $proSeite))) || ($i > $pos && $i <= ($pos + ($minusplus * $proSeite)))) {
+
+					if ($i == $lastPos - ($proSeite * $plusstartende) && $pos < $lastPos - $proSeite - ($proSeite * $minusplus) - ($proSeite * $plusstartende)) {
+						$seiten .= "<li><span>...</span></li>\n";
+					}
+					$nr = ($i / $proSeite) + 1;
+					if ($i == $pos) {
+						$seiten .= "<li class=\"currentpage\"><strong>{$nr}</strong></li>\n";
+					} else {
+						$href = "{$link}.html?pos={$i}";
+						$seiten .= "<li><a href=\"{$href}\">{$nr}</a></li>\n";
+					}
+					if ($i == 0 + ($proSeite * $plusstartende) && $pos > 0 + $proSeite + ($proSeite * $minusplus) + ($proSeite * $plusstartende)) {
+						$seiten .= "<li><span>...</span></li>\n";
+					}
+				}
+			}
+			if ($pos == $lastPos) {
+				$seiten .= "<li class=\"vordisable\">vor &raquo;</li>\n";
+			} else {
+				$nl = $pos + $proSeite;
+				$href = "{$link}.html?pos={$nl}";
+				$seiten .= "<li class=\"zurueck\"><a href=\"{$href}\">vor &raquo;</a></li>\n";
+			}
+			$seiten .= "</ul></div>\n";
+		}
+		return $seiten;
+	}
+
+
+	public function dynTableHeader($fArr, $orderby = '', $ox = '')
+	{
+		$th = "<tr>\n";
+		foreach ($fArr AS $key => $val) {
+			$th .= "<th scope=\"col\" {$val['attributes']}>";
+			if ($val['order'] == 1) {
+				$nox = $val['ox'];
+				if ($orderby == $key && $ox == $val['ox']) {
+					if ($val['ox'] == "ASC") {
+						$nox = "DESC";
+					} else {
+						$nox = "ASC";
+					}
+				}
+				$th .= "<a href=\"?orderby={$key}&amp;ox={$nox}\">{$val['value']}</a>";
+			} else {
+				$th .= $val['value'];
+			}
+			$th .= "</th>\n";
+		}
+		$th .= "</tr>\n";
+		return $th;
+
+	}
+
+
+	function bytestostring($size, $precision = 3)
+	{
+		$sizes = array('YB', 'ZB', 'EB', 'PB', 'TB', 'GB', 'MB', 'KB', 'B');
+		$total = count($sizes);
+
+		while ($total-- && $size > 1024) $size /= 1024;
+		return round($size, $precision) . $sizes[$total];
+	}
 }
-?>
+
+/* EOF */

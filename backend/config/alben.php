@@ -16,4 +16,4 @@ $navistufe[1] = 'fotos';
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = true;
 $grundkonf['navigator']['title'] = 'Fotogalerie';
-?>
+/* EOF */

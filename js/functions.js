@@ -5,13 +5,13 @@ Update: 22.12.2009
 
 $(document).ready(function() {
 	$('a.delete').click(function() {
-    return confirm("Wirklich löschen? - Mit OK bestätigen.");
+    return confirm("Wirklich lÃ¶schen? - Mit OK bestÃ¤tigen.");
   });
   $('.herstellen').click(function() {
-    return confirm("Möchten Sie den Eintrag wirklich wieder herstellen?\Mit OK bestätigen.");
+    return confirm("MÃ¶chten Sie den Eintrag wirklich wieder herstellen?\Mit OK bestÃ¤tigen.");
   });
   $('.cancel').click(function() {
-    return confirm("Möchten Sie wirklich abbrechen?\nBitte mit OK bestätigen.");
+    return confirm("MÃ¶chten Sie wirklich abbrechen?\nBitte mit OK bestÃ¤tigen.");
   });
    $('.external').click(function() {
     open(this.href);

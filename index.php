@@ -4,6 +4,8 @@
 # ------------------------------
 # 20.07.2009	CM	new version
 
+use metanet\db\DBConnect;
+use metanet\db\DBMySQL;
 
 # ------------------
 # load configuration
@@ -50,14 +52,7 @@ if (isset($_SERVER['https']) && $_SERVER['https'] == 1) { /* Apache */
 # use individual domain for every country/language?
 # -------------------------------------------------
 
-if ($config['useCountryLang']) {
-	$countryLang = new CountryLang($config);
-	$config['country'] = $countryLang->country;
-	$config['language'] = $countryLang->language;
-	$config['env'] = $countryLang->env;
-	$config['rootDir'] = $countryLang->rootDir;
-
-} elseif (isset($config['envArr'][$_SERVER['SERVER_NAME']])) {
+if (isset($config['envArr'][$_SERVER['SERVER_NAME']])) {
 	$config['env'] = $config['envArr'][$_SERVER['SERVER_NAME']];
 
 } else {
@@ -141,19 +136,23 @@ if ($requestHandler->reqType == 'file') {
 	# service or page
 	# ---------------
 
-	# connect to db
+# connect to db
 	$DB_LINK = null;
-	if ($config['useDB'] == 1) {
-		$DB_LINK = MySQLiDB::getInstance();
+
+	if($config['useDB'] === true) {
+
+		require_once $_SERVER['DOCUMENT_ROOT'] . '/metanet/classes/db/DB.class.php';
+		require_once $_SERVER['DOCUMENT_ROOT'] . '/metanet/classes/db/DBConnect.class.php';
+		require_once $_SERVER['DOCUMENT_ROOT'] . '/metanet/classes/db/DBListener.class.php';
+		require_once $_SERVER['DOCUMENT_ROOT'] . '/metanet/classes/db/DBMySQL.class.php';
+
+		$dbConnect = new DBConnect($config['DB']['hostname'], $config['DB']['database'],
+			$config['DB']['username'], $config['DB']['password'], 'UTF8');
+		$DB_LINK = new DBMySQL($dbConnect);
+		$DB_LINK->exec("SET NAMES 'utf8'");
+		$DB_LINK->exec("SET CHARACTER SET utf8");
 	}
 	Registry::set('DB', $DB_LINK);
-
-
-	# session handling
-	if ($config['useDB'] && $config['dbSessions']) {
-		DBSessions::connect();
-		session_set_save_handler(array('DBSessions', 'open_session'), array('DBSessions', 'close_session'), array('DBSessions', 'read_session'), array('DBSessions', 'write_session'), array('DBSessions', 'destroy_session'), array('DBSessions', 'clean_session'));
-	}
 
 
 	//get rid of warning "The session id contains invalid characters, valid characters are only a-z, A-Z and 0-9"

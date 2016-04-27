@@ -16,4 +16,4 @@ $navistufe[0] = 'vorstand';
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = true;
 $grundkonf['navigator']['title'] = 'Vorstand';
-?>
+/* EOF */

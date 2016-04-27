@@ -3,7 +3,7 @@
 $grundkonf['templateID'] = '1';
 
 //Platzhalter
-$platzhalter['title'] = 'Seite hinzuf¸gen';
+$platzhalter['title'] = 'Seite hinzuf√ºgen';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
@@ -15,5 +15,5 @@ $navistufe[0] = 'seiten';
 // Navigator / Breadcrumb
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = false;
-$grundkonf['navigator']['title'] = 'Seite hinzuf¸gen';
-?>
+$grundkonf['navigator']['title'] = 'Seite hinzuf√ºgen';
+/* EOF */

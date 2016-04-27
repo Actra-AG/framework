@@ -16,4 +16,4 @@ $navistufe[1] = 'dynamisch';
 $grundkonf['navigator']['use'] = false;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = 'Registrieren';
-?>
+/* EOF */

@@ -16,4 +16,4 @@ $navistufe[0] = 'vereine';
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = true;
 $grundkonf['navigator']['title'] = 'Vereine';
-?>
+/* EOF */

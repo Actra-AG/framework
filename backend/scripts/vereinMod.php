@@ -8,10 +8,10 @@ $datenArr['name'] = '';
 
 $fehlerArr = array();
 
-if($showPage -> checkUG('admin')) {
-	
-	$ID = (isset($showPage -> arrVars[1])) ? $showPage -> arrVars[1] : 0;
-	
+if ($showPage->checkUG('admin')) {
+
+	$ID = (isset($showPage->arrVars[1])) ? $showPage->arrVars[1] : 0;
+
 	$sql = "
 	SELECT
 	  name
@@ -20,62 +20,64 @@ if($showPage -> checkUG('admin')) {
 	  vereine
 	  
 	WHERE
-	  ID='{p}'
+	  ID=?
 	";
-	$qry = $DB_LINK -> query($sql, array($ID));
-	if($qry -> num_rows() == 1) {
-		$showPage -> pageArr['platzhalter']['title'] = 'Verein bearbeiten';
+	$qry = $DB_LINK->query($sql, array($ID));
+	if ($qry->rowCount() == 1) {
+		$showPage->pageArr['platzhalter']['title'] = 'Verein bearbeiten';
 		$ac = 'mod';
-		$datenArr = $qry -> fetch_assoc();
+		$datenArr = $qry->fetch(PDO::FETCH_ASSOC);
 
 	} else {
 		$ID = 0;
 		$ac = 'add';
-		$showPage -> pageArr['platzhalter']['title'] = 'Verein hinzufügen';
-		
+		$showPage->pageArr['platzhalter']['title'] = 'Verein hinzufÃ¼gen';
+
 	}
 
-  $optArr[0] = 'Nein';
-  $optArr[1] = 'Ja';
-	
-  if(isset($_GET['send'])) {
+	$optArr[0] = 'Nein';
+	$optArr[1] = 'Ja';
 
-    if(!isset($_POST['name']) || $_POST['name'] == '') {
-      $fehlerArr[] = 'Sie haben keinen Vereinsnamen eingegeben.';
+	if (isset($_GET['send'])) {
 
-    } else {
-      $datenArr['name'] = $_POST['name'];
+		if (!isset($_POST['name']) || $_POST['name'] == '') {
+			$fehlerArr[] = 'Sie haben keinen Vereinsnamen eingegeben.';
 
-    }
+		} else {
+			$datenArr['name'] = $_POST['name'];
 
-    if(count($fehlerArr) == 0) {
-   	
-    	$datenArr['ID'] = $ID;
-    	
-    	if($ID == 0) {
-    		$datenArr['registered_by'] = $showPage -> userData -> ID;
-    		$ID = $bsvb -> insertEntry('vereine', $datenArr);
-    		
-    	} else {
-    		$bsvb -> updateEntry('vereine', $ID, $datenArr);
+		}
 
-      }
+		if (count($fehlerArr) == 0) {
 
-      $showPage -> redirect("vereine.html?ac={$ac}");
-    }
-  }
+			$datenArr['ID'] = $ID;
+
+			if ($ID == 0) {
+				$datenArr['registered_by'] = $showPage->userData->ID;
+				$ID = $bsvb->insertEntry('vereine', $datenArr);
+
+			} else {
+				$bsvb->updateEntry('vereine', $ID, $datenArr);
+
+			}
+
+			$showPage->redirect("vereine.html?ac={$ac}");
+		}
+	}
 }
 
-if(count($fehlerArr) != 0) {
-  $status = "<div id=\"formfehler\"><ul>\n";
-  foreach($fehlerArr as $key => $val)	{
-	  $status .= "<li>{$val}</li>\n";
+if (count($fehlerArr) != 0) {
+	$status = "<div id=\"formfehler\"><ul>\n";
+	foreach ($fehlerArr as $key => $val) {
+		$status .= "<li>{$val}</li>\n";
 	}
-  $status .= "</ul></div>";
+	$status .= "</ul></div>";
 }
 
 $platzhalter['status'] = $status;
 $platzhalter['ID'] = $ID;
 
-foreach($datenArr AS $key => $val) { $platzhalter[$key] = $val; }
-?>
+foreach ($datenArr AS $key => $val) {
+	$platzhalter[$key] = $val;
+}
+/* EOF */

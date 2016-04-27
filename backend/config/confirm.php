@@ -3,7 +3,7 @@
 $grundkonf['templateID'] = '1';
 
 //Platzhalter
-$platzhalter['title'] = 'Registrierungsbest‰tigung';
+$platzhalter['title'] = 'Registrierungsbest√§tigung';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
@@ -15,5 +15,5 @@ $navistufe[1] = 'dynamisch';
 // Navigator / Breadcrumb
 $grundkonf['navigator']['use'] = false;
 $grundkonf['navigator']['reset'] = false;
-$grundkonf['navigator']['title'] = 'Registrierungsbest‰tigung';
-?>
+$grundkonf['navigator']['title'] = 'Registrierungsbest√§tigung';
+/* EOF */

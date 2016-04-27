@@ -5,7 +5,7 @@
  */
 
 $mnauth = false;
-if(isset($_GET['mnauth']) && isset($_SESSION['mnauth']['access']) && $_SESSION['mnauth']['access'] == true) {
+if (isset($_GET['mnauth']) && isset($_SESSION['mnauth']['access']) && $_SESSION['mnauth']['access'] == true) {
 	$mnauth = true;
 }
 

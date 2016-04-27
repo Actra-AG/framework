@@ -1,16 +1,14 @@
 <?php
-//$jpArr['typen']['vt']['intro'] = '<ul class="pdflink"><li><a href="/files/jp_veteranen_bsvb_2012.pdf">Jahresprogramm Veteranen 2012</a></li></ul>'; // Terminkalender_VVBSVB_2009.pdf
-
-$jpArr['typen']['sa300']['titel'] = 'Schiessanlässe 300m';
+$jpArr['typen']['sa300']['titel'] = 'SchiessanlÃ¤sse 300m';
 $jpArr['typen']['sa300']['kurz'] = '300m';
-$jpArr['typen']['sa50']['titel'] = 'Schiessanlässe 50m';
+$jpArr['typen']['sa50']['titel'] = 'SchiessanlÃ¤sse 50m';
 $jpArr['typen']['sa50']['kurz'] = '50m';
-$jpArr['typen']['sa25']['titel'] = 'Schiessanlässe 25m';
+$jpArr['typen']['sa25']['titel'] = 'SchiessanlÃ¤sse 25m';
 $jpArr['typen']['sa25']['kurz'] = '25m';
-$jpArr['typen']['sa10']['titel'] = 'Schiessanlässe 10m';
+$jpArr['typen']['sa10']['titel'] = 'SchiessanlÃ¤sse 10m';
 $jpArr['typen']['sa10']['kurz'] = '10m';
-$jpArr['typen']['js']['titel'] = 'Jungschützen/Nachwuchs';
-$jpArr['typen']['js']['kurz'] = 'Jungschützen/Nachwuchs';
+$jpArr['typen']['js']['titel'] = 'JungschÃ¼tzen/Nachwuchs';
+$jpArr['typen']['js']['kurz'] = 'JungschÃ¼tzen/Nachwuchs';
 $jpArr['typen']['mw300']['titel'] = 'Matchwesen 300m';
 $jpArr['typen']['mw300']['kurz'] = '300m';
 $jpArr['typen']['mw50']['titel'] = 'Matchwesen 50m';
@@ -63,6 +61,4 @@ $jpArr['gruppen']['vt'] = array();
 $jpArr['gruppen']['wb'] = array();
 $jpArr['gruppen']['vorstand'] = array();
 
-
-
-?>
+/* EOF */

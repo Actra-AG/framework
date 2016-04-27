@@ -5,7 +5,7 @@
  */
 
 $site = 'bsv-buelach.ch';
-$charset = 'ISO-8859-1';
-$loginPage = 'http://'.$_SERVER['SERVER_NAME'].'/backend/login.html?mnauth';
+$charset = 'UTF-8';
+$loginPage = 'http://' . $_SERVER['SERVER_NAME'] . '/backend/login.html?mnauth';
 $sessionName = '';
 /* EOF */

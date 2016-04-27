@@ -16,4 +16,4 @@ $navistufe[1] = 'seiten';
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = true;
 $grundkonf['navigator']['title'] = 'Seiteninhalte';
-?>
+/* EOF */

@@ -3,7 +3,7 @@
 $grundkonf['templateID'] = '1';
 
 //Platzhalter
-$platzhalter['title'] = 'Album hinzuf¸gen/bearbeiten';
+$platzhalter['title'] = 'Album hinzuf√ºgen/bearbeiten';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
@@ -15,5 +15,5 @@ $navistufe[0] = 'fotos';
 // Navigator / Breadcrumb
 $grundkonf['navigator']['use'] = true;
 $grundkonf['navigator']['reset'] = false;
-$grundkonf['navigator']['title'] = 'Album hinzuf¸gen/bearbeiten';
-?>
+$grundkonf['navigator']['title'] = 'Album hinzuf√ºgen/bearbeiten';
+/* EOF */

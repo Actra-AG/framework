@@ -3,7 +3,7 @@
 $grundkonf['templateID'] = '1';
 
 //Platzhalter
-$platzhalter['title'] = 'Stützpunkttraining ZHSV Bülach';
+$platzhalter['title'] = 'StÃ¼tzpunkttraining ZHSV BÃ¼lach';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
@@ -16,4 +16,4 @@ $navistufe[1] = 'stuetzpunkttraining';
 $grundkonf['navigator']['use'] = false;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = '';
-?>
+/* EOF */

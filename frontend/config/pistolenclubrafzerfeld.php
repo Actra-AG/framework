@@ -11,4 +11,4 @@ $platzhalter['scripts'] = '';
 
 // Navigation
 $navistufe[1] = '';
-?>
+/* EOF */

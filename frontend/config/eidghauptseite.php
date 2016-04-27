@@ -3,7 +3,7 @@
 $grundkonf['templateID'] = '1';
 
 //Platzhalter
-$platzhalter['title'] = 'Eidgenössisches Schützenfest 2007 im Tessin';
+$platzhalter['title'] = 'EidgenÃ¶ssisches SchÃ¼tzenfest 2007 im Tessin';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
@@ -16,4 +16,4 @@ $navistufe[1] = 'eidghauptseite';
 $grundkonf['navigator']['use'] = false;
 $grundkonf['navigator']['reset'] = false;
 $grundkonf['navigator']['title'] = '';
-?>
+/* EOF */
