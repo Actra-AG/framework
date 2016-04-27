@@ -31,8 +31,8 @@ if($showPage -> checkUG('redaktor') && isset($showPage -> arrVars[2])) {
     $showPage -> redirect("seiten.html");
 	}
 	
-	$fArr = file($path_pages."{$seite}.html"); foreach($fArr AS $key => $val) { $datenArr['text'] .= $val;  }
-	$fArr = file($path_config."{$seite}.php"); foreach($fArr AS $key => $val) { $datenArr['config'] .= $val;  }
+	$datenArr['text'] = file_get_contents($path_pages . $seite . '.html');
+	$datenArr['config'] = file_get_contents($path_config . $seite . '.php');
 
 	if(isset($_GET['send'])) {
   	if(isset($_POST['text'])) {
@@ -60,8 +60,8 @@ if($showPage -> checkUG('redaktor') && isset($showPage -> arrVars[2])) {
 	  }
 	}
 
-  $datenArr['text'] = htmlentities($datenArr['text']);
-  $datenArr['config'] = htmlentities($datenArr['config']);
+  $datenArr['text'] = htmlentities($datenArr['text'], ENT_COMPAT | ENT_HTML401, 'ISO-8859-1');
+  $datenArr['config'] = htmlentities($datenArr['config'], ENT_COMPAT | ENT_HTML401, 'ISO-8859-1');
 }
 
 if(count($fehlerArr) != 0) {
@@ -77,4 +77,3 @@ $platzhalter['ort'] = $ort;
 $platzhalter['seite'] = $seite;
 
 foreach($datenArr AS $key => $val) { $platzhalter[$key] = $val; }
-?>
