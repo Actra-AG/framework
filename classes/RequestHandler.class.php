@@ -134,12 +134,10 @@ class RequestHandler
 
 					$ok = 1;
 
-				} elseif ($this->config['useDynDir'] == 1) {
-					/***** REWRITE WITHOUT DB-CONNECTION BUT FILE INSTEAD WHICH IS CREATED DYNAMICALLY BY APPLICATION *****/
 				}
 
 				if ($ok == 0) {
-					ErrorHandler::display_error(400);
+					ErrorHandler::display_error(404);
 
 				} else {
 					if ($varFiletitle == '') {
