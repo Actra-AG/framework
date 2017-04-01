@@ -1,0 +1,68 @@
+<?php
+$jpArr['typen']['vt']['intro'] = '<ul class="pdflink"><li><a href="/files/jp_veteranen_bsvb_2011.pdf">Jahresprogramm Veteranen 2011</a></li></ul>'; // Terminkalender_VVBSVB_2009.pdf
+
+$jpArr['typen']['sa300']['titel'] = 'Schiessanlässe 300m';
+$jpArr['typen']['sa300']['kurz'] = '300m';
+$jpArr['typen']['sa50']['titel'] = 'Schiessanlässe 50m';
+$jpArr['typen']['sa50']['kurz'] = '50m';
+$jpArr['typen']['sa25']['titel'] = 'Schiessanlässe 25m';
+$jpArr['typen']['sa25']['kurz'] = '25m';
+$jpArr['typen']['sa10']['titel'] = 'Schiessanlässe 10m';
+$jpArr['typen']['sa10']['kurz'] = '10m';
+$jpArr['typen']['js']['titel'] = 'Jungschützen/Nachwuchs';
+$jpArr['typen']['js']['kurz'] = 'Jungschützen/Nachwuchs';
+$jpArr['typen']['mw300']['titel'] = 'Matchwesen 300m';
+$jpArr['typen']['mw300']['kurz'] = '300m';
+$jpArr['typen']['mw50']['titel'] = 'Matchwesen 50m';
+$jpArr['typen']['mw50']['kurz'] = '50m';
+$jpArr['typen']['mwlg']['titel'] = 'Matchwesen Luftgewehr';
+$jpArr['typen']['mwlg']['kurz'] = 'Luftgewehr';
+$jpArr['typen']['mwlp']['titel'] = 'Matchwesen Luftpistole';
+$jpArr['typen']['mwlp']['kurz'] = 'Luftpistole';
+$jpArr['typen']['gm300']['titel'] = 'Gruppenmeisterschaft 300m';
+$jpArr['typen']['gm300']['kurz'] = '300m';
+$jpArr['typen']['gm50']['titel'] = 'Gruppenmeisterschaft 50m';
+$jpArr['typen']['gm50']['kurz'] = '50m';
+$jpArr['typen']['gm25']['titel'] = 'Gruppenmeisterschaft 25m';
+$jpArr['typen']['gm25']['kurz'] = '25m';
+$jpArr['typen']['gm10']['titel'] = 'Gruppenmeisterschaft 10m';
+$jpArr['typen']['gm10']['kurz'] = '10m';
+$jpArr['typen']['vs']['titel'] = 'Versammlungen';
+$jpArr['typen']['vs']['kurz'] = 'Versammlungen';
+$jpArr['typen']['vt']['titel'] = 'Veteranen';
+$jpArr['typen']['vt']['kurz'] = 'Veteranen';
+$jpArr['typen']['wb']['titel'] = 'Ausbildungen';
+$jpArr['typen']['wb']['kurz'] = 'Ausbildungen';
+$jpArr['typen']['vorstand']['titel'] = 'Vorstand';
+$jpArr['typen']['vorstand']['kurz'] = 'Vorstand';
+
+$jpArr['typen']['sa300']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['sa50']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['sa25']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['sa10']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['js']['conditions'] = array("YEAR(p.datumBis)>=YEAR(CURDATE())");
+$jpArr['typen']['mw300']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['mw50']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['mwlg']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['mwlp']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['gm300']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['gm50']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['gm25']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['gm10']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['vs']['conditions'] = array("YEAR(p.datumBis)>=YEAR(CURDATE())");
+$jpArr['typen']['vt']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['wb']['conditions'] = array("p.datumBis>=DATE_SUB(CURDATE(), INTERVAL 3 DAY)");
+$jpArr['typen']['vorstand']['conditions'] = array();
+
+$jpArr['gruppen']['sa'] = array('sa300', 'sa50', 'sa25', 'sa10');
+$jpArr['gruppen']['js'] = array();
+$jpArr['gruppen']['mw'] = array('mw300', 'mw50', 'mwlg', 'mwlp');
+$jpArr['gruppen']['gm'] = array('gm300', 'gm50', 'gm25', 'gm10');
+$jpArr['gruppen']['vs'] = array();
+$jpArr['gruppen']['vt'] = array();
+$jpArr['gruppen']['wb'] = array();
+$jpArr['gruppen']['vorstand'] = array();
+
+
+
+?>

@@ -1,0 +1,22 @@
+<h2>Anlass publizieren</h2>
+
+<!-- NOTUG_ADMIN START -->
+<p>Sie besitzen keine Rechte um den Inhalt dieser Seite anzuzeigen.</p>
+<!-- NOTUG_ADMIN ENDE -->
+
+<!-- UG_ADMIN START -->
+
+{{STATUS}}
+
+<form method="post" action="publicate-{{ID}}.html?send=1" class="form-edit">
+
+<fieldset>
+<dl>
+  <dt><label for="mitteilung">Mitteilung</label></dt>
+  <dd><textarea cols="40" rows="10" id="mitteilung" name="mitteilung">{{MITTEILUNG}}</textarea></dd>
+</dl>
+</fieldset>
+
+<fieldset class="submit"><input type="submit" name="save" value="bestätigen" /></fieldset>
+</form>
+<!-- UG_ADMIN ENDE -->

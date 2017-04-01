@@ -1,0 +1,25 @@
+<h2>Seite hinzufügen</h2>
+
+<!-- NOTUG_REDAKTOR START -->
+<p>Sie besitzen keine Rechte um den Inhalt dieser Seite anzuzeigen.</p>
+<!-- NOTUG_REDAKTOR ENDE -->
+
+<!-- UG_REDAKTOR START -->
+{{STATUS}}
+
+<form method="post" action="seiteAdd-{{ORT}}.html?send=1" class="form-edit">
+<fieldset>
+<dl>
+  <dt>Ort</dt>
+  <dd>{{ORTNAME}}</dd>
+</dl>
+
+<dl>
+  <dt><label for="seite">Adresse</label></dt>
+  <dd><input type="text" class="text" name="seite" id="seite" value="{{SEITE}}" />.html</dd>
+</dl>
+</fieldset>
+
+<fieldset class="submit"><input type="submit" name="save" value="speichern" /></fieldset>
+</form>
+<!-- UG_REDAKTOR ENDE -->

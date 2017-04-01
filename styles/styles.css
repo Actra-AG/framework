@@ -1,0 +1,1442 @@
+/*******************************************************************************
+Title:  styles.css (bsv-buelach.ch)
+Author: sascha.scholz@actra.ch
+Date:   24.02.2010
+*******************************************************************************/
+/* reset */
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+
+em {font-style: italic;}
+
+ul, ol {list-style: none;}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+}
+
+table, td, th {vertical-align: top;}
+
+blockquote:before, blockquote:after,
+q:before, q:after {content: "";}
+
+blockquote, q {quotes: "" "";}
+
+a img, img {border: none;}
+
+body {
+  margin: 0 10px 10px;
+  font: small/1.5 verdana, arial, helvetica, sans-serif;
+  text-align: center;
+  color: #333;
+  background: #e3e3fb;
+}
+
+a:link, a:visited {
+  color: #555;
+  text-decoration: underline;
+}
+
+a:hover, a:active, a:focus {text-decoration: none;}
+
+p, h2, h3, h4, h5, h6 {margin: 0 0 1em;}
+
+h2, h3, h4, h5, h6 {
+  font-family: arial, sans-serif;
+  font-weight: bold;
+}
+
+h2 {
+  /*padding-bottom: .2em;*/
+  font-size: 155%;
+  color: #424183;
+  font-style: italic;
+  letter-spacing: 1px;
+/*  background: #fff url(/images/h2-bg.gif) left bottom repeat-x;*/
+}
+h3 {
+  font-size: 120%;
+  margin-bottom: .6em;
+  color: #555;
+}
+
+h4 {font-size: 110%;}
+h5 {font-size: 100%;}
+
+address { /* TEMP */
+  font-style: normal;
+  margin-bottom: 1em;
+}
+
+.access, #sidebar h2, #zusatznavi h2 {
+  position: absolute;
+  top: 0;
+  left: -999px;
+  width: 0;
+}
+
+/* structure
+*******************************************************************************/
+#wrapper {
+  margin: 0 auto;
+  padding: 2em 0 0;
+  text-align: left;
+  position: relative;
+  width: 960px;
+}
+
+#header {
+  margin: 0 0 1em;
+  width: auto;
+  border: 1px solid #b8b8b8;
+  background: #fff url(/images/head/image1.jpg) 100% 0 no-repeat;
+  height: 120px;
+}
+
+#outercontainer {
+  background: url(/images/outercontainer-bg-05.gif) 25% 0 repeat-y;
+  background: url(/images/container-bg.gif) 100% 0 repeat-y;
+  width: 100%;
+    font-size: 95%;
+      position: relative;
+}
+
+#content {
+  border: 1px solid #b8b8b8;
+  border-width: 1px 1px 0 0;
+  width: 75%;
+  float: right;
+  font-size: 95%;
+  background: #fff;
+
+  width: 660px;
+  padding: 30px 24px;
+}
+
+#sidebar {
+  float: left;
+  width: 24%;
+  font-size: 85%;
+  font-family: verdana, arial, sans-serif;
+  width: 218px;
+  width: 230px;
+}
+
+#footer {
+  clear: both;
+  width: 100%;
+  background: #E3E3FB;
+}
+
+/* header
+*******************************************************************************/
+#logo h1 {
+  height: 120px;
+  width: 464px;
+  background: url(/images/logo-04.gif) 0 0 no-repeat;
+  text-indent: -9999px;
+}
+
+h1 a:link, h1 a:visited {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  overflow: hidden;
+}
+
+/* =Content
+***********************************************************************/
+
+
+
+/* =sidebar
+***********************************************************************/
+
+#sidebar ul {
+margin-bottom: 20px;
+    border: 1px solid #b8b8b8;
+  border-width: 1px 1px 0;
+}
+.aside-logo img {
+  margin-top: 20px;
+  border: 1px solid #B8B8B8;
+  display: block;
+}
+
+#sidebar ul ul {
+  margin-bottom: 0;
+  border: none;
+  border-bottom: 1px solid #b8b8b8;
+}
+
+#sidebar ul a {
+margin: 0;
+padding: 6px 10px;
+display: block;
+text-decoration: none;
+color: #424183;
+background: #E3E2F2 url(../images/navi-bg.gif) left top repeat-x;
+border-top: 1px solid #fff;
+border-bottom: 1px solid #B8B8B8;
+}
+
+#sidebar li.nav_current a {
+font-weight: bold;
+background: #E3E2F2; 
+}
+#sidebar li.nav_current ul a {
+font-weight: normal;
+background: #fff;
+}
+#sidebar li.nav_current ul a:hover {color: #ee1d3c;}
+#sidebar li.nav_current a:hover {color: #333;}
+#sidebar ul ul {padding-bottom: 0;}
+
+#sidebar ul ul a {
+border: none;
+padding: 5px 10px;
+font-size: 90%;
+background: #fff;
+}
+#sidebar ul ul a:hover {background: #fff;}
+#sidebar ul a:hover {background: #E3E2F2;}
+#sidebar ul ul li.nav_current a {color: #ee1d3c;}
+
+
+/*--------- Print funktion ----------*/
+p#print {
+position: absolute;
+top: 1px;
+right: 1px;
+font-size: 80%;
+margin: 0;
+padding: 4px 10px 3px 8px;
+background: #eee;
+border: 1px solid #ddd;
+border-width: 0 0 1px 1px;
+}
+
+p#print a {
+background: url(../images/print-icon.gif) 0 50% no-repeat;
+padding: 0 0 0 16px;
+font-size: 90%;
+text-decoration: none;
+font-weight: normal;
+} 
+p#print a:hover {text-decoration: underline;}
+
+/*--------- Zusatznavi -----------------------*/
+#zusatznavi li {float: left;}
+
+#zusatznavi ul {
+  position: absolute;
+  top: .5em;
+  right: 0;
+}
+
+#zusatznavi a {
+  margin: 0 0 0 10px;
+  padding: 0;
+  color: #424183;
+  font-size: 85%;
+  text-decoration: none;
+  line-height: 1.0;
+  float: left;
+}
+
+#zusatznavi a:hover {color: #ee1d3c;}
+
+/* =Seitenelemente
+***********************************************************************/
+/* Subnavigation im contentbereich */
+
+#subnavi, #subnavi li {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+#subnavi {
+margin: 0 0 1em;
+background: #E3E2F2 url(../mages/navi-bg.gif) left top repeat-x;
+font-size: 90%;
+border-top: 3px double #fff;
+border-bottom: 3px double #fff;
+}
+
+#subnavi li {
+float: left;
+border-right: 1px solid #fff;
+}
+
+#subnavi a {
+margin: 0;
+padding: 8px 10px 8px;
+display: block;
+float: left;
+text-decoration: none;
+border: 1px solid #fff;
+border-width: 0;
+background: #E3E2F2;
+}
+#subnavi a:hover,
+#subnavi li.nav_current a {
+color: #333;
+border: 1px solid #B8B9CE;
+border-width: 0 0 0;
+background: #B8B9CE;
+}
+#subnavi li.nav_current a {font-weight: bold;}
+#subnavi li.nav_current a:hover {font-weight: bold;}
+
+
+/* =Vereinsseiten *********/
+#praesident {margin-bottom: 1.5em;}
+
+#praesident dt {
+font-weight: bold;
+margin-bottom: .2em;
+}
+
+#schiessplatz {margin-bottom: 1.5em;}
+
+#schiessplatz dt {
+font-weight: bold;
+float: left;
+}
+
+/* =normtabelle */
+.normtabelle {
+clear: both;
+margin: 0 0 1em;
+padding: 0;
+border: 1px solid #ccc;
+border-width: 1px 1px 0 0;
+width: 100%;
+border-width: 0 1px 1px 0;
+}
+.normtabelle th, .normtabelle td {
+padding: 4px 10px;
+border: 1px solid #ccc;
+border-width: 0 0 1px 1px;
+vertical-align: top;
+font-size: 95%;
+border-width: 1px 0 0 1px;
+}
+.normtabelle th {
+background: #E3E2F2;
+font-weight: bold;
+}
+
+.normtabelle td.empty {border: none;}
+
+
+#feldschiessen table {
+margin-bottom: 20px;
+}
+
+#feldschiessen th {
+text-align: center;
+}
+
+#feldschiessen th.colgroup {
+background: #fff;
+}
+
+.normtabelle caption {
+padding: 0 0 .5em;
+text-align: left;
+font-weight: bold;
+font-size: 105%;
+}
+
+.normtabelle th.listen {width: 60%;}
+.normtabelle th.ort {width: 50%;}
+
+.normtabelle th.vereine {width: 35%;}
+
+.normtabelle ul, .normtabelle li {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+#feldschiessen dl {text-align: right;}
+#feldschiessen dt {float: left;}
+
+#feldschiessen .durchfVerein {font-weight: bold;}
+#feldschiessen .normtabelle em {color: #FC0203;}
+
+#feldschiessen p.legende {
+margin-bottom: .5em;
+font-style: italic;
+text-align: right;
+font-size: 90%;
+position: relative;
+top: -0.5em;
+}
+
+#feldschiessen p.legende em {
+color: #FC0203;
+font-weight: bold;
+}
+
+/************************* Fotogalerien ***********************/
+#fotogalerien, fotogalerien li {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+#fotogalerien {margin-bottom: 1em;}
+
+#fotogalerien li {
+padding: 0 0 0 20px;
+margin-bottom: .4em;
+}
+
+/* Thumbnails u. Originalfoto */
+#thumbnails img {
+float: left;
+border: 1px solid #ddd;
+padding: 4px;
+margin: 0 30px 30px 0;
+}
+
+p.galerienavi {clear: both;}
+
+#originalpic img {
+border: 1px solid #ddd;
+padding: 4px;
+}
+
+/****************** jungschuetzentagdetails **************************************/
+#jungschuetzentagdetails {
+margin: 0 0 1em;
+padding: 0;
+}
+#jungschuetzentagdetails dl {margin: 0 0 1em;}
+#jungschuetzentagdetails dt {
+font-weight: bold;
+float: left;
+}
+#jungschuetzentagdetails dd {margin-left: 30%;}
+
+/************************** Vorstandsauflistung *******************/
+#vorstand {margin: 0 0 2em;}
+#vorstand dl {
+width: 48%;
+float: left;
+margin: 0 0.8% 0 0;
+padding: .5em 0;
+}
+
+#vorstand dt img {
+float: left;
+margin: 0 7px 10px 0;
+padding: 2px;
+border: 1px solid #ddd;
+border-color: #ddd #ddd #bbb #bbb;
+}
+#vorstand dt {
+font-weight: bold;
+margin-bottom: .1em;
+font-family: arial, sans-serif;
+letter-spacing: 1px;
+}
+
+#vorstand dd {margin-left: 113px;}
+
+/************ Vereine ********************/
+#vereine, #vereine li {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+#vereine li {
+clear: both;
+padding: .5em 0;
+border-bottom: 1px solid #ddd;
+margin: 0;
+}
+
+#vereine span {
+display: block;
+float: left;
+width: 18em;
+}
+
+/* vereineliste */
+#vereineliste, #vereineliste li {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+#vereineliste {margin: 0 0 1em;}
+
+#vereineliste li {
+float: left;
+width: 48%;
+margin: 0 0.8% .5em 0;
+}
+#vereineliste li span {
+float: left;
+display: block;
+width: 50px;
+height: 50px;
+}
+
+
+/*************** Feldschiessen ********************/
+#feldschiessen06 ul, #feldschiessen06 li {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+#feldschiessen06 ul {float: left;}
+
+#feldschiessen06 dl {
+float: right;
+width: 60%; 
+}
+
+/* versch. Formulare */
+/**************** Kontaktformular *********************************/
+#kontaktformular {margin: 0 0 1em;}
+#kontaktformular fieldset {
+margin: 0;
+padding: 0;
+background: #eee;
+border: 1px solid #ddd;
+border-width: 1px 1px 0;
+}
+
+#kontaktformular dl, #kontaktformular p {
+padding: .5em 10px;
+border-top: 1px solid #fff;
+border-bottom: 1px solid #ccc;
+text-align: right;
+}
+#kontaktformular p {
+margin: 0;
+padding: 1em 10px;
+vertical-align: middle;
+}
+
+#kontaktformular dt {float: left;}
+
+#kontaktformular input {vertical-align:middle;}
+
+#kontaktformular dd input, #kontaktformular dd textarea {
+width: 70%;
+border: 1px solid #ccc;
+padding: 3px 2px;
+}
+
+#kontaktformular dd textarea {
+height: 300px;
+overflow: auto;
+}
+
+#formfehler {
+margin: 0 0 1em;
+padding: 10px 0 10px 45px;     
+background: #FDF5C2 url(../images/fehler-bg.gif) 10px 5px no-repeat;
+border: 1px solid #DFC204;
+}
+
+#formfehler p {
+font-weight: bold;
+padding: 0 10px;
+}
+
+/* Anmeldungformular */
+#anmeldeform {
+margin: 0 0 1em;
+padding: 0;
+}
+
+#anmeldeform fieldset {
+margin: 0;
+padding: 0;
+background: #eee;
+border: 1px solid #ddd;
+border-width: 1px 1px 0;
+}
+
+#anmeldeform dl,
+#anmeldeform div#sendbutton {
+padding: .5em 10px;
+border-bottom: 1px solid #ddd;
+border-top: 1px solid #fff;
+border-bottom: 1px solid #ccc;
+}
+
+#anmeldeform dt {
+float: left;
+width: 28%;
+}
+
+#anmeldeform dd input, #anmeldeform dd textarea {
+width: 70%;
+border: 1px solid #ccc;
+padding: 3px 2px;
+}
+
+#anmeldeform dd textarea {
+/*width: 98%;*/
+height: 10em;
+overflow: auto;
+}
+#anmeldeform div#sendbutton {
+margin: 0;
+padding: 1em 10px;
+vertical-align: middle;
+text-align: center;
+}
+
+/* =Newsbox
+************************/
+.startnews {
+padding: 0 0 1em;
+margin: 0 0 1em;
+border-bottom: 1px dotted #bbb;
+}
+
+.startnews h3 {
+  color: #FC0203;
+}
+
+
+.newsbox:after {
+content: ".";
+clear: both;
+display: block;
+height: 0;
+visibility: hidden;
+}
+.newsbox {display: inline-block;}
+/*verstecken vor IE/Mac\*/
+.newsbox {display: block;}
+/*Ende verstecken*/
+
+.linkliste, .linkliste li {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+.startnews .linkliste {
+margin-bottom: 1em;
+clear: both;
+}
+
+.linkliste li {
+padding: 0 0 0 25px;
+background: url(../images/normliste-but.gif) 10px 50% no-repeat;
+}
+
+/********* versch. Listen *************/
+.normliste, .normliste li {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+.normliste {margin: 0 0 1em;}
+
+.normliste li {
+padding: 0 0 .1em 25px;
+background: url(../images/normliste-but.gif) 10px 50% no-repeat;
+}
+
+/******************** zusatz ***********************/
+#externebundespg ul.normliste {
+float: left;
+width: 49%;
+}
+
+/*------- Links ------------------*/
+.divlinks {
+margin: 0 0 2em;
+padding: 0;
+}
+
+.divlinks dl:after {
+content: ".";
+display: block;
+clear: both;
+height: 0;
+visibility: hidden;
+}
+.divlinks dl {display: inline-block;}
+/* nix fuer Mac/IE5 \*/
+.divlinks dl {display: block;}
+/* Ende verstecken */
+
+.divlinks dt {
+width: 300px;
+float: left;
+margin: .5em 0 .5em 10px;
+padding: 0 0 .5em 15px;
+background: url(../images/normliste-but.gif) 0 50% no-repeat;
+}
+.divlinks dl dt img {
+display: block;
+margin: 0 auto;
+text-align: center;
+}
+
+.divlinks dl {
+width: 100%;
+margin: 0 0 1em;
+/* CM auskommentiert
+padding-bottom: .5em;
+border-bottom: 1px solid #ccc;  
+*/
+}
+.divlinks dd {
+margin: 0;
+padding: 0;
+}
+
+.byebye {display: none;}
+
+/*-------- SelfclrItem ------------*/
+.clrItem:after {
+content: ".";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+.clrItem {display: inline-block;}
+/* nix fuer Mac/IE5 \*/
+.clrItem {display: block;}
+/* Ende vom verstecken */
+
+
+/*---------- Sitemap -----------------*/
+#sitemapliste, #sitemapliste li {list-style: none;}
+#sitemapliste {margin-bottom: 1em;
+margin-left: 10px;
+}
+#sitemapliste li {padding: 1px 0;} 
+
+#sitemapliste ul {
+margin-left: 20px;
+border-left: 1px solid #ccc;
+padding-left: 20px;
+margin-top: .3em;
+}
+#sitemapliste a {
+color: #333;
+text-decoration: none;
+font-weight: bold;
+font-size: 95%;
+}
+#sitemapliste ul a {font-weight: normal;}
+#sitemapliste a:hover {text-decoration: underline;}
+#sitemapliste ul li {margin: 2px 0;}
+
+/******************** kontaktbox *******************************/
+#kontaktbox dl {
+float: left;
+width: 32%;
+margin: 0 1% 0 0;
+}
+
+#kontaktbox dt {
+font-weight: bold;
+margin: 0 0 .2em;
+}
+
+#kontaktbox dd {margin-bottom: .3em;}
+
+
+/* PDF, Word und Excel Links */
+.pdflink, .pdflinks li,
+.excellink, .excellink li,
+.wordlink, .wordlink li,
+.powerpointlink, .powerpointlink li {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+.pdflink,
+.excellink,
+.wordlink,
+.powerpointlink {margin: 0 0 1em;}
+
+.pdflink li,
+.excellink li,
+.wordlink li,
+.powerpointlink li {
+padding: 0 0 .1em 25px;
+background: url(../images/icon-pdf.gif) 5px 50% no-repeat;
+}
+
+
+.zweispaltig:after {
+content: ".";
+display: block;
+clear: both;
+height: 0;
+visibility: hidden;
+}
+.zweispaltig li {
+width: 39%;
+float: left;
+}
+
+
+.excellink li {background-image: url(../images/excel.gif);}
+.wordlink li {background-image: url(../images/word.gif);}
+.powerpointlink li {background-image: url(../images/powerpoint.gif);}
+
+p.pdflink,
+p.excellink,
+p.wordlink,
+p.powerpointlink {
+background: url(../images/icon-pdf.gif) 5px 50% no-repeat;
+padding-left: 25px;
+}
+p.excellink {background-image: url(../images/excel.gif);}
+p.wordlink {background-image: url(../images/word.gif);}
+p.powerpointlink {background-image: url(../images/powerpoint.gif);}
+
+/* versch. Klassen */
+.bildLinks {
+float: left;
+margin: 0 20px 10px 0;
+}
+.bildRechts {
+float: right;
+margin: 0 0 10px 20px;
+}
+
+.rahmen {
+border: 1px solid #ddd;
+border-color: #ddd #ddd #bbb #bbb;
+padding: 2px;
+}
+
+/* 2spaltige Ranglisten */
+.rangliste {margin-bottom: 1.5em;}
+.ranglisteLinks,
+.ranglisteRechts {
+width: 48%;
+float: left;
+margin: 0 2% 0 0;
+line-height: 1.2;
+}
+.ranglisteRechts {margin: 0;}
+.ranglisteLinks li,
+.ranglisteRechts li {margin-bottom: .2em;} 
+
+
+
+/*----------- JSBerichte ------------*/
+.jsberichte dl,
+.berichte dl {
+margin: 0 0 1em;
+padding: 0 0 1em;
+border-bottom: 1px solid #ccc;
+line-height: 1.5;
+}
+
+.jsberichte dt,
+.berichte dt {
+margin: 0 0 .5em;
+font-weight: bold;
+font-size: 105%;
+}
+
+.jsberichte dd.bild img,
+.berichte dd.bild img {
+float: left;
+margin: 0 20px 5px 0;
+border: 1px solid #ccc;
+padding: 3px;
+background: #fff;
+}
+.jsberichte dd,
+.berichte dd {
+margin: 0 0 .5em;
+padding: 0;
+}
+
+
+/*----------- Sponsoren ---------*/
+.sponsoren {margin: 0 0 2em;}
+
+.sponsoren .normliste li {
+width: 42%;
+float: left;
+}
+
+.sponsoren dt {
+width: 300px;
+float: left;
+margin: .5em 0 .5em 0;
+padding: 0;
+}
+
+.sponsoren dd {
+margin: 0;
+padding: 0;
+}
+
+.sponsoren dl {
+margin: 0 0 1em;
+padding: 0 0 1em;
+border-bottom: 1px solid #ccc;
+line-height: 1.4;
+}
+
+
+
+
+/* neue STyles 28.06.2007 */
+#schuetzenfest {
+  margin: 0;
+  padding: 0;
+  float: left;
+  width: 100%;
+  background: transparent url(../images/schuetzenfest-bg.gif) 100% 0 repeat-y;
+}
+
+.schuetzenbox {
+  margin: 0 0 2em;
+  padding: 4px 0;
+  width: 100%;
+  float: left;
+  border: 1px solid #ddd;
+  border-width: 1px 0;
+}
+
+
+#schuetzenfest h3 {
+  margin: 0 0 1em;
+  padding: 0;
+  font-size: 115%;
+}
+
+#schuetzenfest h4 {
+  margin: 0 0 .5em;
+  padding: 1px 10px;
+  font-size: 115%;
+  background: #FC0203;
+  background: #CE0207;
+  color: #fff;
+  font-family: arial, sans-serif;
+  border-bottom: 4px solid #fff;
+}
+
+#newsticker {margin: 0 205px 0 0;}
+
+#newsticker h4 {
+  text-align: right;
+}
+
+#newsticker h4 span {
+  float: left;
+  margin-right: 5px;
+}
+
+#newsticker h4 em {
+  font-style: normal;
+}
+
+
+
+#newsticker ul {
+  margin: 0 0 1em;
+  padding: 0 10px;
+  list-style: none;
+}
+
+#newsticker li {
+  margin: 0;
+  padding: .3em 0;
+  color: #000;
+  border-bottom: 1px dashed #ccc;
+  text-align: right;
+}
+
+#newsticker li:hover {
+  background: #f8f8f8;
+}
+
+
+#newsticker li span {
+  float: left;
+  margin: 0 5px 0 0;
+}
+
+
+#newsticker li em {
+  font-family: arial, sans-serif;
+  font-style: normal;
+  font-size: 90%;
+}
+
+
+#newsticker p {
+  padding: 0 10px;
+  font-size: 90%;
+  text-align: left;
+}
+
+#fototicker {
+  float: right;
+  width: 200px;
+  text-align: center;
+}
+
+#fototicker h4 {
+  margin-bottom: 10px;
+}
+
+
+#fototicker img {
+  margin: 0;
+  padding: 9px;
+  background: #fff;
+  border: 1px solid #ccc;
+}
+
+#fototicker p {
+  padding: 0 10px;
+  margin: 0;
+  text-align: center;
+  font-size: 90%;
+}
+
+#ranglisteticker {margin: 0 205px 0 0;}
+#ranglisteticker p {padding: 0 10px;}
+
+#ranglisteticker p em {
+  font-style: normal;
+  color: #666;
+  font-family: arial, sans-serif;
+}
+
+#ranglisteticker p strong {
+  font-family: arial, sans-serif;
+  color: #000;
+}
+
+#schuetzenfest div {
+  margin-bottom: 4px;
+  padding: 0 0 5px;
+  background: #eee;
+}
+
+#schuetzenfest div#ranglisteticker {margin-bottom: 0;}
+
+
+/* NewstickerARchiv */
+#newstickerarchiv h3 {margin-bottom: .5em;}
+
+#newstickerarchiv ul {
+  margin: 0 0 1.5em;
+  padding: 0;
+  list-style: none;
+}
+
+#newstickerarchiv li {
+  padding: .1em 0;
+  border: 1px dashed #ccc;
+  border-width: 0 0 1px;
+  text-align: right;
+}
+
+#newstickerarchiv li:hover {background: #f0f0f0;}
+
+#newstickerarchiv li span {
+  margin: 0 5px 0 0;
+  float: left;
+}
+
+#newstickerarchiv li em {
+  font-style: normal;
+  font-size: 90%;
+  font-family: arial, sans-serif;
+}
+
+/* Elemente in NewstickerDetails */
+/* linktos */
+#linktos {
+  margin: 3em 0 0;
+  padding: .5em 10px;
+  background: #f0f0f0;
+  border: 1px dashed #ccc;
+  border-width: 1px 0;
+}
+
+#datum {
+  margin-top: -1em;
+  color: #666;
+  font-family: arial, sans-serif;
+  text-align: right;
+  font-size: 90%;
+}
+#teaser {font-weight: bold;}
+
+/* Galerie */
+#galerie {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#galerie li {
+  margin: 0 10px 10px 0;
+  float: left;
+}
+
+#galerie img {
+  padding: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+#fotogross img {
+  margin: 0 0 10px;
+  /*border: 1px solid #ccc;
+  padding: 4px;*/
+}
+
+
+
+
+/* 08.10.09 */
+.normtabelle th, .normtabelle td {
+padding: 4px 6px;
+border: 1px solid #ccc;
+border-width: 0 0 1px 1px;
+vertical-align: top;
+font-family: tahoma, arial, sans-serif;
+
+
+border-width: 1px 0 0 1px;
+}
+.normtabelle th {
+background: #E3E2F2;
+font-weight: bold;
+color: #000;
+}
+
+td.date {white-space:nowrap;}
+
+
+
+/* =Footer
+***********************************************************************/
+#footnote {
+position: relative;
+top: -1px;
+left: 0;
+padding: 5px 0 1em;
+background: url(../images/footer-bg-05.gif) 100% 0 no-repeat;
+}
+
+#footer p {
+margin: 0;
+padding: 0 10px .3em 30px;
+font-size: 80%;
+text-align: right;
+color: #424183;
+}
+#footer a {
+color: #333;
+color: #424183;
+font-weight: bold;
+text-decoration: none;
+}
+#footer a:hover {text-decoration: underline;}
+
+
+/* selfClearing */
+.group:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+
+
+/* NEU */
+/*--------- frühlingsliste-------*/
+dl.fruehlingsliste {
+margin: 0 0 1em;
+padding: 0;
+line-height: 1.4;
+}
+dl.fruehlingsliste dt {
+float: left;
+width: 10em;
+font-weight: bold;
+}
+dl.fruehlingsliste dd {
+margin: 0 0 .3em;
+padding: 0;
+}
+
+
+
+
+
+/* Neu 18.12.2009 */
+
+#nav-content {
+  margin: 0 0 2em;
+  padding: 10px 10px 0;
+  background: #f6f6f6;
+  border-bottom: 1px solid #ddd;
+  font-family: arial, sans-serif;
+}
+
+#nav-content ul {
+  float: left;
+  width: 100%;
+  position: relative;
+  bottom: -1px;
+}
+
+#nav-content ul li {
+  margin: 0 3px 0 0;
+  float: left;
+}
+
+#nav-content ul li a,
+#nav-content ul li strong {
+  padding: 5px 8px;
+  float: left;
+  text-decoration: none;
+  background: #ddd;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+#nav-content ul li a:hover {
+  text-decoration: none;
+  background: #eee;
+}
+
+#nav-content ul li strong {
+  background: #fff;
+  color: #000;
+  border-color: #ccc #ccc #fff;
+}
+
+
+/* =nav-year */
+#nav-year {
+  margin-bottom: 1em;
+  font-size: 125%;
+  font-family: arial, sans-serif;
+}
+
+#nav-year li {
+  margin: 0 15px 0 0;
+  float: left;
+}
+
+#nav-year li a,
+#nav-year li strong {
+  background: #fff;
+  text-decoration: none;
+  color: #bbb;
+  font-weight: bold;
+}
+
+#nav-year li a:hover {color: #000;}
+#nav-year li strong {
+  font-weight: bold;
+  color: #000;
+}
+
+
+
+
+/* =normtable */
+.normtable {
+  margin-bottom: 2em;
+  width: 100%;
+}
+
+.normtable th,
+.normtable td {
+  padding: 5px 10px 5px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.normtable th {
+  padding-bottom: 1em;
+  font-weight: bold;
+  border: 1px solid #aaa;
+  border-width: 1px 0 3px;
+}
+
+/* =groupdetails */
+.progdetails {margin: 0 0 1em;}
+
+
+.progdetails dl {
+  margin-bottom: 1px;
+  padding: 10px 10px;
+  background: #f5f5f5;
+}
+
+.progdetails dt {
+  font-weight: bold;
+  float: left;
+  width: 150px;
+  font-family: arial, sans-serif;
+}
+
+.progdetails dd {margin-left: 160px;}
+
+.progdetails dd ul.pdflink {margin: 0;}
+
+/* =nav-gallery */
+#nav-gallery {
+  margin: 0 0 2em;
+  font-size: 90%;
+}
+
+#nav-gallery li {
+  margin: 0 1px 0 0;
+  float: left;
+}
+
+#nav-gallery li a {
+  padding: 5px 10px;
+  background: #ddd;
+  color: #000;
+  text-decoration: none;
+}
+
+#nav-gallery li.uebersicht a {background: #eee;}
+
+#nav-gallery li.uebersicht a:hover {
+  background: #ddd;
+  color: #000;
+}
+
+#nav-gallery li a:hover {
+  background: #aaa;
+  color: #fff;
+}
+
+.lastupdate {
+  position: absolute;
+  top: 3.5em;
+  right: 25px;
+  font-size: 85%;
+  color: #333;
+  padding: 0 1px;
+  background: #ffffcc;
+}
+
+.lastupdate strong {font-weight: bold;}
+
+
+p.backlink {
+  font-size: 90%;
+}
+
+p.backlink a {
+  color: #777;
+}
+
+
+
+hr {
+  margin: 2em 0;
+  border-top: solid 1px #FFF;
+  border-bottom: solid 1px #CCC;
+  border-left: solid 1px #FFF;
+  border-right: solid 1px #FFF;
+  height:1px;
+}
+
+/* copyed by cm from backendstyles.css */
+.pagination {
+	margin-bottom: 1em;
+	padding: 5px 0;
+	font-size: 90%;
+}
+
+.pagination ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.pagination li {
+	margin: 0 0;
+	display: inline;
+}
+
+.pagination a {
+	padding: 5px 7px;
+	border: 1px solid #aaa;
+	text-decoration: none;
+	position: relative;
+	background: #fff;
+	color: #333;
+}
+
+.pagination a:link,
+.pagination a:visited {font-weight: normal;}
+
+.pagination li.currentpage strong {
+	padding: 5px 3px;
+	font-weight: bold;
+	color: #FF0000;
+}
+
+.pagination .zurueck a, .pagination li.zurueckdisable,
+.pagination .vor a, .pagination li.vordisable {
+	padding: 5px 6px;
+	font-weight: bold;
+	border: 1px solid #aaa;
+	text-decoration: none;
+	position: relative;
+	color: #333;
+}
+
+.pagination a:hover {background: #eee;}
+
+.pagination li.zurueckdisable,
+.pagination li.vordisable {
+	color: #aaa;
+	font-weight: normal;
+	border-color: #ddd;
+}
+
+
+#feldschiessen td {text-align: center;}
+#feldschiessen th.title {width: 95px;}
+#feldschiessen .left {text-align: left;}

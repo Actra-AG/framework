@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
+<head>
+<title>Bezirksschützenverband Bülach | Backend</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="author" content="www.actra.ch Actra AG Internet Services" />
+<meta name="robots" content="noindex,nofollow" />
+<link rel="stylesheet" type="text/css" media="all" href="/styles/backend/backendstyles.css" />
+<!--[if lte IE 7]><link rel="stylesheet" type="text/css" media="screen" href="/styles/backend/backendie.css"><![endif]-->
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/functions.js"></script>
+{{SCRIPTS}}
+</head>
+<body id="{{BODYID}}">
+
+<div id="wrapper">
+
+<div id="header">
+  <div id="header-inner">
+  <h1>BSV-Bülach | Adminbereich</h1>
+<!-- UG_AKTIV START -->
+	<p id="logout"><a href="login-logout.html">ausloggen</a></p>
+<!-- UG_AKTIV ENDE -->
+
+<!-- UG_VISITOR START -->
+	<p id="logout"><a href="login.html">einloggen</a></p>
+<!-- UG_VISITOR ENDE -->
+
+<!-- UG_AKTIV START -->
+<div id="nav-main" class="group">
+<ul>
+  <li id="nav_start"><a href="start.html">Startseite</a></li>
+<!-- UG_VORSTAND START -->
+  <li id="nav_vorstand"><a href="vorstand.html">Vorstand</a></li>
+<!-- UG_VORSTAND ENDE -->
+
+<!-- UG_REDAKTOR START -->
+  <li id="nav_news"><a href="news.html">Neuigkeiten</a></li>
+  <li id="nav_fotos"><a href="alben.html">Fotogalerie</a></li>
+<!-- UG_REDAKTOR ENDE -->
+
+<!-- UG_ADMIN START -->
+  <li id="nav_benutzer"><a href="benutzer.html">Benutzer</a></li>
+  <li id="nav_visits"><a href="visits.html">Besuche</a></li>
+  <li id="nav_vereine"><a href="vereine.html">Vereine</a></li>
+  <li id="nav_seiten"><a href="seiten.html">Seiteninhalte</a></li>
+<!-- UG_ADMIN ENDE -->
+
+  <li id="nav_jahresprogramm"><a href="jp.html">Jahresprogramm</a></li>
+  <li id="nav_webmail"><a href="webmail.html">Webmail</a></li>
+  <li id="nav_statistik"><a href="statistik.html">Statistik</a></li>
+
+</ul>
+</div>
+<!-- UG_AKTIV ENDE -->
+
+</div>
+</div>
+
+
+<div id="main">
+	{{BREADCRUMB}}
+{{CONTENT}}
+</div>
+
+
+<div id="footer">
+  <div id="footer-inner">
+<p>Copyright &copy; {{COPYRIGHT}} <a href="http://www.bsv-buelach.ch" title="www.bsv-buelach.ch">Bezirksschützenverband Bülach</a> | Konzept &amp; Umsetzung durch <a href="http://www.actra.ch" target="_blank">Actra AG</a></p>
+</div>
+</div>
+
+
+</div>
+</body>
+</html>

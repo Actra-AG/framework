@@ -1,0 +1,49 @@
+<h2>{{TITLE}}</h2>
+
+{{STATUS}}
+
+<form action="kontakt-{{TOID}}.html?send=1" method="post" id="kontaktformular">
+<fieldset>
+<dl>
+  <dt><label for="firma">Firma</label></dt>
+  <dd><input type="text" name="firma" id="firma" value="{{FIRMA}}" /></dd>
+</dl>
+
+<dl>
+  <dt><label for="vorname">Vorname</label></dt>
+  <dd><input type="text" name="vorname" id="vorname" value="{{VORNAME}}" /></dd>
+</dl>
+
+<dl>
+  <dt><label for="nachname">Nachname</label></dt>
+  <dd><input type="text" name="nachname" id="nachname" value="{{NACHNAME}}" /></dd>
+</dl>
+
+<dl>
+  <dt><label for="email">E-Mail</label></dt>
+  <dd><input type="text" name="email" id="email" value="{{EMAIL}}" /></dd>
+</dl>
+
+<dl>
+  <dt><label for="telefon">Telefon</label></dt>
+  <dd><input type="text" name="telefon" id="telefon" value="{{TELEFON}}" /></dd>
+</dl>
+
+<dl>
+  <dt><label for="betreff">Betreff</label></dt>
+  <dd><input type="text" name="betreff" id="betreff" value="{{BETREFF}}" /></dd>
+</dl>
+
+<dl>
+  <dt><label for="mitteilung">Mitteilung</label></dt>
+  <dd><textarea name="mitteilung" id="mitteilung" cols="40" rows="10">{{MITTEILUNG}}</textarea></dd>
+</dl>
+
+<div class="byebye">
+  <label for="subject">Folgendes Eingabefeld bitte <strong>nicht</strong> ausfüllen, es dient lediglich der Spambekämpfung</label>
+  <input type="text" id="subject" name="subject" value="" />
+</div>
+
+<p><input type="submit" id="send" value="senden" /></p>
+</fieldset>
+</form>

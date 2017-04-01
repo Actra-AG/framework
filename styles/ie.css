@@ -1,0 +1,18 @@
+/*******************************************************************************
+Title:  ie.css
+Date:   23.12.2009
+*******************************************************************************/
+
+/* hasLayout ie6 */
+* html .group,
+* html .clrItem,
+* html .divlinks dl,
+* html #sidebar ul a,
+* html .zweispaltig {height: 1%;}
+
+* html #nav-content {float: left;}
+
+/* hasLayout ie7 */
+*:first-child+html .group,
+*:first-child+html .clrItem,
+*:first-child+html .zweispaltig {min-height: 1px;}

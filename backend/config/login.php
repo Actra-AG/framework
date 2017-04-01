@@ -1,0 +1,19 @@
+<?php
+//Grundkonfiguration
+$grundkonf['templateID'] = '0';
+
+//Platzhalter
+$platzhalter['title'] = 'Login';
+$platzhalter['description'] = 'description';
+
+// Zusatzcode in Header
+$platzhalter['scripts'] = '';
+
+// Navigation
+$navistufe[1] = 'dynamisch';
+
+// Navigator / Breadcrumb
+$grundkonf['navigator']['use'] = false;
+$grundkonf['navigator']['reset'] = false;
+$grundkonf['navigator']['title'] = '';
+/* EOF */
