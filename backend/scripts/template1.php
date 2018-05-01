@@ -1,28 +1,37 @@
-<?php
-$copyright = '2009';
-$tpllogon = '';
-$breadcrumb = '';
+<?php namespace backend\scripts;
 
-if ($copyright < date("Y")) {
-	$copyright .= ' - ' . date("Y");
-}
+use classes\pageClass;
+use classes\navigator;
 
-if ($showPage->checkAccess() && isset($showPage->userData->vorname)) {
-	$tpllogon = "<strong>{$showPage -> userData -> vorname} {$showPage -> userData -> nachname}</strong>";
-}
+class template1 extends pageClass
+{
+	public function execute()
+	{
+		$copyright = '2009';
+		$tpllogon = '';
+		$breadcrumb = '';
 
-if (isset($showPage->pageArr['grundkonf']['navigator']['use']) && $showPage->pageArr['grundkonf']['navigator']['use']) {
-	$navigator = new navigator($showPage->arrVars, $showPage->pageArr['navistufe']);
-	if (isset($showPage->pageArr['grundkonf']['navigator']['reset']) && $showPage->pageArr['grundkonf']['navigator']['reset']) {
-		$navigator->resetBreadcrumb();
+		if ($copyright < date("Y")) {
+			$copyright .= ' - ' . date("Y");
+		}
+
+		if ($this->showPage->checkAccess() && isset($this->showPage->userData->vorname)) {
+			$tpllogon = "<strong>{$this->showPage -> userData -> vorname} {$this->showPage -> userData -> nachname}</strong>";
+		}
+
+		if (isset($this->showPage->pageArr['grundkonf']['navigator']['use']) && $this->showPage->pageArr['grundkonf']['navigator']['use']) {
+			$navigator = new navigator($this->showPage->arrVars, $this->showPage->pageArr['navistufe']);
+			if (isset($this->showPage->pageArr['grundkonf']['navigator']['reset']) && $this->showPage->pageArr['grundkonf']['navigator']['reset']) {
+				$navigator->resetBreadcrumb();
+			}
+			$navigator->addBreadcrumb($this->showPage->pageArr['platzhalter']['title']);
+			$this->showPage->pageArr['navistufe'] = $navigator->setNavistufe();
+			$breadcrumb = $navigator->getBreadcrumb();
+		}
+
+		$this->placeholders['copyright'] = $copyright;
+		$this->placeholders['tpllogon'] = $tpllogon;
+		$this->placeholders['breadcrumb'] = $breadcrumb;
 	}
-	$navigator->addBreadcrumb($showPage->pageArr['platzhalter']['title']);
-	$showPage->pageArr['navistufe'] = $navigator->setNavistufe();
-	$breadcrumb = $navigator->getBreadcrumb();
-
 }
-
-$platzhalter['copyright'] = $copyright;
-$platzhalter['tpllogon'] = $tpllogon;
-$platzhalter['breadcrumb'] = $breadcrumb;
 /* EOF */

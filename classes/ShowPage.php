@@ -4,16 +4,17 @@
 # ------------------------------
 # 20.07.2009	CM	new version
 
+namespace classes;
+
 class ShowPage extends RequestHandler
 {
-
 	public $pageArr;
 
 	public function getConfig()
 	{
-		$grundkonf = '';
-		$platzhalter = '';
-		$navistufe = '';
+		$grundkonf = [];
+		$platzhalter = [];
+		$navistufe = [];
 
 		$file = $this->config['rootDir'] . 'config/' . $this->reqArr['varFiletitle'] . '.php';
 
@@ -29,7 +30,6 @@ class ShowPage extends RequestHandler
 		$this->pageArr['navistufe'] = $navistufe;
 	}
 
-
 	public function getContent()
 	{
 		$file = $this->config['rootDir'] . 'pages/' . $this->reqArr['varFiletitle'] . '.html';
@@ -40,19 +40,18 @@ class ShowPage extends RequestHandler
 		$this->pageArr['contentArr'] = file($file);
 	}
 
-
 	public function checkScripts()
 	{
 		$file = $this->config['scriptsDir'] . $this->reqArr['varFiletitle'] . '.php';
 
 		if (!file_exists($file)) {
-			return FALSE;
+			return false;
 		} else {
 			$this->pageArr['dynPage'] = $file;
-			return TRUE;
+
+			return true;
 		}
 	}
-
 
 	public function getTemplate()
 	{
@@ -69,16 +68,17 @@ class ShowPage extends RequestHandler
 			$this->pageArr['templateArr'] = file($fileS);
 			if (file_exists($fileD)) {
 				$this->pageArr['dynTemplate'] = $fileD;
-				return TRUE;
+
+				return true;
 			}
 		}
-		return FALSE;
-	}
 
+		return false;
+	}
 
 	public function output()
 	{
-		$fullArr = array();
+		$fullArr = [];
 
 		foreach ($this->pageArr['templateArr'] as $lineNum => $line) {
 			if (preg_match_all("{{CONTENT}}", $line, $matches)) {
@@ -90,8 +90,8 @@ class ShowPage extends RequestHandler
 			}
 		}
 
-		$search = array();
-		$replace = array();
+		$search = [];
+		$replace = [];
 		$i = 0;
 		foreach ($this->pageArr['platzhalter'] as $key => $val) {
 			$i++;
@@ -99,7 +99,7 @@ class ShowPage extends RequestHandler
 			$replace[$i] = $val;
 		}
 
-		$stufen = array();
+		$stufen = [];
 		foreach ($this->pageArr['navistufe'] as $stufeKey => $stufeVar) {
 			$stufen[$stufeVar] = $stufeKey;
 			$i++;
@@ -108,7 +108,7 @@ class ShowPage extends RequestHandler
 		}
 
 		$fullHTML = '';
-		$dontDisplay = array();
+		$dontDisplay = [];
 
 		foreach ($fullArr as $lineNum => $line) {
 			if (preg_match_all("<!-- sub_([a-zA-Z0-9]*) START -->", $line, $regs)) {
@@ -122,19 +122,16 @@ class ShowPage extends RequestHandler
 				if ($this->checkAccess()) {
 					$dontDisplay['onlyvisitor'] = 1;
 				}
-
-			} elseif (preg_match_all("<!-- UG_([A-Z]*) START -->", $line, $regs2)) {
+			} else if (preg_match_all("<!-- UG_([A-Z]*) START -->", $line, $regs2)) {
 				$usergroup = strtolower($regs2[1][0]);
 				if (!$this->checkUG($usergroup)) {
 					$dontDisplay['only' . $usergroup . 'content'] = 1;
 				}
-
-			} elseif (preg_match_all("<!-- NOTUG_([A-Z]*) START -->", $line, $regs2)) {
+			} else if (preg_match_all("<!-- NOTUG_([A-Z]*) START -->", $line, $regs2)) {
 				$usergroup = strtolower($regs2[1][0]);
 				if ($this->checkUG($usergroup)) {
 					$dontDisplay['onlynot' . $usergroup . 'content'] = 1;
 				}
-
 			}
 
 			if (count($dontDisplay) == 0) {
@@ -152,12 +149,12 @@ class ShowPage extends RequestHandler
 				if (array_key_exists('onlyvisitor', $dontDisplay)) {
 					unset($dontDisplay['onlyvisitor']);
 				}
-			} elseif (preg_match_all("<!-- UG_([A-Z]*) ENDE -->", $line, $regs2)) {
+			} else if (preg_match_all("<!-- UG_([A-Z]*) ENDE -->", $line, $regs2)) {
 				$usergroup = strtolower($regs2[1][0]);
 				if (array_key_exists('only' . $usergroup . 'content', $dontDisplay)) {
 					unset($dontDisplay['only' . $usergroup . 'content']);
 				}
-			} elseif (preg_match_all("<!-- NOTUG_([A-Z]*) ENDE -->", $line, $regs2)) {
+			} else if (preg_match_all("<!-- NOTUG_([A-Z]*) ENDE -->", $line, $regs2)) {
 				$usergroup = strtolower($regs2[1][0]);
 				if (array_key_exists('onlynot' . $usergroup . 'content', $dontDisplay)) {
 					unset($dontDisplay['onlynot' . $usergroup . 'content']);
@@ -168,7 +165,6 @@ class ShowPage extends RequestHandler
 		$fullHTML = str_replace($search, $replace, $fullHTML);
 		echo $fullHTML;
 	}
-
 
 	public function getPagenavi($link, $anzObjekte, $pos = 0, $proSeite = false, $minusplus = false, $plusstartende = false)
 	{
@@ -221,9 +217,9 @@ class ShowPage extends RequestHandler
 			}
 			$seiten .= "</ul></div>\n";
 		}
+
 		return $seiten;
 	}
-
 
 	public function dynTableHeader($fArr, $orderby = '', $ox = '')
 	{
@@ -246,17 +242,19 @@ class ShowPage extends RequestHandler
 			$th .= "</th>\n";
 		}
 		$th .= "</tr>\n";
+
 		return $th;
-
 	}
-
 
 	function bytestostring($size, $precision = 3)
 	{
-		$sizes = array('YB', 'ZB', 'EB', 'PB', 'TB', 'GB', 'MB', 'KB', 'B');
+		$sizes = ['YB', 'ZB', 'EB', 'PB', 'TB', 'GB', 'MB', 'KB', 'B'];
 		$total = count($sizes);
 
-		while ($total-- && $size > 1024) $size /= 1024;
+		while ($total-- && $size > 1024) {
+			$size /= 1024;
+		}
+
 		return round($size, $precision) . $sizes[$total];
 	}
 }

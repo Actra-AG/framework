@@ -4,10 +4,10 @@
 # ------------------------------
 # 20.07.2009	CM	transfered into a class
 
+namespace classes;
 
 class ErrorHandler
 {
-
 	/**
 	 * @param string $errCode
 	 */
@@ -80,22 +80,17 @@ class ErrorHandler
 			default:
 				header("HTTP/1.1 404 Not found");
 				break;
-
 		}
 
 		$path = $_SERVER['DOCUMENT_ROOT'] . '/errors/' . $errCode . '.php';
 		if (file_exists($path)) {
 			require_once($path);
-
 		} else {
 			echo "<p>Leider ist ein Fehler aufgetreten. <a href=\"http://{$_SERVER['SERVER_NAME']}\">weiter</a></p>";
-
 		}
 		session_write_close();
 		exit;
-
 	}
-
 
 	/**
 	 * @param $e_number
@@ -128,7 +123,6 @@ class ErrorHandler
 			echo "<pre>{$message}</pre>";
 			session_write_close();
 			exit;
-
 		} else {
 			error_log($message, 1, $config['errorEmail']);
 			self::display_error(500);

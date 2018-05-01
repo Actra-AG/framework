@@ -1,48 +1,48 @@
-<?php
-$backlink = '';
-$was = '';
-$version = '';
-$fields = '';
+<?php namespace backend\scripts;
 
-$fehlerArr = array();
+use classes\pageClass;
+use PDO;
 
-if ($showPage->checkUG('redaktor') && isset($showPage->arrVars[2])) {
+class archiv extends pageClass
+{
+	public function execute() {
+		$backlink = '';
+		$was = '';
+		$version = '';
+		$fields = '';
 
-	$typ = $showPage->arrVars[1];
-	$ID = $showPage->arrVars[2];
+		if ($this->showPage->checkUG('redaktor') && isset($this->showPage->arrVars[2])) {
 
-	if ($typ == 'seite') {
+			$typ = $this->showPage->arrVars[1];
+			$ID = $this->showPage->arrVars[2];
 
-		$sql = "SELECT DATE_FORMAT(s.datum, '%d.%m.%Y %T') AS datum, s.ort, s.seite, s.inhalt, s.config FROM seiteninhalte s WHERE s.ID=?";
-		$qry = $DB_LINK->query($sql, array($ID));
-		$res = $qry->fetch(PDO::FETCH_ASSOC);
+			if ($typ == 'seite') {
 
-		$backlink = "seiteArchiv-{$res['ort']}-{$res['seite']}.html";
-		$was = "Seite {$res['seite']} ({$res['ort']})";
-		$version = $res['datum'];
+				$sql = "SELECT DATE_FORMAT(s.datum, '%d.%m.%Y %T') AS datum, s.ort, s.seite, s.inhalt, s.config FROM seiteninhalte s WHERE s.ID=?";
+				$qry = $this->db->query($sql, [$ID]);
+				$res = $qry->fetch(PDO::FETCH_ASSOC);
 
-		$srcArr[1] = '<';
-		$rplArr[1] = "&lt;";
+				$backlink = "seiteArchiv-{$res['ort']}-{$res['seite']}.html";
+				$was = "Seite {$res['seite']} ({$res['ort']})";
+				$version = $res['datum'];
 
-		$srcArr[2] = '>';
-		$rplArr[2] = "&gt;";
+				$srcArr[1] = '<';
+				$rplArr[1] = "&lt;";
 
-		$fields .= "<h3>Inhalt</h3>\n<pre>" . str_replace($srcArr, $rplArr, $res['inhalt']) . "</pre>";
-		$fields .= "<h3>Konfiguration</h3>\n<pre>" . str_replace($srcArr, $rplArr, $res['config']) . "</pre>";
+				$srcArr[2] = '>';
+				$rplArr[2] = "&gt;";
 
+				$fields .= "<h3>Inhalt</h3>\n<pre>" . str_replace($srcArr, $rplArr, $res['inhalt']) . "</pre>";
+				$fields .= "<h3>Konfiguration</h3>\n<pre>" . str_replace($srcArr, $rplArr, $res['config']) . "</pre>";
+			}
+		}
+
+		$this->placeholders['backlink'] = $backlink;
+		$this->placeholders['was'] = $was;
+		$this->placeholders['version'] = $version;
+		$this->placeholders['fields'] = $fields;
 	}
 }
 
-if (count($fehlerArr) != 0) {
-	$status = "<div id=\"formfehler\"><ul>\n";
-	foreach ($fehlerArr as $key => $val) {
-		$status .= "<li>{$val}</li>\n";
-	}
-	$status .= "</ul></div>";
-}
 
-$platzhalter['backlink'] = $backlink;
-$platzhalter['was'] = $was;
-$platzhalter['version'] = $version;
-$platzhalter['fields'] = $fields;
 /* EOF */

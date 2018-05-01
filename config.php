@@ -4,7 +4,6 @@
 # ------------------------------
 # 20.07.2009	CM	new version
 
-
 # --------------
 # Error Handling
 # --------------
@@ -13,14 +12,12 @@ $config['debug'] = true;
 $config['errorEmail'] = 'error@metanet.ch';
 $config['errorReporting'] = E_ALL | E_STRICT;
 
-
 # --------------
 # localization
 # --------------
 
-$config['locale'] = array('de_CH@euro', 'de_CH', 'de', 'ge');
+$config['locale'] = ['de_CH@euro', 'de_CH', 'de', 'ge'];
 $config['default_timezone'] = "Europe/Zurich";
-
 
 # ---------------
 # set request URI
@@ -29,9 +26,7 @@ $config['default_timezone'] = "Europe/Zurich";
 $config['reqURI'] = $_SERVER['REQUEST_URI'];
 if (!strpos($config['reqURI'], ".") && !strpos($config['reqURI'], "?") && substr($config['reqURI'], -1) != "/") {
 	$config['reqURI'] = $config['reqURI'] . "/";
-
 }
-
 
 # ----------------
 # general settings
@@ -45,9 +40,8 @@ $config['scriptsDir'] = $_SERVER['DOCUMENT_ROOT'] . '/scripts/';
 $config['rootDir'] = $_SERVER['DOCUMENT_ROOT'] . '/frontend/';
 $config['country'] = 'CH';
 $config['language'] = 'de';
-$config['requireSSL'] = false;
+$config['requireSSL'] = true;
 $config['defaultURI'] = "http://www.bsv-buelach.ch";
-
 
 # ----------------------
 # additional directories
@@ -59,7 +53,6 @@ $config['allowedDir']['/backend/']['rootDir'] = $_SERVER['DOCUMENT_ROOT'] . '/ba
 $config['allowedDir']['/backend/']['country'] = 'CH';
 $config['allowedDir']['/backend/']['language'] = 'de';
 
-
 # -------------------------------
 # default settings for pagination
 # -------------------------------
@@ -68,7 +61,6 @@ $config['lists']['entriesPerPage'] = 25;
 $config['lists']['minusplus'] = 2;
 $config['lists']['startend'] = 1;
 
-
 # ---------------------------
 # additional project settings
 # ---------------------------
@@ -76,15 +68,13 @@ $config['lists']['startend'] = 1;
 $config['defaultSpracheID'] = 1;
 $config['extension']['cryptLinks']['key'] = '';
 
-
 # -------------------
 # additional services
 # -------------------
 
-$config['services'] = array();
+$config['services'] = [];
 $config['services']['dokumente'] = '';
 $config['services']['calendar'] = '';
-
 
 # ----------------------------
 # domain and database settings
@@ -99,7 +89,7 @@ $config['dev']['DB']['hostname'] = '127.0.0.1';
 $config['dev']['DB']['username'] = 'bsvbuelach';
 $config['dev']['DB']['password'] = 'RiGEYt';
 $config['dev']['DB']['database'] = 'bsvbuelach';
-$config['dev']['requireSSL'] = false;
+$config['dev']['requireSSL'] = true;
 $config['dev']['debug'] = true;
 
 $config['live']['DB']['DEBUG']['enabled'] = 'false';
@@ -108,7 +98,7 @@ $config['live']['DB']['hostname'] = 'localhost';
 $config['live']['DB']['username'] = 'bsvbuelach';
 $config['live']['DB']['password'] = 'RiGEYt';
 $config['live']['DB']['database'] = 'bsvbuelach';
-$config['live']['requireSSL'] = false;
+$config['live']['requireSSL'] = true;
 $config['live']['debug'] = false;
 
 /* EOF */

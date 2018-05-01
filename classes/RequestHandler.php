@@ -4,20 +4,21 @@
 # ------------------------------
 # 20.07.2009	CM	created, replacement of globalFunctions.class.php
 
+namespace classes;
+use stdClass;
+
 use metanet\db\DBMySQL;
+
 class RequestHandler
 {
-
 	public $config;
 	public $reqType;
 	public $reqArr;
 	public $arrVars;
 	public $accessChecked;
-
 	/** @var stdClass */
 	public $userData;
 	public $serviceName;
-
 	/** @var DBMySQL */
 	static private $DB_LINK;
 	public $intAccess;
@@ -28,14 +29,12 @@ class RequestHandler
 
 		$this->config = Registry::get('CONFIG');
 		$this->reqType = 'undefined';
-		$this->reqArr = array();
-		$this->arrVars = array();
+		$this->reqArr = [];
+		$this->arrVars = [];
 		$this->accessChecked = false;
 		$this->intAccess = false;
-		$this->userData = array();
-
+		$this->userData = [];
 	}
-
 
 	/**
 	 * @param string $url
@@ -48,7 +47,9 @@ class RequestHandler
 			$prot = $config['protocol'];
 			$directory = dirname($_SERVER['REQUEST_URI']);
 			$directory = str_replace('\\', '/', $directory);
-			if ($directory == "/") $directory = "";
+			if ($directory == "/") {
+				$directory = "";
+			}
 			$url = $prot . "://" . $_SERVER['SERVER_NAME'] . $directory . "/" . $url;
 		}
 
@@ -63,7 +64,6 @@ class RequestHandler
 		header("Location: {$url}");
 		exit;
 	}
-
 
 	/***** initialize request *****/
 	public function initRequest()
@@ -81,7 +81,7 @@ class RequestHandler
 			$directories .= $reqArr[$z] . '/';
 		}
 
-		$arrVars = array();
+		$arrVars = [];
 		$varFiletitle = '';
 		$varFileext = '';
 
@@ -92,7 +92,6 @@ class RequestHandler
 
 			if ($filename == "") {
 				$this->reqType = 'page';
-
 			} else {
 				$fnArr = explode(".", $filename);
 				$fnArrCount = count($fnArr);
@@ -104,7 +103,7 @@ class RequestHandler
 
 					if (strtolower($varFileext) == 'php') {
 						ErrorHandler::display_error(400);
-					} elseif (strtolower($varFileext) == 'html') {
+					} else if (strtolower($varFileext) == 'html') {
 						$arrVars = explode("-", $fnArr[0]);
 						$varFiletitle = $arrVars[0];
 						if (strtolower($varFiletitle) == 'index') {
@@ -112,7 +111,6 @@ class RequestHandler
 						} else {
 							$this->reqType = 'page';
 						}
-
 					} else {
 						$this->reqType = 'file';
 						$varFiletitle = $fnArr[0];
@@ -124,8 +122,7 @@ class RequestHandler
 				$ok = 0;
 				if ($directories == '/') {
 					$ok = 1;
-
-				} elseif (isset($this->config['allowedDir']) && array_key_exists($directories, $this->config['allowedDir'])) {
+				} else if (isset($this->config['allowedDir']) && array_key_exists($directories, $this->config['allowedDir'])) {
 					$this->config['defaultpage'] = $this->config['allowedDir'][$directories]['defaultpage'];
 					$this->config['scriptsDir'] = $this->config['allowedDir'][$directories]['scriptsDir'];
 					$this->config['rootDir'] = $this->config['allowedDir'][$directories]['rootDir'];
@@ -133,18 +130,15 @@ class RequestHandler
 					$this->config['language'] = $this->config['allowedDir'][$directories]['language'];
 
 					$ok = 1;
-
 				}
 
 				if ($ok == 0) {
 					ErrorHandler::display_error(404);
-
 				} else {
 					if ($varFiletitle == '') {
 						$varFiletitle = $this->config['defaultpage'];
 						$arrVars[0] = $varFiletitle;
 					}
-
 				}
 			}
 		}
@@ -159,7 +153,6 @@ class RequestHandler
 		$this->reqArr['varFileext'] = $varFileext;
 		$this->reqArr['varDirectories'] = $directories;
 	}
-
 
 	/***** check user privileges *****/
 	private function accesscheck()
@@ -190,40 +183,38 @@ class RequestHandler
 		}
 	}
 
-
 	/**
 	 * @return bool
 	 */
 	public function checkAccess()
 	{
 		$this->accesscheck();
+
 		return $this->intAccess;
 	}
 
-
 	/**
 	 * @param $ug
+	 *
 	 * @return bool
 	 */
 	public function checkUG($ug)
 	{
 		$this->accesscheck();
+
 		return (isset($this->userData->$ug) && $this->userData->$ug == 1) ? true : false;
 	}
-
 
 	/***** log out *****/
 	public function logOut()
 	{
 		if ($this->checkAccess()) {
 			$this->intAccess = false;
-			$this->userData = array();
+			$this->userData = [];
 			$_SESSION['intAccess'] = false;
-			$_SESSION['userData'] = array();
+			$_SESSION['userData'] = [];
 		}
-
 	}
-
 
 	/***** regenerate sessionID *****/
 	public function regenerate_sessionID()
@@ -231,20 +222,19 @@ class RequestHandler
 		session_regenerate_id();
 	}
 
-
 	/**
 	 * @param $var
+	 *
 	 * @return bool
 	 */
 	public function getVar($var)
 	{
 		return (isset($this->$var)) ? $this->$var : false;
-
 	}
-
 
 	/**
 	 * @param $addr
+	 *
 	 * @return bool
 	 */
 	function valemail($addr)
@@ -257,13 +247,13 @@ class RequestHandler
 		}
 	}
 
-
 	/**
-	 * @param $addr
+	 * @param       $addr
 	 * @param array $options
+	 *
 	 * @return bool
 	 */
-	function valurl($addr, $options = array())
+	function valurl($addr, $options = [])
 	{
 
 		if (!filter_var($addr, FILTER_VALIDATE_URL, $options)) {
@@ -272,7 +262,6 @@ class RequestHandler
 			return true;
 		}
 	}
-
 
 	/***** finish request *****/
 	public function finish()

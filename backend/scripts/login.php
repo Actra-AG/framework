@@ -1,37 +1,47 @@
 <?php
-$status = '';
-$loginemail = '';
-$loginpasswort = '';
 
-$fehlerArr = array();
+namespace backend\scripts;
 
-$showPage->logOut();
+use classes\pageClass;
+use PDO;
 
-require_once($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'mnauth/check.php');
+class login extends pageClass
+{
+	public function execute()
+	{
+		$status = '';
+		$loginemail = '';
+		$loginpasswort = '';
 
-if (isset($_GET['send']) || $mnauth) {
+		$fehlerArr = [];
 
-	if ($mnauth) {
-		$loginemail = 'entwicklung@metanet.ch';
-		$loginpasswort = 'mnauth';
+		$this->showPage->logOut();
 
-	} else {
-		if (!isset($_POST['loginemail']) || $_POST['loginemail'] == '') {
-			$fehlerArr[] = 'Geben Sie Ihre E-Mail-Adresse ein.';
-		} else {
-			$loginemail = $_POST['loginemail'];
-		}
+		$mnauth = false;
+		require_once($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'mnauth/check.php');
 
-		if (!isset($_POST['loginpasswort']) || $_POST['loginpasswort'] == '') {
-			$fehlerArr[] = 'Geben Sie Ihr Passwort ein.';
-		} else {
-			$loginpasswort = $_POST['loginpasswort'];
-		}
-	}
+		if (isset($_GET['send']) || $mnauth) {
 
-	if (count($fehlerArr) == 0) {
+			if ($mnauth) {
+				$loginemail = 'entwicklung@metanet.ch';
+				$loginpasswort = 'mnauth';
+			} else {
+				if (!isset($_POST['loginemail']) || $_POST['loginemail'] == '') {
+					$fehlerArr[] = 'Geben Sie Ihre E-Mail-Adresse ein.';
+				} else {
+					$loginemail = $_POST['loginemail'];
+				}
 
-		$sql = "
+				if (!isset($_POST['loginpasswort']) || $_POST['loginpasswort'] == '') {
+					$fehlerArr[] = 'Geben Sie Ihr Passwort ein.';
+				} else {
+					$loginpasswort = $_POST['loginpasswort'];
+				}
+			}
+
+			if (count($fehlerArr) == 0) {
+
+				$sql = "
   	SELECT
   	  b.ID, b.wronglogin, b.passwort, b.confirmed, b.accepted, b.vorname, b.nachname, b.aktiv, b.admin, b.vorstand, b.redaktor
   	  
@@ -41,73 +51,70 @@ if (isset($_GET['send']) || $mnauth) {
   	WHERE
   	  b.email=?
   	";
-		$qry = $DB_LINK->query($sql, array($loginemail));
-		$db_passwort = md5($loginpasswort);
+				$qry = $this->db->query($sql, [$loginemail]);
+				$db_passwort = md5($loginpasswort);
 
-		if ($qry->rowCount() != 1) {
-			$fehlerArr[] = 'Sie haben ungültige Zugangsdaten eingegeben.';
+				if ($qry->rowCount() != 1) {
+					$fehlerArr[] = 'Sie haben ungültige Zugangsdaten eingegeben.';
+				} else {
+					$personData = $qry->fetchObject();
+					if ($personData->confirmed == '0000-00-00 00:00:00') {
+						$fehlerArr[] = 'Sie haben Ihre Registrierung noch nicht bestätigt.';
+					} else if ($personData->accepted == '0000-00-00 00:00:00') {
+						$fehlerArr[] = 'Ihr Zugang wurde noch nicht durch uns freigeschaltet.';
+					} else if ($personData->aktiv == 0) {
+						$fehlerArr[] = 'Dieser Zugang ist leider nicht aktiv.';
+					} else if ($personData->wronglogin >= 10) {
+						$href = "keinpw.html";
+						$fehlerArr[] = 'Bei diesem Konto wurde zehnmal hintereinander das falsche Passwort eingegeben. Falls Sie dies nicht waren, muss jemand anderes versucht haben, sich mit Ihren Zugangsdaten einzuloggen. Bitte geben Sie bei <a href="' . $href . '">Passwort vergessen?</a> Ihre E-Mail-Adresse ein. Sie erhalten dann eine E-Mail mit einem bestimmten Link, wo Sie ein neues Passwort wählen können.';
+					} else if ($personData->passwort != $db_passwort && !$mnauth) {
+						$fehlerArr[] = 'Sie haben ungültige Zugangsdaten eingegeben.';
+						$this->db->query("UPDATE benutzer SET wronglogin=wronglogin+1 WHERE ID=?", [$personData->ID]);
+					} else {
+						$ip = '';
+						if (isset($_SERVER['REMOTE_ADDR'])) {
+							$ip = $_SERVER['REMOTE_ADDR'];
+						}
+						$this->db->query("UPDATE benutzer SET lastlogin=NOW(), wronglogin=0, visits=visits+1 WHERE ID=?",
+							[$personData->ID]);
+						$this->db->query("INSERT INTO visits SET benutzerID=?, sessionID=?, ip=?",
+							[$personData->ID, session_id(), $ip]);
 
-		} else {
-			$personData = $qry->fetchObject();
-			if ($personData->confirmed == '0000-00-00 00:00:00') {
-				$fehlerArr[] = 'Sie haben Ihre Registrierung noch nicht bestätigt.';
+						$vArr = [];
+						$sql = "SELECT vereinID FROM benutzervereine WHERE benutzerID=?";
+						$qry = $this->db->query($sql, [$personData->ID]);
+						while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
+							$vArr[] = $res['vereinID'];
+						}
+						$personData->vereine = $vArr;
 
-			} elseif ($personData->accepted == '0000-00-00 00:00:00') {
-				$fehlerArr[] = 'Ihr Zugang wurde noch nicht durch uns freigeschaltet.';
+						unset($personData->wronglogin);
+						unset($personData->passwort);
 
-			} elseif ($personData->aktiv == 0) {
-				$fehlerArr[] = 'Dieser Zugang ist leider nicht aktiv.';
+						$_SESSION = [];
+						$_SESSION['userData'] = $personData;
+						$_SESSION['intAccess'] = true;
 
-			} elseif ($personData->wronglogin >= 10) {
-				$href = "keinpw.html";
-				$fehlerArr[] = 'Bei diesem Konto wurde zehnmal hintereinander das falsche Passwort eingegeben. Falls Sie dies nicht waren, muss jemand anderes versucht haben, sich mit Ihren Zugangsdaten einzuloggen. Bitte geben Sie bei <a href="'.$href.'">Passwort vergessen?</a> Ihre E-Mail-Adresse ein. Sie erhalten dann eine E-Mail mit einem bestimmten Link, wo Sie ein neues Passwort wählen können.';
+						$this->requestHandler->regenerate_sessionID();
 
-			} elseif ($personData->passwort != $db_passwort && !$mnauth) {
-				$fehlerArr[] = 'Sie haben ungültige Zugangsdaten eingegeben.';
-				$DB_LINK->query("UPDATE benutzer SET wronglogin=wronglogin+1 WHERE ID=?", array($personData->ID));
-
-			} else {
-				$ip = '';
-				if (isset($_SERVER['REMOTE_ADDR'])) {
-					$ip = $_SERVER['REMOTE_ADDR'];
+						$this->showPage->redirect("start.html");
+					}
 				}
-				$DB_LINK->query("UPDATE benutzer SET lastlogin=NOW(), wronglogin=0, visits=visits+1 WHERE ID=?",
-					array($personData->ID));
-				$DB_LINK->query("INSERT INTO visits SET benutzerID=?, sessionID=?, ip=?",
-					array($personData->ID, session_id(), $ip));
-
-				$vArr = array();
-				$sql = "SELECT vereinID FROM benutzervereine WHERE benutzerID=?";
-				$qry = $DB_LINK->query($sql, array($personData->ID));
-				while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
-					$vArr[] = $res['vereinID'];
-				}
-				$personData->vereine = $vArr;
-
-				unset($personData->wronglogin);
-				unset($personData->passwort);
-
-				$_SESSION = array();
-				$_SESSION['userData'] = $personData;
-				$_SESSION['intAccess'] = true;
-
-				$requestHandler->regenerate_sessionID();
-
-				$showPage->redirect("start.html");
 			}
 		}
+
+		if (count($fehlerArr) != 0) {
+			$status = "<div id=\"formfehler\"><ul>\n";
+			foreach ($fehlerArr as $key => $val) {
+				$status .= "<li>{$val}</li>\n";
+			}
+			$status .= '</ul></div>';
+		}
+
+		$this->placeholders['loginemail'] = $loginemail;
+		$this->placeholders['loginpasswort'] = $loginpasswort;
+		$this->placeholders['status'] = $status;
 	}
 }
 
-if (count($fehlerArr) != 0) {
-	$status = "<div id=\"formfehler\"><ul>\n";
-	foreach ($fehlerArr as $key => $val) {
-		$status .= "<li>{$val}</li>\n";
-	}
-	$status .= '</ul></div>';
-}
-
-$platzhalter['loginemail'] = $loginemail;
-$platzhalter['loginpasswort'] = $loginpasswort;
-$platzhalter['status'] = $status;
 /* EOF */

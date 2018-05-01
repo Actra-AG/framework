@@ -5,6 +5,9 @@
 # 20.07.2009	CM	updated
 # 26.05.2009	DM	created
 
+namespace classes;
+
+use ArrayAccess;
 
 /***** static data storage container *****/
 class Registry implements ArrayAccess
@@ -26,7 +29,7 @@ class Registry implements ArrayAccess
 		if (isset(self::$options[$option])) {
 			return self::$options[$option];
 		} else {
-			return NULL;
+			return null;
 		}
 	}
 
@@ -39,6 +42,7 @@ class Registry implements ArrayAccess
 
 	/**
 	 * @param mixed $offset
+	 *
 	 * @return bool
 	 */
 	public function offsetExists($offset)
@@ -48,6 +52,7 @@ class Registry implements ArrayAccess
 
 	/**
 	 * @param mixed $offset
+	 *
 	 * @return mixed
 	 */
 	public function offsetGet($offset)
@@ -69,8 +74,9 @@ class Registry implements ArrayAccess
 	 */
 	public function offsetUnset($offset)
 	{
-		if (isset(self::$options[$offset]))
+		if (isset(self::$options[$offset])) {
 			unset(self::$options[$offset]);
+		}
 	}
 }
 

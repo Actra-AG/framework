@@ -5,10 +5,10 @@
 # 06.12.2007	CM	new version
 # 22.08.2007	CM	created
 
+namespace classes;
 
 class ImageResize
 {
-
 	public function resize_image($tmp_name, $ext, $new_img_loc = '', $new_img_name = '', $thumb_w = 0, $thumb_h = 0, $new_img_q = 90, $cut = 0, $createOrig = 1)
 	{
 		restore_error_handler();
@@ -85,13 +85,13 @@ class ImageResize
 
 			if ($new_w > $thumb_w) {
 				$src_x = round(($new_w - $thumb_w) / 2 / $faktor, 0);
-			} elseif ($new_w < $thumb_w) {
+			} else if ($new_w < $thumb_w) {
 				$dst_x = round(($thumb_w - $new_w) / 2, 0);
 			}
 
 			if ($new_h > $thumb_h) {
 				$src_y = round(($new_h - $thumb_h) / 2 / $faktor, 0);
-			} elseif ($new_h < $thumb_h) {
+			} else if ($new_h < $thumb_h) {
 				$dst_y = round(($thumb_h - $new_h) / 2, 0);
 			}
 			ini_set('gd.jpeg_ignore_warning', 1);
@@ -140,6 +140,7 @@ class ImageResize
 
 			if (file_exists($newimg)) {
 				chmod($newimg, 0777);
+
 				return 1;
 			} else {
 				return 3;

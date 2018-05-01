@@ -1,13 +1,21 @@
 <?php
-$rand = '';
+namespace scripts;
 
-$rand = rand(1, 28);
+use classes\pageClass;
 
-$copyright = '2006';
-if ($copyright < date("Y")) {
-	$copyright .= ' - ' . date("Y");
+class template1 extends pageClass
+{
+	public function execute()
+	{
+		$rand = rand(1, 28);
+
+		$copyright = '2006';
+		if ($copyright < date("Y")) {
+			$copyright .= ' - ' . date("Y");
+		}
+
+		$this->placeholders['rand'] = $rand;
+		$this->placeholders['copyright'] = $copyright;
+	}
 }
-
-$platzhalter['rand'] = $rand;
-$platzhalter['copyright'] = $copyright;
 /* EOF */

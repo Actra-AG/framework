@@ -1,31 +1,35 @@
 <?php
-$foto = '';
-$datum = '';
-$eidgnews = '';
 
-$datum = strftime("%A, %e. %B");
+namespace scripts;
 
+use classes\pageClass;
+use PDO;
 
-$sql = "SELECT n.ID, n.titel, n.teaser, n.text, DATE_FORMAT(n.datum, '%d.%m.%Y') AS datum, DATE_FORMAT(n.datum, '%T') AS zeit FROM news n WHERE n.archiv='0' AND n.typ=2 ORDER BY n.datum DESC LIMIT 0,3";
-$qry = $DB_LINK->query($sql);
-if ($qry->rowCount() == 0) {
-	$eidgnews = '<span>keine Neuigkeiten</span>';
+class eidg07start extends pageClass
+{
+	public function execute()
+	{
+		$datum = strftime("%A, %e. %B");
 
-} else {
-	$ldate = '';
-	$eidgnews = '<ul>';
-	while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
+		$sql = "SELECT n.ID, n.titel, n.teaser, n.text, DATE_FORMAT(n.datum, '%d.%m.%Y') AS datum, DATE_FORMAT(n.datum, '%T') AS zeit FROM news n WHERE n.archiv='0' AND n.typ=2 ORDER BY n.datum DESC LIMIT 0,3";
+		$qry = $this->db->query($sql);
+		if ($qry->rowCount() == 0) {
+			$eidgnews = '<span>keine Neuigkeiten</span>';
+		} else {
+			$ldate = '';
+			$eidgnews = '<ul>';
+			while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 
-		if ($ldate == $res['datum'] || $ldate == '') {
-			$href = 'newsDetails-' . $res['ID'] . '.html';
-			$eidgnews .= '<li><span><a href="'.$href.'">' . $res['titel'] . '</a></span> <em>' . $res['datum'] . '</em></li>';
-			$ldate = $res['datum'];
+				if ($ldate == $res['datum'] || $ldate == '') {
+					$href = 'newsDetails-' . $res['ID'] . '.html';
+					$eidgnews .= '<li><span><a href="' . $href . '">' . $res['titel'] . '</a></span> <em>' . $res['datum'] . '</em></li>';
+					$ldate = $res['datum'];
+				}
+			}
+			$eidgnews .= '</ul>';
 		}
-	}
-	$eidgnews .= '</ul>';
-}
 
-$sql = "
+		$sql = "
 SELECT
   f.ID AS fotoID, k.ID AS albumID
   
@@ -41,11 +45,15 @@ ORDER BY
   
 LIMIT 0,1
 ";
-$qry = $DB_LINK->query($sql);
-$res = $qry->fetch(PDO::FETCH_ASSOC);
-$foto = '<a href="eidg07foto-' . $res['albumID'] . '-' . $res['fotoID'] . '.html"><img src="/gallery/tnfoto' . $res['fotoID'] . '.jpg" width="125" height="90" alt="" /></a>';
+		$qry = $this->db->query($sql);
+		$res = $qry->fetch(PDO::FETCH_ASSOC);
+		$href = 'eidg07foto-' . $res['albumID'] . '-' . $res['fotoID'] . '.html';
+		$src = '/gallery/tnfoto' . $res['fotoID'] . '.jpg';
+		$foto = '<a href="'.$href.'"><img src="'.$src.'" width="125" height="90" alt="" /></a>';
 
-$platzhalter['foto'] = $foto;
-$platzhalter['datum'] = $datum;
-$platzhalter['eidgnews'] = $eidgnews;
+		$this->placeholders['foto'] = $foto;
+		$this->placeholders['datum'] = $datum;
+		$this->placeholders['eidgnews'] = $eidgnews;
+	}
+}
 /* EOF */

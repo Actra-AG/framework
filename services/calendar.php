@@ -1,73 +1,80 @@
 <?php
-$reqArr = explode("/", $requestHandler->config['reqURI']);
 
-if (!isset($reqArr[3])) {
-	ErrorHandler::display_error(404);
-}
+namespace services;
 
-$dnArr = explode("?", $reqArr[3]);
-$filename = urldecode($dnArr[0]);
+use classes\serviceClass;
+use classes\ErrorHandler;
+use PDO;
 
-$eventID = $reqArr[2];
-
-$sql = "
-SELECT
-	ID
-	, datumVon
-	, datumBis
-	, zeitVon
-	, zeitBis
-	, zeit
-	, titel
-	, ort
-	, bemerkungen
-
-FROM
-	jahresprogramm
-
-WHERE
-	ID=? AND export=1
-";
-$qry = $DB_LINK->query($sql, array($eventID));
-if ($qry->rowCount() != 1) {
-	ErrorHandler::display_error(404);
-}
-$res = $qry->fetch(PDO::FETCH_ASSOC);
-
-if ($res['datumBis'] == '0000-00-00') {
-	$res['datumBis'] = $res['datumVon'];
-}
-
-$vArr = explode('-', $res['datumVon']);
-$bArr = explode('-', $res['datumBis']);
-
-$tvArr = explode(':', $res['zeitVon']);
-$tbArr = explode(':', $res['zeitBis']);
-
-$tsVon = mktime($tvArr[0], $tvArr[1], $tvArr[2], $vArr[1], $vArr[2], $vArr[0]);
-$tsBis = mktime($tbArr[0], $tbArr[1], $tbArr[2], $bArr[1], $bArr[2], $bArr[0]);
-
-$data = array(
-	'filename' => $filename
-, 'prodID' => '//' . $_SERVER['SERVER_NAME'] . '/calendar'
-, 'calscale' => 'GREGORIAN'
-, 'UID' => uniqid()
-, 'address' => addslashes($res['ort'])
-, 'summary' => addslashes($res['titel'])
-, 'description' => addslashes($res['bemerkungen'])
-, 'start' => dateToCal($tsVon)
-, 'end' => dateToCal($tsBis)
-, 'stamp' => dateToCal(time())
-, 'URI' => 'URI:http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']
-);
-
-function dateToCal($time)
+class calendar extends serviceClass
 {
-	return date('Ymd\THis', $time); //  . 'Z'
-}
+	public function execute()
+	{
+		$reqArr = explode("/", $this->requestHandler->config['reqURI']);
 
-// Build the ics file
-$ical = <<<EOD
+		if (!isset($reqArr[3])) {
+			ErrorHandler::display_error(404);
+		}
+
+		$dnArr = explode("?", $reqArr[3]);
+		$filename = urldecode($dnArr[0]);
+
+		$eventID = $reqArr[2];
+
+		$sql = "
+		SELECT
+			ID,
+			datumVon,
+			datumBis,
+			zeitVon,
+			zeitBis,
+			zeit,
+			titel,
+			ort,
+			bemerkungen,
+			vorstand
+
+		FROM
+			jahresprogramm
+
+		WHERE
+			ID=? AND export=1
+		";
+		$qry = $this->db->query($sql, [$eventID]);
+		if ($qry->rowCount() != 1) {
+			ErrorHandler::display_error(404);
+		}
+		$res = $qry->fetch(PDO::FETCH_ASSOC);
+
+		if ($res['datumBis'] == '0000-00-00') {
+			$res['datumBis'] = $res['datumVon'];
+		}
+
+		$vArr = explode('-', $res['datumVon']);
+		$bArr = explode('-', $res['datumBis']);
+
+		$tvArr = explode(':', $res['zeitVon']);
+		$tbArr = explode(':', $res['zeitBis']);
+
+		$tsVon = mktime($tvArr[0], $tvArr[1], $tvArr[2], $vArr[1], $vArr[2], $vArr[0]);
+		$tsBis = mktime($tbArr[0], $tbArr[1], $tbArr[2], $bArr[1], $bArr[2], $bArr[0]);
+
+		$data = [
+			'filename'      => $filename
+			, 'prodID'      => '//' . $_SERVER['SERVER_NAME'] . '/calendar'
+			, 'calscale'    => 'GREGORIAN'
+			, 'UID'         => uniqid()
+			, 'address'     => addslashes($res['ort'])
+			, 'summary'     => addslashes($res['titel'])
+			, 'description' => $res['vorstand'] == 1 ? '' : addslashes($res['bemerkungen'])
+			, 'start'       => $this->dateToCal($tsVon)
+			, 'end'         => $this->dateToCal($tsBis)
+			, 'stamp'       => $this->dateToCal(time())
+			, 'URI'         => 'URI:http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'],
+		];
+
+		// Build the ics file
+		$ical = <<<EOD
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:{$data['prodID']}
@@ -105,10 +112,17 @@ END:VEVENT
 END:VCALENDAR
 EOD;
 
-//set correct content-type-header
-header('Content-type: text/calendar; charset=utf-8');
-header('Content-Disposition: attachment; filename=' . $data['filename']);
-echo utf8_encode($ical);
-exit;
+		//set correct content-type-header
+		header('Content-type: text/calendar; charset=utf-8');
+		header('Content-Disposition: attachment; filename=' . $data['filename']);
+		echo utf8_encode($ical);
+		exit;
+	}
 
+	protected function dateToCal($time)
+	{
+		return date('Ymd\THis', $time); //  . 'Z'
+	}
+
+}
 /* EOF */

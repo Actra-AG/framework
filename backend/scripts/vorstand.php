@@ -1,128 +1,128 @@
-<?php
-$bsvb = new bsvb();
+<?php namespace backend\scripts;
 
-$jahresnavi = '';
-$liste = '';
+use classes\pageClass;
+use classes\bsvb;
+use PDO;
 
-$jpArr = $bsvb->getJahresprogramm();
+class vorstand extends pageClass
+{
+	public function execute() {
+		$bsvb = new bsvb();
 
-$fehlerArr = array();
+		$jahresnavi = '';
+		$liste = '';
 
-$fn = 'adm_vorstand';
+		$jpArr = $bsvb->getJahresprogramm();
 
-if ($showPage->checkUG('vorstand')) {
+		if ($this->showPage->checkUG('vorstand')) {
 
-	$typ = 'vorstand';
-	$addCond = (count($jpArr['typen'][$typ]['conditions']) == 0) ? "" : " AND " . implode(" AND ", $jpArr['typen'][$typ]['conditions']);
+			$typ = 'vorstand';
+			$addCond = (count($jpArr['typen'][$typ]['conditions']) == 0) ? "" : " AND " . implode(" AND ", $jpArr['typen'][$typ]['conditions']);
 
-	$sql = "SELECT DATE_FORMAT(MAX(lastmod), '%d.%m.%Y %T') AS lastmod FROM jahresprogramm WHERE {$typ}=1";
-	$qry = $DB_LINK->query($sql, array());
-	$res = $qry->fetch(PDO::FETCH_ASSOC);
-	$lastmod = ($res['lastmod'] != '') ? $res['lastmod'] : 'unbekannt';
+			$sql = "SELECT MIN(YEAR(p.datumVon)) AS minJahr, MAX(YEAR(p.datumBis)) AS maxJahr FROM jahresprogramm p WHERE p.{$typ}=1 AND p.confirmed!='0000-00-00 00:00:00'{$addCond}";
+			$qry = $this->db->query($sql, []);
+			$res = $qry->fetch(PDO::FETCH_ASSOC);
+			$minJahr = ($res['minJahr'] != '') ? $res['minJahr'] : date("Y");
+			$maxJahr = ($res['maxJahr'] != '') ? $res['maxJahr'] : date("Y");
+			$currJahr = (isset($this->showPage->arrVars[1]) && is_numeric($this->showPage->arrVars[1]) && $this->showPage->arrVars[1] >= $minJahr && $this->showPage->arrVars[1] <= $maxJahr) ? $this->showPage->arrVars[1] : date("Y");
+			if ($currJahr < $minJahr || $currJahr > $maxJahr) {
+				$currJahr = $minJahr;
+			}
 
-	$sql = "SELECT MIN(YEAR(p.datumVon)) AS minJahr, MAX(YEAR(p.datumBis)) AS maxJahr FROM jahresprogramm p WHERE p.{$typ}=1 AND p.confirmed!='0000-00-00 00:00:00'{$addCond}";
-	$qry = $DB_LINK->query($sql, array());
-	$res = $qry->fetch(PDO::FETCH_ASSOC);
-	$minJahr = ($res['minJahr'] != '') ? $res['minJahr'] : date("Y");
-	$maxJahr = ($res['maxJahr'] != '') ? $res['maxJahr'] : date("Y");
-	$currJahr = (isset($showPage->arrVars[1]) && is_numeric($showPage->arrVars[1]) && $showPage->arrVars[1] >= $minJahr && $showPage->arrVars[1] <= $maxJahr) ? $showPage->arrVars[1] : date("Y");
-	if ($currJahr < $minJahr || $currJahr > $maxJahr) {
-		$currJahr = $minJahr;
-	}
+			$jArr = [];
+			for ($i = $maxJahr; $i >= $minJahr; $i--) {
+				if ($i == $currJahr) {
+					$jArr[] = "<strong>{$i}</strong>";
+				} else {
+					$href = "vorstand-{$i}.html";
+					$jArr[] = "<a href=\"{$href}\">{$i}</a>";
+				}
+			}
+			$jahresnavi = "<p>" . implode(" | ", $jArr) . "</p>";
 
-	$jArr = array();
-	for ($i = $maxJahr; $i >= $minJahr; $i--) {
-		if ($i == $currJahr) {
-			$jArr[] = "<strong>{$i}</strong>";
+			$cond = "WHERE p.{$typ}=1 AND p.confirmed!='0000-00-00 00:00:00' AND YEAR(p.datumVon)<=? AND YEAR(p.datumBis)>=?{$addCond}";
+			$paramsArr[] = $currJahr;
+			$paramsArr[] = $currJahr;
 
-		} else {
-			$href = "vorstand-{$i}.html";
-			$jArr[] = "<a href=\"{$href}\">{$i}</a>";
+			$fArr['p.datum']['attributes'] = '';
+			$fArr['p.datum']['order'] = 0;
+			$fArr['p.datum']['ox'] = '';
+			$fArr['p.datum']['value'] = 'Datum';
 
-		}
-	}
-	$jahresnavi = "<p>" . implode(" | ", $jArr) . "</p>";
+			$fArr['p.titel']['attributes'] = '';
+			$fArr['p.titel']['order'] = 0;
+			$fArr['p.titel']['ox'] = '';
+			$fArr['p.titel']['value'] = 'Titel';
 
-	$cond = "WHERE p.{$typ}=1 AND p.confirmed!='0000-00-00 00:00:00' AND YEAR(p.datumVon)<=? AND YEAR(p.datumBis)>=?{$addCond}";
-	$paramsArr[] = $currJahr;
-	$paramsArr[] = $currJahr;
+			$fArr['p.ort']['attributes'] = '';
+			$fArr['p.ort']['order'] = 0;
+			$fArr['p.ort']['ox'] = '';
+			$fArr['p.ort']['value'] = 'Ort';
 
-	$fArr['p.datum']['attributes'] = '';
-	$fArr['p.datum']['order'] = 0;
-	$fArr['p.datum']['ox'] = '';
-	$fArr['p.datum']['value'] = 'Datum';
+			$fn = "jahresprogramm{$typ}";
 
-	$fArr['p.titel']['attributes'] = '';
-	$fArr['p.titel']['order'] = 0;
-	$fArr['p.titel']['ox'] = '';
-	$fArr['p.titel']['value'] = 'Titel';
+			$ox = "";
+			$orderby = "p.datumVon, p.datumBis, p.zeit";
+			if (isset($_GET['orderby']) && isset($fArr[$_GET['orderby']])) {
+				$_SESSION[$fn]['orderby'] = urldecode($_GET['orderby']);
+			}
+			if (isset($_GET['ox']) && ($_GET['ox'] == 'ASC' || $_GET['ox'] == 'DESC')) {
+				$_SESSION[$fn]['ox'] = $_GET['ox'];
+			}
+			if (isset($_SESSION[$fn]['orderby'])) {
+				$orderby = $_SESSION[$fn]['orderby'];
+			}
+			if (isset($_SESSION[$fn]['ox'])) {
+				$ox = $_SESSION[$fn]['ox'];
+			}
 
-	$fArr['p.ort']['attributes'] = '';
-	$fArr['p.ort']['order'] = 0;
-	$fArr['p.ort']['ox'] = '';
-	$fArr['p.ort']['value'] = 'Ort';
-
-	$fn = "jahresprogramm{$typ}";
-
-	$ox = "";
-	$orderby = "p.datumVon, p.datumBis, p.zeit";
-	if (isset($_GET['orderby']) && isset($fArr[$_GET['orderby']])) {
-		$_SESSION[$fn]['orderby'] = urldecode($_GET['orderby']);
-	}
-	if (isset($_GET['ox']) && ($_GET['ox'] == 'ASC' || $_GET['ox'] == 'DESC')) {
-		$_SESSION[$fn]['ox'] = $_GET['ox'];
-	}
-	if (isset($_SESSION[$fn]['orderby'])) {
-		$orderby = $_SESSION[$fn]['orderby'];
-	}
-	if (isset($_SESSION[$fn]['ox'])) {
-		$ox = $_SESSION[$fn]['ox'];
-	}
-
-	$sql = "
+			$sql = "
   SELECT
     COUNT(p.ID) AS anz
   
   FROM
     jahresprogramm p
   
-  {$cond}
+  "."{$cond}
   ";
-	$qry = $DB_LINK->query($sql, $paramsArr);
-	$res = $qry->fetchObject();
-	if ($res->anz == 0) {
-		$liste = "<p class=\"no-entry\">Es sind keine Anlässe erfasst.</p>";
+			$qry = $this->db->query($sql, $paramsArr);
+			$res = $qry->fetchObject();
+			if ($res->anz == 0) {
+				$liste = "<p class=\"no-entry\">Es sind keine Anlässe erfasst.</p>";
+			} else {
+				$liste .= "<table cellspacing=\"0\" summary=\"\" class=\"mitglieder\">\n<thead>\n" . $this->showPage->dynTableHeader($fArr, $orderby, $ox) . "</thead>\n<tbody>\n";
 
-	} else {
-		$liste .= "<table cellspacing=\"0\" summary=\"\" class=\"mitglieder\">\n<thead>\n" . $showPage->dynTableHeader($fArr, $orderby, $ox) . "</thead>\n<tbody>\n";
-
-		$i = 0;
-		$sql = "
+				$i = 0;
+				$sql = "
     SELECT
       ID, DATE_FORMAT(p.datumVon, '%d.%m.%Y') AS datumVon, DATE_FORMAT(p.datumBis, '%d.%m.%Y') AS datumBis, p.titel, p.ort
     
     FROM
       jahresprogramm p
       
-    {$cond}
+    "."{$cond}
     
     ORDER BY
       {$orderby} {$ox}
     ";
 
-		$qry = $DB_LINK->query($sql, $paramsArr);
-		while ($res = $qry->fetchObject()) {
-			$i++;
-			$alt = ($i % 2 == 0) ? ' class="alt"' : '';
-			$datum = ($res->datumVon == $res->datumBis) ? $res->datumVon : "{$res -> datumVon} - <br />{$res -> datumBis}";
+				$qry = $this->db->query($sql, $paramsArr);
+				while ($res = $qry->fetchObject()) {
+					$i++;
+					$alt = ($i % 2 == 0) ? ' class="alt"' : '';
+					$datum = ($res->datumVon == $res->datumBis) ? $res->datumVon : "{$res -> datumVon} - <br />{$res -> datumBis}";
 
-			$href = "anlassDet-{$res -> ID}.html";
-			$liste .= "<tr{$alt}><td>{$datum}</td>\n<td><a href=\"{$href}\">{$res -> titel}</a></td>\n<td>{$res -> ort}</td>\n</tr>\n";
+					$href = "anlassDet-{$res -> ID}.html";
+					$liste .= "<tr{$alt}><td>{$datum}</td>\n<td><a href=\"{$href}\">{$res -> titel}</a></td>\n<td>{$res -> ort}</td>\n</tr>\n";
+				}
+				$liste .= "</tbody>\n</table>";
+			}
 		}
-		$liste .= "</tbody>\n</table>";
+
+		$this->placeholders['jahresnavi'] = $jahresnavi;
+		$this->placeholders['liste'] = $liste;
 	}
 }
 
-$platzhalter['jahresnavi'] = $jahresnavi;
-$platzhalter['liste'] = $liste;
+
 /* EOF */

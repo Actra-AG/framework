@@ -1,86 +1,95 @@
-<?php
-$status = '';
-$ort = '';
-$seite = '';
+<?php namespace backend\scripts;
 
-$datenArr['text'] = '';
-$datenArr['config'] = '';
+use classes\pageClass;
 
-$fehlerArr = array();
+class seiteMod extends pageClass
+{
+	public function execute() {
+		$status = '';
+		$ort = '';
+		$seite = '';
 
-if ($showPage->checkUG('redaktor') && isset($showPage->arrVars[2])) {
-	$benutzerID = (int)$showPage->userData->ID;
+		$datenArr['text'] = '';
+		$datenArr['config'] = '';
 
-	$oArr['frontend']['pages'] = $_SERVER['DOCUMENT_ROOT'] . '/frontend/pages/';
-	$oArr['frontend']['config'] = $_SERVER['DOCUMENT_ROOT'] . '/frontend/config/';
-	$oArr['frontend']['name'] = "Frontend";
+		$fehlerArr = [];
 
-	$oArr['backend']['pages'] = $_SERVER['DOCUMENT_ROOT'] . '/backend/pages/';
-	$oArr['backend']['config'] = $_SERVER['DOCUMENT_ROOT'] . '/backend/config/';
-	$oArr['backend']['name'] = "Backend";
+		if ($this->showPage->checkUG('redaktor') && isset($this->showPage->arrVars[2])) {
+			$benutzerID = (int)$this->showPage->userData->ID;
 
-	$ort = 'frontend';
-	if (isset($showPage->arrVars[1]) && isset($oArr[$showPage->arrVars[1]])) {
-		$ort = $showPage->arrVars[1];
-	}
+			$oArr['frontend']['pages'] = $_SERVER['DOCUMENT_ROOT'] . '/frontend/pages/';
+			$oArr['frontend']['config'] = $_SERVER['DOCUMENT_ROOT'] . '/frontend/config/';
+			$oArr['frontend']['name'] = "Frontend";
 
-	$path_pages = $oArr[$ort]['pages'];
-	$path_config = $oArr[$ort]['config'];
-	$ortname = $oArr[$ort]['name'];
+			$oArr['backend']['pages'] = $_SERVER['DOCUMENT_ROOT'] . '/backend/pages/';
+			$oArr['backend']['config'] = $_SERVER['DOCUMENT_ROOT'] . '/backend/config/';
+			$oArr['backend']['name'] = "Backend";
 
-	$seite = $showPage->arrVars[2];
+			$ort = 'frontend';
+			if (isset($this->showPage->arrVars[1]) && isset($oArr[$this->showPage->arrVars[1]])) {
+				$ort = $this->showPage->arrVars[1];
+			}
 
-	if (!file_exists($path_pages . "{$seite}.html") || !file_exists($path_config . "{$seite}.php")) {
-		$showPage->redirect("seiten.html");
-	}
+			$path_pages = $oArr[$ort]['pages'];
+			$path_config = $oArr[$ort]['config'];
 
-	$datenArr['text'] = file_get_contents($path_pages . $seite . '.html');
-	$datenArr['config'] = file_get_contents($path_config . $seite . '.php');
+			$seite = $this->showPage->arrVars[2];
 
-	if (isset($_GET['send'])) {
-		if (isset($_POST['text'])) {
-			$f = fopen($path_pages . "{$seite}.html", "w");
-			fwrite($f, stripslashes($_POST['text']));
-			fclose($f);
+			if (!file_exists($path_pages . "{$seite}.html") || !file_exists($path_config . "{$seite}.php")) {
+				$this->showPage->redirect("seiten.html");
+			}
+
+			$datenArr['text'] = file_get_contents($path_pages . $seite . '.html');
+			$datenArr['config'] = file_get_contents($path_config . $seite . '.php');
+
+			if (isset($_GET['send'])) {
+				if (isset($_POST['text'])) {
+					$f = fopen($path_pages . "{$seite}.html", "w");
+					fwrite($f, stripslashes($_POST['text']));
+					fclose($f);
+				}
+
+				if (isset($_POST['config'])) {
+					$f = fopen($path_config . "{$seite}.php", "w");
+					fwrite($f, stripslashes($_POST['config']));
+					fclose($f);
+				}
+
+				$paramsArr[] = $benutzerID;
+				$paramsArr[] = $ort;
+				$paramsArr[] = $seite;
+				$paramsArr[] = $_POST['text'];
+				$paramsArr[] = $_POST['config'];
+
+				$this->db->query("INSERT INTO seiteninhalte SET benutzerID=?, ort=?, seite=?, inhalt=?, config=?", $paramsArr);
+
+				if (count($fehlerArr) == 0) {
+					$this->showPage->redirect("seiten.html");
+				}
+			}
+
+			$datenArr['text'] = htmlentities($datenArr['text'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
+			$datenArr['config'] = htmlentities($datenArr['config'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
 		}
 
-		if (isset($_POST['config'])) {
-			$f = fopen($path_config . "{$seite}.php", "w");
-			fwrite($f, stripslashes($_POST['config']));
-			fclose($f);
+		if (count($fehlerArr) != 0) {
+			$status = "<div id=\"formfehler\"><ul>\n";
+			foreach ($fehlerArr as $key => $val) {
+				$status .= "<li>{$val}</li>\n";
+			}
+			$status .= "</ul></div>";
 		}
 
-		$paramsArr[] = $benutzerID;
-		$paramsArr[] = $ort;
-		$paramsArr[] = $seite;
-		$paramsArr[] = $_POST['text'];
-		$paramsArr[] = $_POST['config'];
+		$this->placeholders['status'] = $status;
+		$this->placeholders['ort'] = $ort;
+		$this->placeholders['seite'] = $seite;
 
-		$DB_LINK->query("INSERT INTO seiteninhalte SET benutzerID=?, ort=?, seite=?, inhalt=?, config=?", $paramsArr);
-
-		if (count($fehlerArr) == 0) {
-			$showPage->redirect("seiten.html");
+		foreach ($datenArr AS $key => $val) {
+			$this->placeholders[$key] = $val;
 		}
+
 	}
-
-	$datenArr['text'] = htmlentities($datenArr['text'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
-	$datenArr['config'] = htmlentities($datenArr['config'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
 }
 
-if (count($fehlerArr) != 0) {
-	$status = "<div id=\"formfehler\"><ul>\n";
-	foreach ($fehlerArr as $key => $val) {
-		$status .= "<li>{$val}</li>\n";
-	}
-	$status .= "</ul></div>";
-}
-
-$platzhalter['status'] = $status;
-$platzhalter['ort'] = $ort;
-$platzhalter['seite'] = $seite;
-
-foreach ($datenArr AS $key => $val) {
-	$platzhalter[$key] = $val;
-}
 
 /* EOF */

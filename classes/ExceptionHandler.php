@@ -5,13 +5,12 @@
 # 22.07.2009	CM	updated
 # 26.05.2009	DM	created
 
+namespace classes;
 
 class ExceptionHandler
 {
-
 	private $errors;
 	private $error_file;
-	
 
 	function __construct()
 	{
@@ -40,13 +39,10 @@ class ExceptionHandler
 			echo "<pre>{$message}</pre>";
 			session_write_close();
 			exit;
-
 		} else {
 			error_log($message, 1, $config['errorEmail']);
 			ErrorHandler::display_error(500);
 		}
-
-
 	}
 
 	function refreshErrorList($errorFile)

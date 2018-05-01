@@ -4,9 +4,10 @@
 # ------------------------------
 # 25.07.2009	CM	new version
 
+namespace classes;
+
 class navigator
 {
-
 	private $cp;
 	private $cl;
 	private $nsArr;
@@ -31,24 +32,24 @@ class navigator
 			unset($_SESSION['sess_breadcrumb']);
 		}
 	}
-	
+
 	public function addBreadcrumb($title = '')
 	{
 		if (!isset($_SESSION['sess_breadcrumb'])) {
-			$_SESSION['sess_breadcrumb'] = array();
+			$_SESSION['sess_breadcrumb'] = [];
 		}
 
-//		if(!array_key_exists($this -> cp, $_SESSION['sess_breadcrumb'])) {
+		//		if(!array_key_exists($this -> cp, $_SESSION['sess_breadcrumb'])) {
 		$_SESSION['sess_breadcrumb'][$this->cp]['title'] = $title;
 		$_SESSION['sess_breadcrumb'][$this->cp]['link'] = $this->cl;
-//		}
+		//		}
 	}
 
 	public function getBreadcrumb()
 	{
 		$breadcrumb = '';
 		if (isset($_SESSION['sess_breadcrumb']) && is_array($_SESSION['sess_breadcrumb'])) {
-			$xArr = array();
+			$xArr = [];
 			$found = 0;
 			foreach ($_SESSION['sess_breadcrumb'] AS $key => $val) {
 				if ($key == $this->cp) {
@@ -68,13 +69,14 @@ class navigator
 				$breadcrumb = '';
 			}
 		}
+
 		return $breadcrumb;
 	}
 
 	public function setNavistufe()
 	{
 		if (!isset($_SESSION['sess_navistufe'])) {
-			$_SESSION['sess_navistufe'] = array();
+			$_SESSION['sess_navistufe'] = [];
 		}
 		if (isset($_GET['n'])) {
 			$_SESSION['sess_navistufe'] = explode("|", $_GET['n']);

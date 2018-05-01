@@ -4,9 +4,10 @@
 # ------------------------------
 # 20.07.2009	CM	new version
 
+namespace classes;
+
 class ShowFile
 {
-
 	public $config;
 	public $reqArr;
 
@@ -17,7 +18,6 @@ class ShowFile
 		$fileExtLower = strtolower($this->reqArr['varFileext']);
 		if (!file_exists($getFile)) {
 			ErrorHandler::display_error(404);
-
 		} else {
 			switch ($fileExtLower) {
 				case "txt":
