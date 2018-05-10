@@ -18,6 +18,9 @@ class jp extends pageClass
 		$jpArr = $bsvb->getJahresprogramm();
 
 		$gruppe = (isset($this->showPage->arrVars[1]) && array_key_exists($this->showPage->arrVars[1], $jpArr['gruppen']) && $this->showPage->arrVars[1] != 'vorstand') ? $this->showPage->arrVars[1] : '';
+		if(!isset($jpArr['gruppen'][$gruppe])) {
+			$this->showPage->redirect("jpAll.html");
+		}
 
 		if (count($jpArr['gruppen'][$gruppe]) == 0) {
 			$typ = $gruppe;

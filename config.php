@@ -9,7 +9,7 @@
 # --------------
 
 $config['debug'] = true;
-$config['errorEmail'] = 'error@metanet.ch';
+$config['errorEmail'] = 'christof.moser@actra.ch';
 $config['errorReporting'] = E_ALL | E_STRICT;
 
 # --------------
