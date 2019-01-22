@@ -4,7 +4,6 @@
  * PHP Version 5.5.
  *
  * @see       https://github.com/PHPMailer/PHPMailer/ The PHPMailer GitHub project
- *
  * @author    Marcus Bointon (Synchro/coolbru) <phpmailer@synchromedia.co.uk>
  * @author    Jim Jagielski (jimjag) <jimjag@gmail.com>
  * @author    Andy Prevost (codeworxtech) <codeworxtech@users.sourceforge.net>
@@ -32,6 +31,22 @@ use Exception;
  */
 class PHPMailer
 {
+	const CHARSET_ISO88591 = 'iso-8859-1';
+	const CHARSET_UTF8 = 'utf-8';
+
+	const CONTENT_TYPE_PLAINTEXT = 'text/plain';
+	const CONTENT_TYPE_TEXT_CALENDAR = 'text/calendar';
+	const CONTENT_TYPE_TEXT_HTML = 'text/html';
+	const CONTENT_TYPE_MULTIPART_ALTERNATIVE = 'multipart/alternative';
+	const CONTENT_TYPE_MULTIPART_MIXED = 'multipart/mixed';
+	const CONTENT_TYPE_MULTIPART_RELATED = 'multipart/related';
+
+	const ENCODING_7BIT = '7bit';
+	const ENCODING_8BIT = '8bit';
+	const ENCODING_BASE64 = 'base64';
+	const ENCODING_BINARY = 'binary';
+	const ENCODING_QUOTED_PRINTABLE = 'quoted-printable';
+
 	/**
 	 * Email priority.
 	 * Options: null (default), 1 = High, 3 = Normal, 5 = low.
@@ -46,14 +61,14 @@ class PHPMailer
 	 *
 	 * @var string
 	 */
-	public $CharSet = 'iso-8859-1';
+	public $CharSet = self::CHARSET_ISO88591;
 
 	/**
 	 * The MIME Content-type of the message.
 	 *
 	 * @var string
 	 */
-	public $ContentType = 'text/plain';
+	public $ContentType = self::CONTENT_TYPE_PLAINTEXT;
 
 	/**
 	 * The message encoding.
@@ -61,7 +76,7 @@ class PHPMailer
 	 *
 	 * @var string
 	 */
-	public $Encoding = '8bit';
+	public $Encoding = self::ENCODING_8BIT;
 
 	/**
 	 * Holds the most recent mailer error message.
@@ -126,7 +141,6 @@ class PHPMailer
 	 *
 	 * @see http://sprain.ch/blog/downloads/php-class-easypeasyics-create-ical-files-with-php/
 	 * @see http://kigkonsult.se/iCalcreator/
-	 *
 	 * @var string
 	 */
 	public $Ical = '';
@@ -157,7 +171,6 @@ class PHPMailer
 	 * Set to 0 to not wrap. A useful value here is 78, for RFC2822 section 2.1.1 compliance.
 	 *
 	 * @see static::STD_LINE_LENGTH
-	 *
 	 * @var int
 	 */
 	public $WordWrap = 0;
@@ -209,7 +222,6 @@ class PHPMailer
 	 * as defined in RFC5322 section 3.6.4 or it will be ignored.
 	 *
 	 * @see https://tools.ietf.org/html/rfc5322#section-3.6.4
-	 *
 	 * @var string
 	 */
 	public $MessageID = '';
@@ -249,7 +261,6 @@ class PHPMailer
 	 * one with the same method described above for $Hostname.
 	 *
 	 * @see PHPMailer::$Hostname
-	 *
 	 * @var string
 	 */
 	public $Helo = '';
@@ -277,7 +288,6 @@ class PHPMailer
 	 *
 	 * @see PHPMailer::$Username
 	 * @see PHPMailer::$Password
-	 *
 	 * @var bool
 	 */
 	public $SMTPAuth = false;
@@ -305,7 +315,7 @@ class PHPMailer
 
 	/**
 	 * SMTP auth type.
-	 * Options are CRAM-MD5, LOGIN, PLAIN, attempted in that order if not specified.
+	 * Options are CRAM-MD5, LOGIN, PLAIN, XOAUTH2, attempted in that order if not specified.
 	 *
 	 * @var string
 	 */
@@ -314,6 +324,7 @@ class PHPMailer
 	/**
 	 * An instance of the PHPMailer OAuth class.
 	 *
+	 * @var OAuth
 	 */
 	protected $oauth;
 	/**
@@ -335,7 +346,6 @@ class PHPMailer
 	 * * `4` Low-level data output.
 	 *
 	 * @see SMTP::$do_debug
-	 *
 	 * @var int
 	 */
 	public $SMTPDebug = 0;
@@ -348,19 +358,17 @@ class PHPMailer
 	 * * `error_log` Output to error log as configured in php.ini
 	 * By default PHPMailer will use `echo` if run from a `cli` or `cli-server` SAPI, `html` otherwise.
 	 * Alternatively, you can provide a callable expecting two params: a message string and the debug level:
-	 *
 	 * ```php
 	 * $mail->Debugoutput = function($str, $level) {echo "debug level $level; message: $str";};
 	 * ```
-	 *
 	 * Alternatively, you can pass in an instance of a PSR-3 compatible logger, though only `debug`
 	 * level output is used:
-	 *
 	 * ```php
 	 * $mail->Debugoutput = new myPsr3Logger;
 	 * ```
 	 *
 	 * @see SMTP::$Debugoutput
+	 * @var string|callable|\Psr\Log\LoggerInterface
 	 */
 	public $Debugoutput = 'echo';
 
@@ -395,7 +403,6 @@ class PHPMailer
 	 *
 	 * @see https://en.wikipedia.org/wiki/Variable_envelope_return_path
 	 * @see http://www.postfix.org/VERP_README.html Postfix VERP info
-	 *
 	 * @var bool
 	 */
 	public $do_verp = false;
@@ -434,10 +441,24 @@ class PHPMailer
 	 * DKIM signing domain name.
 	 *
 	 * @example 'example.com'
-	 *
 	 * @var string
 	 */
 	public $DKIM_domain = '';
+
+	/**
+	 * DKIM Copy header field values for diagnostic use.
+	 *
+	 * @var bool
+	 */
+	public $DKIM_copyHeaderFields = true;
+
+	/**
+	 * DKIM Extra signing headers.
+	 *
+	 * @example ['List-Unsubscribe', 'List-Help']
+	 * @var array
+	 */
+	public $DKIM_extraHeaders = [];
 
 	/**
 	 * DKIM private key file path.
@@ -448,7 +469,6 @@ class PHPMailer
 
 	/**
 	 * DKIM private key string.
-	 *
 	 * If set, takes precedence over `$DKIM_private`.
 	 *
 	 * @var string
@@ -457,12 +477,9 @@ class PHPMailer
 
 	/**
 	 * Callback Action function name.
-	 *
 	 * The function that handles the result of the send email action.
 	 * It is called out by send() for each email sent.
-	 *
 	 * Value can be any php callable: http://www.php.net/is_callable
-	 *
 	 * Parameters:
 	 *   bool $result        result of the send action
 	 *   array   $to            email addresses of the recipients
@@ -492,7 +509,6 @@ class PHPMailer
 	 * The default validator uses PHP's FILTER_VALIDATE_EMAIL filter_var option.
 	 *
 	 * @see PHPMailer::validateAddress()
-	 *
 	 * @var string|callable
 	 */
 	public static $validator = 'php';
@@ -539,7 +555,6 @@ class PHPMailer
 	 * @see PHPMailer::$to
 	 * @see PHPMailer::$cc
 	 * @see PHPMailer::$bcc
-	 *
 	 * @var array
 	 */
 	protected $all_recipients = [];
@@ -554,7 +569,6 @@ class PHPMailer
 	 * @see PHPMailer::$cc
 	 * @see PHPMailer::$bcc
 	 * @see PHPMailer::$all_recipients
-	 *
 	 * @var array
 	 */
 	protected $RecipientsQueue = [];
@@ -565,7 +579,6 @@ class PHPMailer
 	 * This array is used only for addresses with IDN.
 	 *
 	 * @see PHPMailer::$ReplyTo
-	 *
 	 * @var array
 	 */
 	protected $ReplyToQueue = [];
@@ -667,7 +680,7 @@ class PHPMailer
 	 *
 	 * @var string
 	 */
-	const VERSION = '6.0.3';
+	const VERSION = '6.0.6';
 
 	/**
 	 * Error severity: message only, continue processing.
@@ -722,7 +735,7 @@ class PHPMailer
 	public function __construct($exceptions = null)
 	{
 		if (null !== $exceptions) {
-			$this->exceptions = (bool) $exceptions;
+			$this->exceptions = (bool)$exceptions;
 		}
 		//Pick an appropriate debug output format automatically
 		$this->Debugoutput = (strpos(PHP_SAPI, 'cli') !== false ? 'echo' : 'html');
@@ -783,6 +796,12 @@ class PHPMailer
 		if ($this->SMTPDebug <= 0) {
 			return;
 		}
+		//Is this a PSR-3 logger?
+		if ($this->Debugoutput instanceof \Psr\Log\LoggerInterface) {
+			$this->Debugoutput->debug($str);
+
+			return;
+		}
 		//Avoid clash with built-in function names
 		if (!in_array($this->Debugoutput, ['error_log', 'html', 'echo']) and is_callable($this->Debugoutput)) {
 			call_user_func($this->Debugoutput, $str, $this->SMTPDebug);
@@ -829,9 +848,9 @@ class PHPMailer
 	public function isHTML($isHtml = true)
 	{
 		if ($isHtml) {
-			$this->ContentType = 'text/html';
+			$this->ContentType = static::CONTENT_TYPE_TEXT_HTML;
 		} else {
-			$this->ContentType = 'text/plain';
+			$this->ContentType = static::CONTENT_TYPE_PLAINTEXT;
 		}
 	}
 
@@ -944,7 +963,6 @@ class PHPMailer
 	 * @param string $name
 	 *
 	 * @throws Exception
-	 *
 	 * @return bool true on success, false if address already used or invalid in some way
 	 */
 	protected function addOrEnqueueAnAddress($kind, $address, $name)
@@ -999,7 +1017,6 @@ class PHPMailer
 	 * @param string $name
 	 *
 	 * @throws Exception
-	 *
 	 * @return bool true on success, false if address already used or invalid in some way
 	 */
 	protected function addAnAddress($kind, $address, $name = '')
@@ -1070,7 +1087,7 @@ class PHPMailer
 				if ('.SYNTAX-ERROR.' != $address->host) {
 					if (static::validateAddress($address->mailbox . '@' . $address->host)) {
 						$addresses[] = [
-							'name' => (property_exists($address, 'personal') ? $address->personal : ''),
+							'name'    => (property_exists($address, 'personal') ? $address->personal : ''),
 							'address' => $address->mailbox . '@' . $address->host,
 						];
 					}
@@ -1086,7 +1103,7 @@ class PHPMailer
 					//No separate name, just use the whole thing
 					if (static::validateAddress($address)) {
 						$addresses[] = [
-							'name' => '',
+							'name'    => '',
 							'address' => $address,
 						];
 					}
@@ -1095,7 +1112,7 @@ class PHPMailer
 					$email = trim(str_replace('>', '', $email));
 					if (static::validateAddress($email)) {
 						$addresses[] = [
-							'name' => trim(str_replace(['"', "'"], '', $name)),
+							'name'    => trim(str_replace(['"', "'"], '', $name)),
 							'address' => $email,
 						];
 					}
@@ -1111,10 +1128,9 @@ class PHPMailer
 	 *
 	 * @param string $address
 	 * @param string $name
-	 * @param bool   $auto    Whether to also set the Sender address, defaults to true
+	 * @param bool   $auto Whether to also set the Sender address, defaults to true
 	 *
 	 * @throws Exception
-	 *
 	 * @return bool
 	 */
 	public function setFrom($address, $name = '', $auto = true)
@@ -1171,13 +1187,11 @@ class PHPMailer
 	 * * `html5` Use the pattern given by the HTML5 spec for 'email' type form input elements.
 	 * * `noregex` Don't use a regex: super fast, really dumb.
 	 * Alternatively you may pass in a callable to inject your own validator, for example:
-	 *
 	 * ```php
 	 * PHPMailer::validateAddress('user@example.com', function($address) {
 	 *     return (strpos($address, '@') !== false);
 	 * });
 	 * ```
-	 *
 	 * You can also set the PHPMailer::$validator static to a callable, allowing built-in methods to use your validator.
 	 *
 	 * @param string          $address       The email address to check
@@ -1216,7 +1230,7 @@ class PHPMailer
                  * @copyright 2009-2010 Michael Rushton
                  * Feel free to use and redistribute this code. But please keep this copyright notice.
                  */
-				return (bool) preg_match(
+				return (bool)preg_match(
 					'/^(?!(?>(?1)"?(?>\\\[ -~]|[^"])"?(?1)){255,})(?!(?>(?1)"?(?>\\\[ -~]|[^"])"?(?1)){65,}@)' .
 					'((?>(?>(?>((?>(?>(?>\x0D\x0A)?[\t ])+|(?>[\t ]*\x0D\x0A)?[\t ]+)?)(\((?>(?2)' .
 					'(?>[\x01-\x08\x0B\x0C\x0E-\'*-\[\]-\x7F]|\\\[\x00-\x7F]|(?3)))*(?2)\)))+(?2))|(?2))?)' .
@@ -1234,14 +1248,14 @@ class PHPMailer
                  *
                  * @see http://www.whatwg.org/specs/web-apps/current-work/#e-mail-state-(type=email)
                  */
-				return (bool) preg_match(
+				return (bool)preg_match(
 					'/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}' .
 					'[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/sD',
 					$address
 				);
 			case 'php':
 			default:
-				return (bool) filter_var($address, FILTER_VALIDATE_EMAIL);
+				return (bool)filter_var($address, FILTER_VALIDATE_EMAIL);
 		}
 	}
 
@@ -1299,7 +1313,6 @@ class PHPMailer
 	 * Uses the sending method specified by $Mailer.
 	 *
 	 * @throws Exception
-	 *
 	 * @return bool false on error - See the ErrorInfo property for details of the error
 	 */
 	public function send()
@@ -1325,7 +1338,6 @@ class PHPMailer
 	 * Prepare a message for sending.
 	 *
 	 * @throws Exception
-	 *
 	 * @return bool
 	 */
 	public function preSend()
@@ -1394,7 +1406,7 @@ class PHPMailer
 
 			// Set whether the message is multipart/alternative
 			if ($this->alternativeExists()) {
-				$this->ContentType = 'multipart/alternative';
+				$this->ContentType = static::CONTENT_TYPE_MULTIPART_ALTERNATIVE;
 			}
 
 			$this->setMessageType();
@@ -1431,7 +1443,10 @@ class PHPMailer
 			if (!empty($this->DKIM_domain)
 				and !empty($this->DKIM_selector)
 				and (!empty($this->DKIM_private_string)
-					or (!empty($this->DKIM_private) and file_exists($this->DKIM_private))
+					or (!empty($this->DKIM_private)
+						and static::isPermittedPath($this->DKIM_private)
+						and file_exists($this->DKIM_private)
+					)
 				)
 			) {
 				$header_dkim = $this->DKIM_Add(
@@ -1458,7 +1473,6 @@ class PHPMailer
 	 * Actually send a message via the selected mechanism.
 	 *
 	 * @throws Exception
-	 *
 	 * @return bool
 	 */
 	public function postSend()
@@ -1501,7 +1515,6 @@ class PHPMailer
 	 * @param string $body   The message body
 	 *
 	 * @throws Exception
-	 *
 	 * @return bool
 	 */
 	protected function sendmailSend($header, $body)
@@ -1609,6 +1622,20 @@ class PHPMailer
 	}
 
 	/**
+	 * Check whether a file path is of a permitted type.
+	 * Used to reject URLs and phar files from functions that access local file paths,
+	 * such as addAttachment.
+	 *
+	 * @param string $path A relative or absolute path to a file
+	 *
+	 * @return bool
+	 */
+	protected static function isPermittedPath($path)
+	{
+		return !preg_match('#^[a-z]+://#i', $path);
+	}
+
+	/**
 	 * Send mail using the PHP mail() function.
 	 *
 	 * @see    http://www.php.net/manual/en/book.mail.php
@@ -1617,7 +1644,6 @@ class PHPMailer
 	 * @param string $body   The message body
 	 *
 	 * @throws Exception
-	 *
 	 * @return bool
 	 */
 	protected function mailSend($header, $body)
@@ -1700,15 +1726,13 @@ class PHPMailer
 	 * Send mail via SMTP.
 	 * Returns false if there is a bad MAIL FROM, RCPT, or DATA input.
 	 *
-	 * @see PHPMailer::setSMTPInstance() to use a different class.
-	 *
-	 * @uses \metanet\mailer\SMTP
+	 * @see  PHPMailer::setSMTPInstance() to use a different class.
+	 * @uses \PHPMailer\PHPMailer\SMTP
 	 *
 	 * @param string $header The message headers
 	 * @param string $body   The message body
 	 *
 	 * @throws Exception
-	 *
 	 * @return bool
 	 */
 	protected function smtpSend($header, $body)
@@ -1740,7 +1764,7 @@ class PHPMailer
 					$isSent = true;
 				}
 
-				$callbacks[] = ['issent'=>$isSent, 'to'=>$to[0]];
+				$callbacks[] = ['issent' => $isSent, 'to' => $to[0]];
 			}
 		}
 
@@ -1793,9 +1817,7 @@ class PHPMailer
 	 * @param array $options An array of options compatible with stream_context_create()
 	 *
 	 * @throws Exception
-	 *
-	 * @uses \metanet\mailer\SMTP
-	 *
+	 * @uses \PHPMailer\PHPMailer\SMTP
 	 * @return bool
 	 */
 	public function smtpConnect($options = null)
@@ -1850,7 +1872,7 @@ class PHPMailer
 				$prefix = 'ssl://';
 				$tls = false; // Can't have SSL and TLS at the same time
 				$secure = 'ssl';
-			} elseif ('tls' == $hostinfo[2]) {
+			} else if ('tls' == $hostinfo[2]) {
 				$tls = true;
 				// tls doesn't use a prefix
 				$secure = 'tls';
@@ -1865,7 +1887,7 @@ class PHPMailer
 			}
 			$host = $hostinfo[3];
 			$port = $this->Port;
-			$tport = (int) $hostinfo[4];
+			$tport = (int)$hostinfo[4];
 			if ($tport > 0 and $tport < 65536) {
 				$port = $tport;
 			}
@@ -1896,7 +1918,8 @@ class PHPMailer
 						if (!$this->smtp->authenticate(
 							$this->Username,
 							$this->Password,
-							$this->AuthType
+							$this->AuthType,
+							$this->oauth
 						)
 						) {
 							throw new Exception($this->lang('authenticate'));
@@ -1954,7 +1977,8 @@ class PHPMailer
 			'dk' => 'da',
 			'no' => 'nb',
 			'se' => 'sv',
-			'sr' => 'rs',
+			'rs' => 'sr',
+			'tg' => 'tl',
 		];
 
 		if (isset($renamed_langcodes[$langcode])) {
@@ -1963,29 +1987,29 @@ class PHPMailer
 
 		// Define full set of translatable strings in English
 		$PHPMAILER_LANG = [
-			'authenticate' => 'SMTP Error: Could not authenticate.',
-			'connect_host' => 'SMTP Error: Could not connect to SMTP host.',
-			'data_not_accepted' => 'SMTP Error: data not accepted.',
-			'empty_message' => 'Message body empty',
-			'encoding' => 'Unknown encoding: ',
-			'execute' => 'Could not execute: ',
-			'file_access' => 'Could not access file: ',
-			'file_open' => 'File Error: Could not open file: ',
-			'from_failed' => 'The following From address failed: ',
-			'instantiate' => 'Could not instantiate mail function.',
-			'invalid_address' => 'Invalid address: ',
+			'authenticate'         => 'SMTP Error: Could not authenticate.',
+			'connect_host'         => 'SMTP Error: Could not connect to SMTP host.',
+			'data_not_accepted'    => 'SMTP Error: data not accepted.',
+			'empty_message'        => 'Message body empty',
+			'encoding'             => 'Unknown encoding: ',
+			'execute'              => 'Could not execute: ',
+			'file_access'          => 'Could not access file: ',
+			'file_open'            => 'File Error: Could not open file: ',
+			'from_failed'          => 'The following From address failed: ',
+			'instantiate'          => 'Could not instantiate mail function.',
+			'invalid_address'      => 'Invalid address: ',
 			'mailer_not_supported' => ' mailer is not supported.',
-			'provide_address' => 'You must provide at least one recipient email address.',
-			'recipients_failed' => 'SMTP Error: The following recipients failed: ',
-			'signing' => 'Signing Error: ',
-			'smtp_connect_failed' => 'SMTP connect() failed.',
-			'smtp_error' => 'SMTP server error: ',
-			'variable_set' => 'Cannot set or reset variable: ',
-			'extension_missing' => 'Extension missing: ',
+			'provide_address'      => 'You must provide at least one recipient email address.',
+			'recipients_failed'    => 'SMTP Error: The following recipients failed: ',
+			'signing'              => 'Signing Error: ',
+			'smtp_connect_failed'  => 'SMTP connect() failed.',
+			'smtp_error'           => 'SMTP server error: ',
+			'variable_set'         => 'Cannot set or reset variable: ',
+			'extension_missing'    => 'Extension missing: ',
 		];
 		if (empty($lang_path)) {
 			// Calculate an absolute path so it can work if CWD is not here
-			$lang_path = __DIR__ . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR;
+			$lang_path = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR;
 		}
 		//Validate $langcode
 		if (!preg_match('/^[a-z]{2}(?:_[a-zA-Z]{2})?$/', $langcode)) {
@@ -1996,7 +2020,7 @@ class PHPMailer
 		// There is no English translation file
 		if ('en' != $langcode) {
 			// Make sure language file path is readable
-			if (!file_exists($lang_file)) {
+			if (!static::isPermittedPath($lang_file) || !file_exists($lang_file)) {
 				$foundlang = false;
 			} else {
 				// Overwrite language-specific strings.
@@ -2006,7 +2030,7 @@ class PHPMailer
 		}
 		$this->language = $PHPMAILER_LANG;
 
-		return (bool) $foundlang; // Returns false if language not found
+		return (bool)$foundlang; // Returns false if language not found
 	}
 
 	/**
@@ -2080,7 +2104,7 @@ class PHPMailer
 		}
 		// If utf-8 encoding is used, we will need to make sure we don't
 		// split multibyte characters when we wrap
-		$is_utf8 = 'utf-8' == strtolower($this->CharSet);
+		$is_utf8 = static::CHARSET_UTF8 === strtolower($this->CharSet);
 		$lelen = strlen(static::$LE);
 		$crlflen = strlen(static::$LE);
 
@@ -2106,9 +2130,9 @@ class PHPMailer
 							$len = $space_left;
 							if ($is_utf8) {
 								$len = $this->utf8CharBoundary($word, $len);
-							} elseif ('=' == substr($word, $len - 1, 1)) {
+							} else if ('=' == substr($word, $len - 1, 1)) {
 								--$len;
-							} elseif ('=' == substr($word, $len - 2, 1)) {
+							} else if ('=' == substr($word, $len - 2, 1)) {
 								$len -= 2;
 							}
 							$part = substr($word, 0, $len);
@@ -2127,9 +2151,9 @@ class PHPMailer
 						$len = $length;
 						if ($is_utf8) {
 							$len = $this->utf8CharBoundary($word, $len);
-						} elseif ('=' == substr($word, $len - 1, 1)) {
+						} else if ('=' == substr($word, $len - 1, 1)) {
 							--$len;
-						} elseif ('=' == substr($word, $len - 2, 1)) {
+						} else if ('=' == substr($word, $len - 2, 1)) {
 							$len -= 2;
 						}
 						$part = substr($word, 0, $len);
@@ -2191,12 +2215,12 @@ class PHPMailer
 						$maxLength -= $lookBack - $encodedCharPos;
 					}
 					$foundSplitPos = true;
-				} elseif ($dec >= 192) {
+				} else if ($dec >= 192) {
 					// First byte of a multi byte character
 					// Reduce maxLength to split at start of character
 					$maxLength -= $lookBack - $encodedCharPos;
 					$foundSplitPos = true;
-				} elseif ($dec < 192) {
+				} else if ($dec < 192) {
 					// Middle byte of a multi byte character, look further back
 					$lookBack += 3;
 				}
@@ -2257,7 +2281,7 @@ class PHPMailer
 				if ('mail' != $this->Mailer) {
 					$result .= $this->addrAppend('To', $this->to);
 				}
-			} elseif (count($this->cc) == 0) {
+			} else if (count($this->cc) == 0) {
 				$result .= $this->headerLine('To', 'undisclosed-recipients:;');
 			}
 		}
@@ -2340,19 +2364,19 @@ class PHPMailer
 		$ismultipart = true;
 		switch ($this->message_type) {
 			case 'inline':
-				$result .= $this->headerLine('Content-Type', 'multipart/related;');
+				$result .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED . ';');
 				$result .= $this->textLine("\tboundary=\"" . $this->boundary[1] . '"');
 				break;
 			case 'attach':
 			case 'inline_attach':
 			case 'alt_attach':
 			case 'alt_inline_attach':
-				$result .= $this->headerLine('Content-Type', 'multipart/mixed;');
+				$result .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_MIXED . ';');
 				$result .= $this->textLine("\tboundary=\"" . $this->boundary[1] . '"');
 				break;
 			case 'alt':
 			case 'alt_inline':
-				$result .= $this->headerLine('Content-Type', 'multipart/alternative;');
+				$result .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_ALTERNATIVE . ';');
 				$result .= $this->textLine("\tboundary=\"" . $this->boundary[1] . '"');
 				break;
 			default:
@@ -2362,11 +2386,11 @@ class PHPMailer
 				break;
 		}
 		// RFC1341 part 5 says 7bit is assumed if not specified
-		if ('7bit' != $this->Encoding) {
+		if (static::ENCODING_7BIT != $this->Encoding) {
 			// RFC 2045 section 6.4 says multipart MIME parts may only use 7bit, 8bit or binary CTE
 			if ($ismultipart) {
-				if ('8bit' == $this->Encoding) {
-					$result .= $this->headerLine('Content-Transfer-Encoding', '8bit');
+				if (static::ENCODING_8BIT == $this->Encoding) {
+					$result .= $this->headerLine('Content-Transfer-Encoding', static::ENCODING_8BIT);
 				}
 				// The only remaining alternatives are quoted-printable and base64, which are both 7bit compatible
 			} else {
@@ -2387,7 +2411,6 @@ class PHPMailer
 	 * Only valid post preSend().
 	 *
 	 * @see PHPMailer::preSend()
-	 *
 	 * @return string
 	 */
 	public function getSentMIMEMessage()
@@ -2405,11 +2428,11 @@ class PHPMailer
 		$len = 32; //32 bytes = 256 bits
 		if (function_exists('random_bytes')) {
 			$bytes = random_bytes($len);
-		} elseif (function_exists('openssl_random_pseudo_bytes')) {
+		} else if (function_exists('openssl_random_pseudo_bytes')) {
 			$bytes = openssl_random_pseudo_bytes($len);
 		} else {
 			//Use a hash to force the length to the same as the other methods
-			$bytes = hash('sha256', uniqid((string) mt_rand(), true), true);
+			$bytes = hash('sha256', uniqid((string)mt_rand(), true), true);
 		}
 
 		//We don't care about messing up base64 format here, just want a random string
@@ -2421,7 +2444,6 @@ class PHPMailer
 	 * Returns an empty string on failure.
 	 *
 	 * @throws Exception
-	 *
 	 * @return string The assembled message body
 	 */
 	public function createBody()
@@ -2442,29 +2464,29 @@ class PHPMailer
 		$bodyEncoding = $this->Encoding;
 		$bodyCharSet = $this->CharSet;
 		//Can we do a 7-bit downgrade?
-		if ('8bit' == $bodyEncoding and !$this->has8bitChars($this->Body)) {
-			$bodyEncoding = '7bit';
+		if (static::ENCODING_8BIT == $bodyEncoding and !$this->has8bitChars($this->Body)) {
+			$bodyEncoding = static::ENCODING_7BIT;
 			//All ISO 8859, Windows codepage and UTF-8 charsets are ascii compatible up to 7-bit
 			$bodyCharSet = 'us-ascii';
 		}
 		//If lines are too long, and we're not already using an encoding that will shorten them,
 		//change to quoted-printable transfer encoding for the body part only
-		if ('base64' != $this->Encoding and static::hasLineLongerThanMax($this->Body)) {
-			$bodyEncoding = 'quoted-printable';
+		if (static::ENCODING_BASE64 != $this->Encoding and static::hasLineLongerThanMax($this->Body)) {
+			$bodyEncoding = static::ENCODING_QUOTED_PRINTABLE;
 		}
 
 		$altBodyEncoding = $this->Encoding;
 		$altBodyCharSet = $this->CharSet;
 		//Can we do a 7-bit downgrade?
-		if ('8bit' == $altBodyEncoding and !$this->has8bitChars($this->AltBody)) {
-			$altBodyEncoding = '7bit';
+		if (static::ENCODING_8BIT == $altBodyEncoding and !$this->has8bitChars($this->AltBody)) {
+			$altBodyEncoding = static::ENCODING_7BIT;
 			//All ISO 8859, Windows codepage and UTF-8 charsets are ascii compatible up to 7-bit
 			$altBodyCharSet = 'us-ascii';
 		}
 		//If lines are too long, and we're not already using an encoding that will shorten them,
 		//change to quoted-printable transfer encoding for the alt body part only
-		if ('base64' != $altBodyEncoding and static::hasLineLongerThanMax($this->AltBody)) {
-			$altBodyEncoding = 'quoted-printable';
+		if (static::ENCODING_BASE64 != $altBodyEncoding and static::hasLineLongerThanMax($this->AltBody)) {
+			$altBodyEncoding = static::ENCODING_QUOTED_PRINTABLE;
 		}
 		//Use this as a preamble in all multipart message types
 		$mimepre = 'This is a multi-part message in MIME format.' . static::$LE;
@@ -2486,7 +2508,7 @@ class PHPMailer
 			case 'inline_attach':
 				$body .= $mimepre;
 				$body .= $this->textLine('--' . $this->boundary[1]);
-				$body .= $this->headerLine('Content-Type', 'multipart/related;');
+				$body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED . ';');
 				$body .= $this->textLine("\tboundary=\"" . $this->boundary[2] . '"');
 				$body .= static::$LE;
 				$body .= $this->getBoundary($this->boundary[2], $bodyCharSet, '', $bodyEncoding);
@@ -2498,14 +2520,14 @@ class PHPMailer
 				break;
 			case 'alt':
 				$body .= $mimepre;
-				$body .= $this->getBoundary($this->boundary[1], $altBodyCharSet, 'text/plain', $altBodyEncoding);
+				$body .= $this->getBoundary($this->boundary[1], $altBodyCharSet, static::CONTENT_TYPE_PLAINTEXT, $altBodyEncoding);
 				$body .= $this->encodeString($this->AltBody, $altBodyEncoding);
 				$body .= static::$LE;
-				$body .= $this->getBoundary($this->boundary[1], $bodyCharSet, 'text/html', $bodyEncoding);
+				$body .= $this->getBoundary($this->boundary[1], $bodyCharSet, static::CONTENT_TYPE_TEXT_HTML, $bodyEncoding);
 				$body .= $this->encodeString($this->Body, $bodyEncoding);
 				$body .= static::$LE;
 				if (!empty($this->Ical)) {
-					$body .= $this->getBoundary($this->boundary[1], '', 'text/calendar; method=REQUEST', '');
+					$body .= $this->getBoundary($this->boundary[1], '', static::CONTENT_TYPE_TEXT_CALENDAR . '; method=REQUEST', '');
 					$body .= $this->encodeString($this->Ical, $this->Encoding);
 					$body .= static::$LE;
 				}
@@ -2513,14 +2535,14 @@ class PHPMailer
 				break;
 			case 'alt_inline':
 				$body .= $mimepre;
-				$body .= $this->getBoundary($this->boundary[1], $altBodyCharSet, 'text/plain', $altBodyEncoding);
+				$body .= $this->getBoundary($this->boundary[1], $altBodyCharSet, static::CONTENT_TYPE_PLAINTEXT, $altBodyEncoding);
 				$body .= $this->encodeString($this->AltBody, $altBodyEncoding);
 				$body .= static::$LE;
 				$body .= $this->textLine('--' . $this->boundary[1]);
-				$body .= $this->headerLine('Content-Type', 'multipart/related;');
+				$body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED . ';');
 				$body .= $this->textLine("\tboundary=\"" . $this->boundary[2] . '"');
 				$body .= static::$LE;
-				$body .= $this->getBoundary($this->boundary[2], $bodyCharSet, 'text/html', $bodyEncoding);
+				$body .= $this->getBoundary($this->boundary[2], $bodyCharSet, static::CONTENT_TYPE_TEXT_HTML, $bodyEncoding);
 				$body .= $this->encodeString($this->Body, $bodyEncoding);
 				$body .= static::$LE;
 				$body .= $this->attachAll('inline', $this->boundary[2]);
@@ -2530,17 +2552,17 @@ class PHPMailer
 			case 'alt_attach':
 				$body .= $mimepre;
 				$body .= $this->textLine('--' . $this->boundary[1]);
-				$body .= $this->headerLine('Content-Type', 'multipart/alternative;');
+				$body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_ALTERNATIVE . ';');
 				$body .= $this->textLine("\tboundary=\"" . $this->boundary[2] . '"');
 				$body .= static::$LE;
-				$body .= $this->getBoundary($this->boundary[2], $altBodyCharSet, 'text/plain', $altBodyEncoding);
+				$body .= $this->getBoundary($this->boundary[2], $altBodyCharSet, static::CONTENT_TYPE_PLAINTEXT, $altBodyEncoding);
 				$body .= $this->encodeString($this->AltBody, $altBodyEncoding);
 				$body .= static::$LE;
-				$body .= $this->getBoundary($this->boundary[2], $bodyCharSet, 'text/html', $bodyEncoding);
+				$body .= $this->getBoundary($this->boundary[2], $bodyCharSet, static::CONTENT_TYPE_TEXT_HTML, $bodyEncoding);
 				$body .= $this->encodeString($this->Body, $bodyEncoding);
 				$body .= static::$LE;
 				if (!empty($this->Ical)) {
-					$body .= $this->getBoundary($this->boundary[2], '', 'text/calendar; method=REQUEST', '');
+					$body .= $this->getBoundary($this->boundary[2], '', static::CONTENT_TYPE_TEXT_CALENDAR . '; method=REQUEST', '');
 					$body .= $this->encodeString($this->Ical, $this->Encoding);
 				}
 				$body .= $this->endBoundary($this->boundary[2]);
@@ -2550,17 +2572,17 @@ class PHPMailer
 			case 'alt_inline_attach':
 				$body .= $mimepre;
 				$body .= $this->textLine('--' . $this->boundary[1]);
-				$body .= $this->headerLine('Content-Type', 'multipart/alternative;');
+				$body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_ALTERNATIVE . ';');
 				$body .= $this->textLine("\tboundary=\"" . $this->boundary[2] . '"');
 				$body .= static::$LE;
-				$body .= $this->getBoundary($this->boundary[2], $altBodyCharSet, 'text/plain', $altBodyEncoding);
+				$body .= $this->getBoundary($this->boundary[2], $altBodyCharSet, static::CONTENT_TYPE_PLAINTEXT, $altBodyEncoding);
 				$body .= $this->encodeString($this->AltBody, $altBodyEncoding);
 				$body .= static::$LE;
 				$body .= $this->textLine('--' . $this->boundary[2]);
-				$body .= $this->headerLine('Content-Type', 'multipart/related;');
+				$body .= $this->headerLine('Content-Type', static::CONTENT_TYPE_MULTIPART_RELATED . ';');
 				$body .= $this->textLine("\tboundary=\"" . $this->boundary[3] . '"');
 				$body .= static::$LE;
-				$body .= $this->getBoundary($this->boundary[3], $bodyCharSet, 'text/html', $bodyEncoding);
+				$body .= $this->getBoundary($this->boundary[3], $bodyCharSet, static::CONTENT_TYPE_TEXT_HTML, $bodyEncoding);
 				$body .= $this->encodeString($this->Body, $bodyEncoding);
 				$body .= static::$LE;
 				$body .= $this->attachAll('inline', $this->boundary[3]);
@@ -2582,7 +2604,7 @@ class PHPMailer
 			if ($this->exceptions) {
 				throw new Exception($this->lang('empty_message'), self::STOP_CRITICAL);
 			}
-		} elseif ($this->sign_key_file) {
+		} else if ($this->sign_key_file) {
 			try {
 				if (!defined('PKCS7_TEXT')) {
 					throw new Exception($this->lang('extension_missing') . 'openssl');
@@ -2662,7 +2684,7 @@ class PHPMailer
 		$result .= sprintf('Content-Type: %s; charset=%s', $contentType, $charSet);
 		$result .= static::$LE;
 		// RFC1341 part 5 says 7bit is assumed if not specified
-		if ('7bit' != $encoding) {
+		if (static::ENCODING_7BIT != $encoding) {
 			$result .= $this->headerLine('Content-Transfer-Encoding', $encoding);
 		}
 		$result .= static::$LE;
@@ -2734,6 +2756,8 @@ class PHPMailer
 	 * Add an attachment from a path on the filesystem.
 	 * Never use a user-supplied path to a file!
 	 * Returns false if the file could not be found or read.
+	 * Explicitly *does not* support passing URLs; PHPMailer is not an HTTP client.
+	 * If you need to do that, fetch the resource yourself and pass it in via a local file or string.
 	 *
 	 * @param string $path        Path to the attachment
 	 * @param string $name        Overrides the attachment name
@@ -2742,13 +2766,12 @@ class PHPMailer
 	 * @param string $disposition Disposition to use
 	 *
 	 * @throws Exception
-	 *
 	 * @return bool
 	 */
-	public function addAttachment($path, $name = '', $encoding = 'base64', $type = '', $disposition = 'attachment')
+	public function addAttachment($path, $name = '', $encoding = self::ENCODING_BASE64, $type = '', $disposition = 'attachment')
 	{
 		try {
-			if (!@is_file($path)) {
+			if (!static::isPermittedPath($path) || !@is_file($path)) {
 				throw new Exception($this->lang('file_access') . $path, self::STOP_CONTINUE);
 			}
 
@@ -2857,7 +2880,7 @@ class PHPMailer
 					);
 				}
 				// RFC1341 part 5 says 7bit is assumed if not specified
-				if ('7bit' != $encoding) {
+				if (static::ENCODING_7BIT != $encoding) {
 					$mime[] = sprintf('Content-Transfer-Encoding: %s%s', $encoding, static::$LE);
 				}
 
@@ -2924,13 +2947,12 @@ class PHPMailer
 	 * @param string $encoding The encoding to use; one of 'base64', '7bit', '8bit', 'binary', 'quoted-printable'
 	 *
 	 * @throws Exception
-	 *
 	 * @return string
 	 */
-	protected function encodeFile($path, $encoding = 'base64')
+	protected function encodeFile($path, $encoding = self::ENCODING_BASE64)
 	{
 		try {
-			if (!file_exists($path)) {
+			if (!static::isPermittedPath($path) || !file_exists($path)) {
 				throw new Exception($this->lang('file_open') . $path, self::STOP_CONTINUE);
 			}
 			$file_buffer = file_get_contents($path);
@@ -2952,33 +2974,33 @@ class PHPMailer
 	 * Returns an empty string on failure.
 	 *
 	 * @param string $str      The text to encode
-	 * @param string $encoding The encoding to use; one of 'base64', '7bit', '8bit', 'binary', 'quoted-printable
+	 * @param string $encoding The encoding to use; one of 'base64', '7bit', '8bit', 'binary', 'quoted-printable'
 	 *
 	 * @return string
 	 */
-	public function encodeString($str, $encoding = 'base64')
+	public function encodeString($str, $encoding = self::ENCODING_BASE64)
 	{
 		$encoded = '';
 		switch (strtolower($encoding)) {
-			case 'base64':
+			case static::ENCODING_BASE64:
 				$encoded = chunk_split(
 					base64_encode($str),
 					static::STD_LINE_LENGTH,
 					static::$LE
 				);
 				break;
-			case '7bit':
-			case '8bit':
+			case static::ENCODING_7BIT:
+			case static::ENCODING_8BIT:
 				$encoded = static::normalizeBreaks($str);
 				// Make sure it ends with a line break
 				if (substr($encoded, -(strlen(static::$LE))) != static::$LE) {
 					$encoded .= static::$LE;
 				}
 				break;
-			case 'binary':
+			case static::ENCODING_BINARY:
 				$encoded = $str;
 				break;
-			case 'quoted-printable':
+			case static::ENCODING_QUOTED_PRINTABLE:
 				$encoded = $this->encodeQP($str);
 				break;
 			default:
@@ -3049,7 +3071,7 @@ class PHPMailer
 				$encoded = trim(chunk_split($encoded, $maxlen, "\n"));
 			}
 			$encoded = preg_replace('/^(.*)$/m', ' =?' . $this->CharSet . "?$encoding?\\1?=", $encoded);
-		} elseif ($matchcount > 0) {
+		} else if ($matchcount > 0) {
 			//1 or more chars need encoding, use Q-encode
 			$encoding = 'Q';
 			//Recalc max line length for Q encoding - see comments on B encode
@@ -3058,7 +3080,7 @@ class PHPMailer
 			$encoded = $this->wrapText($encoded, $maxlen, true);
 			$encoded = str_replace('=' . static::$LE, "\n", trim($encoded));
 			$encoded = preg_replace('/^(.*)$/m', ' =?' . $this->CharSet . "?$encoding?\\1?=", $encoded);
-		} elseif (strlen($str) > $maxlen) {
+		} else if (strlen($str) > $maxlen) {
 			//No chars need encoding, but line is too long, so fold it
 			$encoded = trim($this->wrapText($str, $maxlen, false));
 			if ($str == $encoded) {
@@ -3101,7 +3123,7 @@ class PHPMailer
 	 */
 	public function has8bitChars($text)
 	{
-		return (bool) preg_match('/[\x80-\xFF]/', $text);
+		return (bool)preg_match('/[\x80-\xFF]/', $text);
 	}
 
 	/**
@@ -3229,7 +3251,7 @@ class PHPMailer
 	public function addStringAttachment(
 		$string,
 		$filename,
-		$encoding = 'base64',
+		$encoding = self::ENCODING_BASE64,
 		$type = '',
 		$disposition = 'attachment'
 	) {
@@ -3269,9 +3291,9 @@ class PHPMailer
 	 *
 	 * @return bool True on successfully adding an attachment
 	 */
-	public function addEmbeddedImage($path, $cid, $name = '', $encoding = 'base64', $type = '', $disposition = 'inline')
+	public function addEmbeddedImage($path, $cid, $name = '', $encoding = self::ENCODING_BASE64, $type = '', $disposition = 'inline')
 	{
-		if (!@is_file($path)) {
+		if (!static::isPermittedPath($path) || !@is_file($path)) {
 			$this->setError($this->lang('file_access') . $path);
 
 			return false;
@@ -3323,7 +3345,7 @@ class PHPMailer
 		$string,
 		$cid,
 		$name = '',
-		$encoding = 'base64',
+		$encoding = self::ENCODING_BASE64,
 		$type = '',
 		$disposition = 'inline'
 	) {
@@ -3416,7 +3438,7 @@ class PHPMailer
 	{
 		$this->RecipientsQueue = array_filter(
 			$this->RecipientsQueue,
-			function ($params) use ($kind) {
+			function($params) use ($kind) {
 				return $params[0] != $kind;
 			}
 		);
@@ -3546,11 +3568,11 @@ class PHPMailer
 		$result = '';
 		if (!empty($this->Hostname)) {
 			$result = $this->Hostname;
-		} elseif (isset($_SERVER) and array_key_exists('SERVER_NAME', $_SERVER)) {
+		} else if (isset($_SERVER) and array_key_exists('SERVER_NAME', $_SERVER)) {
 			$result = $_SERVER['SERVER_NAME'];
-		} elseif (function_exists('gethostname') and gethostname() !== false) {
+		} else if (function_exists('gethostname') and gethostname() !== false) {
 			$result = gethostname();
-		} elseif (php_uname('n') !== false) {
+		} else if (php_uname('n') !== false) {
 			$result = php_uname('n');
 		}
 		if (!static::isValidHost($result)) {
@@ -3579,15 +3601,15 @@ class PHPMailer
 		}
 		//Looks like a bracketed IPv6 address
 		if (trim($host, '[]') != $host) {
-			return (bool) filter_var(trim($host, '[]'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV6);
+			return (bool)filter_var(trim($host, '[]'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV6);
 		}
 		//If removing all the dots results in a numeric string, it must be an IPv4 address.
 		//Need to check this first because otherwise things like `999.0.0.0` are considered valid host names
 		if (is_numeric(str_replace('.', '', $host))) {
 			//Is it a valid IPv4 address?
-			return (bool) filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+			return (bool)filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
 		}
-		if (filter_var('http://' . $host, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED)) {
+		if (filter_var('http://' . $host, FILTER_VALIDATE_URL)) {
 			//Is it a syntactically valid hostname?
 			return true;
 		}
@@ -3691,9 +3713,9 @@ class PHPMailer
 				// Convert data URIs into embedded images
 				//e.g. "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
 				if (preg_match('#^data:(image/(?:jpe?g|gif|png));?(base64)?,(.+)#', $url, $match)) {
-					if (count($match) == 4 and 'base64' == $match[2]) {
+					if (count($match) == 4 and static::ENCODING_BASE64 == $match[2]) {
 						$data = base64_decode($match[3]);
-					} elseif ('' == $match[2]) {
+					} else if ('' == $match[2]) {
 						$data = rawurldecode($match[3]);
 					} else {
 						//Not recognised so leave it alone
@@ -3704,7 +3726,7 @@ class PHPMailer
 					$cid = hash('sha256', $data) . '@phpmailer.0'; // RFC2392 S 2
 
 					if (!$this->cidExists($cid)) {
-						$this->addStringEmbeddedImage($data, $cid, 'embed' . $imgindex, 'base64', $match[1]);
+						$this->addStringEmbeddedImage($data, $cid, 'embed' . $imgindex, static::ENCODING_BASE64, $match[1]);
 					}
 					$message = str_replace(
 						$images[0][$imgindex],
@@ -3738,8 +3760,8 @@ class PHPMailer
 						$basedir . $directory . $filename,
 						$cid,
 						$filename,
-						'base64',
-						static::_mime_types((string) static::mb_pathinfo($filename, PATHINFO_EXTENSION))
+						static::ENCODING_BASE64,
+						static::_mime_types((string)static::mb_pathinfo($filename, PATHINFO_EXTENSION))
 					)
 					) {
 						$message = preg_replace(
@@ -3769,7 +3791,6 @@ class PHPMailer
 	 * Note - older versions of this function used a bundled advanced converter
 	 * which was removed for license reasons in #232.
 	 * Example usage:
-	 *
 	 * ```php
 	 * // Use default conversion
 	 * $plain = $mail->html2text($html);
@@ -3809,117 +3830,117 @@ class PHPMailer
 	public static function _mime_types($ext = '')
 	{
 		$mimes = [
-			'xl' => 'application/excel',
-			'js' => 'application/javascript',
-			'hqx' => 'application/mac-binhex40',
-			'cpt' => 'application/mac-compactpro',
-			'bin' => 'application/macbinary',
-			'doc' => 'application/msword',
-			'word' => 'application/msword',
-			'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-			'xltx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
-			'potx' => 'application/vnd.openxmlformats-officedocument.presentationml.template',
-			'ppsx' => 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
-			'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-			'sldx' => 'application/vnd.openxmlformats-officedocument.presentationml.slide',
-			'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-			'dotx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
-			'xlam' => 'application/vnd.ms-excel.addin.macroEnabled.12',
-			'xlsb' => 'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
+			'xl'    => 'application/excel',
+			'js'    => 'application/javascript',
+			'hqx'   => 'application/mac-binhex40',
+			'cpt'   => 'application/mac-compactpro',
+			'bin'   => 'application/macbinary',
+			'doc'   => 'application/msword',
+			'word'  => 'application/msword',
+			'xlsx'  => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'xltx'  => 'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
+			'potx'  => 'application/vnd.openxmlformats-officedocument.presentationml.template',
+			'ppsx'  => 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+			'pptx'  => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+			'sldx'  => 'application/vnd.openxmlformats-officedocument.presentationml.slide',
+			'docx'  => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+			'dotx'  => 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
+			'xlam'  => 'application/vnd.ms-excel.addin.macroEnabled.12',
+			'xlsb'  => 'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
 			'class' => 'application/octet-stream',
-			'dll' => 'application/octet-stream',
-			'dms' => 'application/octet-stream',
-			'exe' => 'application/octet-stream',
-			'lha' => 'application/octet-stream',
-			'lzh' => 'application/octet-stream',
-			'psd' => 'application/octet-stream',
-			'sea' => 'application/octet-stream',
-			'so' => 'application/octet-stream',
-			'oda' => 'application/oda',
-			'pdf' => 'application/pdf',
-			'ai' => 'application/postscript',
-			'eps' => 'application/postscript',
-			'ps' => 'application/postscript',
-			'smi' => 'application/smil',
-			'smil' => 'application/smil',
-			'mif' => 'application/vnd.mif',
-			'xls' => 'application/vnd.ms-excel',
-			'ppt' => 'application/vnd.ms-powerpoint',
+			'dll'   => 'application/octet-stream',
+			'dms'   => 'application/octet-stream',
+			'exe'   => 'application/octet-stream',
+			'lha'   => 'application/octet-stream',
+			'lzh'   => 'application/octet-stream',
+			'psd'   => 'application/octet-stream',
+			'sea'   => 'application/octet-stream',
+			'so'    => 'application/octet-stream',
+			'oda'   => 'application/oda',
+			'pdf'   => 'application/pdf',
+			'ai'    => 'application/postscript',
+			'eps'   => 'application/postscript',
+			'ps'    => 'application/postscript',
+			'smi'   => 'application/smil',
+			'smil'  => 'application/smil',
+			'mif'   => 'application/vnd.mif',
+			'xls'   => 'application/vnd.ms-excel',
+			'ppt'   => 'application/vnd.ms-powerpoint',
 			'wbxml' => 'application/vnd.wap.wbxml',
-			'wmlc' => 'application/vnd.wap.wmlc',
-			'dcr' => 'application/x-director',
-			'dir' => 'application/x-director',
-			'dxr' => 'application/x-director',
-			'dvi' => 'application/x-dvi',
-			'gtar' => 'application/x-gtar',
-			'php3' => 'application/x-httpd-php',
-			'php4' => 'application/x-httpd-php',
-			'php' => 'application/x-httpd-php',
+			'wmlc'  => 'application/vnd.wap.wmlc',
+			'dcr'   => 'application/x-director',
+			'dir'   => 'application/x-director',
+			'dxr'   => 'application/x-director',
+			'dvi'   => 'application/x-dvi',
+			'gtar'  => 'application/x-gtar',
+			'php3'  => 'application/x-httpd-php',
+			'php4'  => 'application/x-httpd-php',
+			'php'   => 'application/x-httpd-php',
 			'phtml' => 'application/x-httpd-php',
-			'phps' => 'application/x-httpd-php-source',
-			'swf' => 'application/x-shockwave-flash',
-			'sit' => 'application/x-stuffit',
-			'tar' => 'application/x-tar',
-			'tgz' => 'application/x-tar',
-			'xht' => 'application/xhtml+xml',
+			'phps'  => 'application/x-httpd-php-source',
+			'swf'   => 'application/x-shockwave-flash',
+			'sit'   => 'application/x-stuffit',
+			'tar'   => 'application/x-tar',
+			'tgz'   => 'application/x-tar',
+			'xht'   => 'application/xhtml+xml',
 			'xhtml' => 'application/xhtml+xml',
-			'zip' => 'application/zip',
-			'mid' => 'audio/midi',
-			'midi' => 'audio/midi',
-			'mp2' => 'audio/mpeg',
-			'mp3' => 'audio/mpeg',
-			'm4a' => 'audio/mp4',
-			'mpga' => 'audio/mpeg',
-			'aif' => 'audio/x-aiff',
-			'aifc' => 'audio/x-aiff',
-			'aiff' => 'audio/x-aiff',
-			'ram' => 'audio/x-pn-realaudio',
-			'rm' => 'audio/x-pn-realaudio',
-			'rpm' => 'audio/x-pn-realaudio-plugin',
-			'ra' => 'audio/x-realaudio',
-			'wav' => 'audio/x-wav',
-			'mka' => 'audio/x-matroska',
-			'bmp' => 'image/bmp',
-			'gif' => 'image/gif',
-			'jpeg' => 'image/jpeg',
-			'jpe' => 'image/jpeg',
-			'jpg' => 'image/jpeg',
-			'png' => 'image/png',
-			'tiff' => 'image/tiff',
-			'tif' => 'image/tiff',
-			'webp' => 'image/webp',
-			'heif' => 'image/heif',
+			'zip'   => 'application/zip',
+			'mid'   => 'audio/midi',
+			'midi'  => 'audio/midi',
+			'mp2'   => 'audio/mpeg',
+			'mp3'   => 'audio/mpeg',
+			'm4a'   => 'audio/mp4',
+			'mpga'  => 'audio/mpeg',
+			'aif'   => 'audio/x-aiff',
+			'aifc'  => 'audio/x-aiff',
+			'aiff'  => 'audio/x-aiff',
+			'ram'   => 'audio/x-pn-realaudio',
+			'rm'    => 'audio/x-pn-realaudio',
+			'rpm'   => 'audio/x-pn-realaudio-plugin',
+			'ra'    => 'audio/x-realaudio',
+			'wav'   => 'audio/x-wav',
+			'mka'   => 'audio/x-matroska',
+			'bmp'   => 'image/bmp',
+			'gif'   => 'image/gif',
+			'jpeg'  => 'image/jpeg',
+			'jpe'   => 'image/jpeg',
+			'jpg'   => 'image/jpeg',
+			'png'   => 'image/png',
+			'tiff'  => 'image/tiff',
+			'tif'   => 'image/tiff',
+			'webp'  => 'image/webp',
+			'heif'  => 'image/heif',
 			'heifs' => 'image/heif-sequence',
-			'heic' => 'image/heic',
+			'heic'  => 'image/heic',
 			'heics' => 'image/heic-sequence',
-			'eml' => 'message/rfc822',
-			'css' => 'text/css',
-			'html' => 'text/html',
-			'htm' => 'text/html',
+			'eml'   => 'message/rfc822',
+			'css'   => 'text/css',
+			'html'  => 'text/html',
+			'htm'   => 'text/html',
 			'shtml' => 'text/html',
-			'log' => 'text/plain',
-			'text' => 'text/plain',
-			'txt' => 'text/plain',
-			'rtx' => 'text/richtext',
-			'rtf' => 'text/rtf',
-			'vcf' => 'text/vcard',
+			'log'   => 'text/plain',
+			'text'  => 'text/plain',
+			'txt'   => 'text/plain',
+			'rtx'   => 'text/richtext',
+			'rtf'   => 'text/rtf',
+			'vcf'   => 'text/vcard',
 			'vcard' => 'text/vcard',
-			'ics' => 'text/calendar',
-			'xml' => 'text/xml',
-			'xsl' => 'text/xml',
-			'wmv' => 'video/x-ms-wmv',
-			'mpeg' => 'video/mpeg',
-			'mpe' => 'video/mpeg',
-			'mpg' => 'video/mpeg',
-			'mp4' => 'video/mp4',
-			'm4v' => 'video/mp4',
-			'mov' => 'video/quicktime',
-			'qt' => 'video/quicktime',
-			'rv' => 'video/vnd.rn-realvideo',
-			'avi' => 'video/x-msvideo',
+			'ics'   => 'text/calendar',
+			'xml'   => 'text/xml',
+			'xsl'   => 'text/xml',
+			'wmv'   => 'video/x-ms-wmv',
+			'mpeg'  => 'video/mpeg',
+			'mpe'   => 'video/mpeg',
+			'mpg'   => 'video/mpeg',
+			'mp4'   => 'video/mp4',
+			'm4v'   => 'video/mp4',
+			'mov'   => 'video/quicktime',
+			'qt'    => 'video/quicktime',
+			'rv'    => 'video/vnd.rn-realvideo',
+			'avi'   => 'video/x-msvideo',
 			'movie' => 'video/x-sgi-movie',
-			'webm' => 'video/webm',
-			'mkv' => 'video/x-matroska',
+			'webm'  => 'video/webm',
+			'mkv'   => 'video/x-matroska',
 		];
 		$ext = strtolower($ext);
 		if (array_key_exists($ext, $mimes)) {
@@ -4125,7 +4146,6 @@ class PHPMailer
 	 * @param string $signHeader
 	 *
 	 * @throws Exception
-	 *
 	 * @return string The DKIM signature value
 	 */
 	public function DKIM_Sign($signHeader)
@@ -4241,16 +4261,38 @@ class PHPMailer
 		$to_header = '';
 		$date_header = '';
 		$current = '';
+		$copiedHeaderFields = '';
+		$foundExtraHeaders = [];
+		$extraHeaderKeys = '';
+		$extraHeaderValues = '';
+		$extraCopyHeaderFields = '';
 		foreach ($headers as $header) {
 			if (strpos($header, 'From:') === 0) {
 				$from_header = $header;
 				$current = 'from_header';
-			} elseif (strpos($header, 'To:') === 0) {
+			} else if (strpos($header, 'To:') === 0) {
 				$to_header = $header;
 				$current = 'to_header';
-			} elseif (strpos($header, 'Date:') === 0) {
+			} else if (strpos($header, 'Date:') === 0) {
 				$date_header = $header;
 				$current = 'date_header';
+			} else if (!empty($this->DKIM_extraHeaders)) {
+				foreach ($this->DKIM_extraHeaders as $extraHeader) {
+					if (strpos($header, $extraHeader . ':') === 0) {
+						$headerValue = $header;
+						foreach ($this->CustomHeader as $customHeader) {
+							if ($customHeader[0] === $extraHeader) {
+								$headerValue = trim($customHeader[0]) .
+									': ' .
+									$this->encodeHeader(trim($customHeader[1]));
+								break;
+							}
+						}
+						$foundExtraHeaders[$extraHeader] = $headerValue;
+						$current = '';
+						break;
+					}
+				}
 			} else {
 				if (!empty($$current) and strpos($header, ' =?') === 0) {
 					$$current .= $header;
@@ -4259,14 +4301,24 @@ class PHPMailer
 				}
 			}
 		}
-		$from = str_replace('|', '=7C', $this->DKIM_QP($from_header));
-		$to = str_replace('|', '=7C', $this->DKIM_QP($to_header));
-		$date = str_replace('|', '=7C', $this->DKIM_QP($date_header));
-		$subject = str_replace(
-			'|',
-			'=7C',
-			$this->DKIM_QP($subject_header)
-		); // Copied header fields (dkim-quoted-printable)
+		foreach ($foundExtraHeaders as $key => $value) {
+			$extraHeaderKeys .= ':' . $key;
+			$extraHeaderValues .= $value . "\r\n";
+			if ($this->DKIM_copyHeaderFields) {
+				$extraCopyHeaderFields .= "\t|" . str_replace('|', '=7C', $this->DKIM_QP($value)) . ";\r\n";
+			}
+		}
+		if ($this->DKIM_copyHeaderFields) {
+			$from = str_replace('|', '=7C', $this->DKIM_QP($from_header));
+			$to = str_replace('|', '=7C', $this->DKIM_QP($to_header));
+			$date = str_replace('|', '=7C', $this->DKIM_QP($date_header));
+			$subject = str_replace('|', '=7C', $this->DKIM_QP($subject_header));
+			$copiedHeaderFields = "\tz=$from\r\n" .
+				"\t|$to\r\n" .
+				"\t|$date\r\n" .
+				"\t|$subject;\r\n" .
+				$extraCopyHeaderFields;
+		}
 		$body = $this->DKIM_BodyC($body);
 		$DKIMlen = strlen($body); // Length of body
 		$DKIMb64 = base64_encode(pack('H*', hash('sha256', $body))); // Base64 of packed binary SHA-256 hash of body
@@ -4282,12 +4334,9 @@ class PHPMailer
 			$this->DKIM_selector .
 			";\r\n" .
 			"\tt=" . $DKIMtime . '; c=' . $DKIMcanonicalization . ";\r\n" .
-			"\th=From:To:Date:Subject;\r\n" .
+			"\th=From:To:Date:Subject" . $extraHeaderKeys . ";\r\n" .
 			"\td=" . $this->DKIM_domain . ';' . $ident . "\r\n" .
-			"\tz=$from\r\n" .
-			"\t|$to\r\n" .
-			"\t|$date\r\n" .
-			"\t|$subject;\r\n" .
+			$copiedHeaderFields .
 			"\tbh=" . $DKIMb64 . ";\r\n" .
 			"\tb=";
 		$toSign = $this->DKIM_HeaderC(
@@ -4295,6 +4344,7 @@ class PHPMailer
 			$to_header . "\r\n" .
 			$date_header . "\r\n" .
 			$subject_header . "\r\n" .
+			$extraHeaderValues .
 			$dkimhdrs
 		);
 		$signed = $this->DKIM_Sign($toSign);
@@ -4312,7 +4362,7 @@ class PHPMailer
 	 */
 	public static function hasLineLongerThanMax($str)
 	{
-		return (bool) preg_match('/^(.{' . (self::MAX_LINE_LENGTH + strlen(static::$LE)) . ',})/m', $str);
+		return (bool)preg_match('/^(.{' . (self::MAX_LINE_LENGTH + strlen(static::$LE)) . ',})/m', $str);
 	}
 
 	/**
@@ -4387,6 +4437,26 @@ class PHPMailer
 		if (!empty($this->action_function) and is_callable($this->action_function)) {
 			call_user_func($this->action_function, $isSent, $to, $cc, $bcc, $subject, $body, $from, $extra);
 		}
+	}
+
+	/**
+	 * Get the OAuth instance.
+	 *
+	 * @return OAuth
+	 */
+	public function getOAuth()
+	{
+		return $this->oauth;
+	}
+
+	/**
+	 * Set an OAuth instance.
+	 *
+	 * @param OAuth $oauth
+	 */
+	public function setOAuth(OAuth $oauth)
+	{
+		$this->oauth = $oauth;
 	}
 }
 /* EOF */
