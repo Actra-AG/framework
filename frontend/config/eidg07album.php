@@ -7,7 +7,6 @@ $platzhalter['title'] = 'Fotos zum eidgenössischen Schützenfest 2007';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
-$platzhalter['scripts'] = '';
 
 // Navigation
 $navistufe[1] = 'eidg07';

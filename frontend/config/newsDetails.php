@@ -7,7 +7,6 @@ $platzhalter['title'] = 'Details zur Neuigkeit';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
-$platzhalter['scripts'] = '';
 
 // Navigation
 $navistufe[1] = 'start';

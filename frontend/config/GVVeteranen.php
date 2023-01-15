@@ -7,7 +7,6 @@ $platzhalter['title'] = 'GV Veteranen';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
-$platzhalter['scripts'] = '';
 
 // Navigation
 $navistufe[1] = '';

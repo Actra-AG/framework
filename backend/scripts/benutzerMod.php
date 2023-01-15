@@ -2,6 +2,8 @@
 
 use classes\pageClass;
 use classes\bsvb;
+use framework\form\component\field\EmailField;
+use framework\html\HtmlText;
 use PDO;
 
 class benutzerMod extends pageClass
@@ -146,20 +148,24 @@ class benutzerMod extends pageClass
 					$datenArr['telefon'] = $_POST['telefon'];
 				}
 
-				if (!isset($_POST['email']) || $_POST['email'] == '') {
-					$fehlerArr[] = 'Geben Sie bitte eine E-Mail-Adresse an.';
-				} else if (!$this->showPage->valemail($_POST['email'])) {
-					$fehlerArr[] = 'Geben Sie bitte eine gültige E-Mail-Adresse an.';
+				$emailField = new EmailField(
+					name: 'email',
+					label: HtmlText::encoded(textContent: 'E-Mail'),
+					value: null,
+					invalidError: HtmlText::encoded(textContent: 'Geben Sie bitte eine gültige E-Mail-Adresse an.'),
+					requiredError: HtmlText::encoded(textContent: 'Geben Sie bitte eine E-Mail-Adresse an.')
+				);
+				if (!$emailField->validate(inputData: $_POST)) {
+					$fehlerArr[] = $emailField->getErrorsAsHtmlTextObjects()[0]->render();
 				} else {
-					$datenArr['email'] = $_POST['email'];
+					$datenArr['email'] = $emailField->getRawValue();
 					$sql = "SELECT COUNT(*) AS anz FROM benutzer WHERE email=? AND ID!=?";
-					$qry = $this->db->query($sql, [$_POST['email'], $ID]);
+					$qry = $this->db->query($sql, [$datenArr['email'], $ID]);
 					$res = $qry->fetch(PDO::FETCH_ASSOC);
 					if ($res['anz'] != 0) {
 						$fehlerArr[] = 'Die eingegebene E-Mail-Adresse ist bereits registriert. Geben Sie bitte eine andere ein.';
 					}
 				}
-
 				if (!isset($_POST['geburtsdatum']) || $_POST['geburtsdatum'] == '') {
 					$datenArr['geburtsdatum'] = '';
 				} else if (!preg_match("/[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4}/", $_POST['geburtsdatum'])) {
@@ -216,7 +222,7 @@ class benutzerMod extends pageClass
 					$datenArr['vorstand'] = $_POST['vorstand'];
 				}
 
-				foreach ($cjp AS $key => $vID) {
+				foreach ($cjp as $key => $vID) {
 					if (!isset($_POST['vwahl']) || !in_array($vID, $_POST['vwahl'])) {
 						$delArr[] = $vID;
 						unset($cjp[$key]);
@@ -224,7 +230,7 @@ class benutzerMod extends pageClass
 				}
 
 				if (isset($_POST['vwahl'])) {
-					foreach ($_POST['vwahl'] AS $vID) {
+					foreach ($_POST['vwahl'] as $vID) {
 						if (!in_array($vID, $cjp)) {
 							$addArr[] = $vID;
 							$cjp[] = $vID;
@@ -248,11 +254,11 @@ class benutzerMod extends pageClass
 						$bsvb->updateEntry('benutzer', $ID, $datenArr);
 					}
 
-					foreach ($delArr AS $vID) {
+					foreach ($delArr as $vID) {
 						$this->db->query("DELETE FROM benutzervereine WHERE benutzerID=? AND vereinID=?", [$ID, $vID]);
 					}
 
-					foreach ($addArr AS $vID) {
+					foreach ($addArr as $vID) {
 						$this->db->query("INSERT INTO benutzervereine SET benutzerID=?, vereinID=?", [$ID, $vID]);
 					}
 
@@ -260,7 +266,7 @@ class benutzerMod extends pageClass
 				}
 			}
 
-			foreach ($vArr AS $key => $val) {
+			foreach ($vArr as $key => $val) {
 				$vereine .= "<option value=\"{$key}\"";
 				if ($key == $datenArr['vereinID']) {
 					$vereine .= ' selected="selected"';
@@ -283,7 +289,7 @@ class benutzerMod extends pageClass
 				$herr = ' checked="checked"';
 			}
 
-			foreach ($optArr AS $key => $val) {
+			foreach ($optArr as $key => $val) {
 				$opt1 .= "<option value=\"{$key}\"";
 				if ($key == $datenArr['aktiv']) {
 					$opt1 .= ' selected="selected"';
@@ -337,7 +343,7 @@ class benutzerMod extends pageClass
 		$this->placeholders['opt5'] = $opt5;
 		$this->placeholders['jpwahl'] = $jpwahl;
 
-		foreach ($datenArr AS $key => $val) {
+		foreach ($datenArr as $key => $val) {
 			$this->placeholders[$key] = $val;
 		}
 	}

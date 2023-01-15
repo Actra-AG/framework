@@ -7,7 +7,6 @@ $platzhalter['title'] = 'Verein bearbeiten';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
-$platzhalter['scripts'] = '';
 
 // Navigation
 $navistufe[0] = 'vereine';

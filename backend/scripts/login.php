@@ -3,6 +3,8 @@
 namespace backend\scripts;
 
 use classes\pageClass;
+use framework\auth\AuthSession;
+use framework\session\AbstractSessionHandler;
 use PDO;
 
 class login extends pageClass
@@ -15,7 +17,7 @@ class login extends pageClass
 
 		$fehlerArr = [];
 
-		$this->showPage->logOut();
+		AuthSession::logOut();
 
 		$mnauth = false;
 		require_once($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'mnauth/check.php');
@@ -95,7 +97,7 @@ class login extends pageClass
 						$_SESSION['userData'] = $personData;
 						$_SESSION['intAccess'] = true;
 
-						$this->requestHandler->regenerate_sessionID();
+						AbstractSessionHandler::getSessionHandler()->regenerateID();
 
 						$this->showPage->redirect("start.html");
 					}

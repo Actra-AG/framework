@@ -1,0 +1,90 @@
+html {
+	color: #222;
+	line-height: 1.5;
+	font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+	background: #f3f3f3;
+	-ms-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	padding: 0 40px 20px;
+}
+
+h1, h2 {
+	margin: 0 0 1em;
+	padding: 0;
+}
+
+h1 {
+	padding: 0;
+	font-size: 2em;
+	font-weight: 400;
+	color: #c00;
+}
+
+h2 {
+	margin-bottom: .5em;
+	font-size: 1em;
+	text-transform: uppercase;
+	font-weight: 400;
+}
+
+.error {
+	padding: 40px 40px 0;
+	margin: 40px auto 20px;
+	background: #fff;
+	box-shadow: 1px 1px 40px rgba(0, 0, 0, .2);
+	font-size: 0.875em;
+}
+
+.debug {
+	margin-bottom: 40px;
+	border-bottom: 1px solid rgba(0, 0, 0, .07);
+}
+
+.debug h2 {
+	margin-bottom: 1em;
+}
+
+.debug dl {
+	margin: 0;
+	padding: 5px 0;
+	border-top: 1px solid rgba(0, 0, 0, .07);
+}
+
+.debug dt {
+	float: left;
+	width: 100px;
+	color: rgba(0, 0, 0, .4);
+
+}
+
+.debug dd {
+	margin-left: 120px;
+}
+
+.stacktrace {
+	background: #2B333D;
+	color: rgba(255, 255, 255, .8);
+	padding: 40px 40px 40px;
+	margin: 0 -40px;
+}
+
+.stacktrace pre {
+	background: rgba(0, 0, 0, .1);
+	background: #2B333D;
+	color: rgba(255, 255, 255, .8);
+	padding: 0 0 20px;
+	overflow: auto;
+	box-shadow: -1px -1px 4px rgba(0, 0, 0, .04) inset;
+	margin: 0;
+	font-family: courier, sans-serif;
+	line-height: 1.5;
+}
+
+.stacktrace h2 {
+	color: rgba(255, 255, 255, .3);
+	margin-bottom: 2em;
+}

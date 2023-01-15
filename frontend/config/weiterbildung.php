@@ -7,7 +7,6 @@ $platzhalter['title'] = 'Aus- und Weiterbildungen';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
-$platzhalter['scripts'] = '';
 
 // Navigation
 $navistufe[1] = 'weiterbildung';

@@ -1,67 +1,182 @@
-# ------------------------------
-# Actra AG - http://www.actra.ch
-# ------------------------------
-# 20.07.2009	CM	new version
+# author Christof Moser <christof.moser@actra.ch>
+# copyright Actra AG, Rümlang, Switzerland
 
-# --------------------------------------------------------
-# handle default errors (that occur outside our framework)
-# --------------------------------------------------------
+# ----------------------------------------------------------------------
+# Use modRewrite if active
+# ----------------------------------------------------------------------
 
-ErrorDocument 400 /index.php?default_error=400
-ErrorDocument 401 /index.php?default_error=401
-ErrorDocument 403 /index.php?default_error=403
-ErrorDocument 404 /index.php?default_error=404
-ErrorDocument 405 /index.php?default_error=405
-ErrorDocument 406 /index.php?default_error=406
-ErrorDocument 407 /index.php?default_error=407
-ErrorDocument 408 /index.php?default_error=408
-ErrorDocument 409 /index.php?default_error=409
-ErrorDocument 410 /index.php?default_error=410
-ErrorDocument 411 /index.php?default_error=411
-ErrorDocument 412 /index.php?default_error=412
-ErrorDocument 413 /index.php?default_error=413
-ErrorDocument 414 /index.php?default_error=414
-ErrorDocument 415 /index.php?default_error=415
-ErrorDocument 500 /index.php?default_error=500
-ErrorDocument 501 /index.php?default_error=501
-ErrorDocument 502 /index.php?default_error=502
-ErrorDocument 503 /index.php?default_error=503
-ErrorDocument 504 /index.php?default_error=504
-ErrorDocument 505 /index.php?default_error=505
+<IfModule mod_rewrite.c>
+	# Activate rewrite engine
+	RewriteEngine On
 
-# -----------------------------
-# rewriting for actra framework
-# -----------------------------
+	# Set rewrite base
+	RewriteBase /
 
-RewriteEngine on
-RewriteBase /
+	# Deny direct access to blacklisted directories and files
+	RewriteRule ^framework/(.*) index.php [NC,L] # framework files
+	RewriteRule ^site/(.*) index.php [NC,L] # site files
+	RewriteRule ^src/(.*) index.php [NC,L] # src files
+	RewriteRule ^vendor/(.*) index.php [NC,L] # vendor files
+	RewriteRule ^\..+ - [NC,F,L] # hidden files
 
-# blacklist of directories
+	# Whitelist specific root files
+	RewriteRule ^favicon\.ico$ - [L]
+	RewriteRule ^robots\.txt$ - [L]
 
-RewriteRule classes/ - [NC,F,L]
-RewriteRule errors/ - [NC,F,L]
-RewriteRule config/ - [NC,F,L]
-RewriteRule pages/ - [NC,F,L]
-RewriteRule services/ - [NC,F,L]
-RewriteRule settings/ - [NC,F,L]
-RewriteRule scripts/ - [NC,F,L]
-RewriteRule templates/ - [NC,F,L]
+    # Send all requests for files in root directory to index.php
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^[^/]+$ index.php [NC,L]
 
-# whitelist of files
+	# Deliver directories and files if they exist
+	RewriteCond %{REQUEST_FILENAME} -f [OR]
+	RewriteCond %{REQUEST_FILENAME} -d
+	RewriteRule ^(.+) - [PT,L]
 
-RewriteRule ^patch\.php$ - [L]
-RewriteRule ^index\.php$ - [L]
-RewriteRule ^robots\.txt$ - [L]
-RewriteRule ^mnauth/login\.php$ - [L]
+	# Handle other requests by /index.php
+	RewriteRule ^(.*) index.php
+</IfModule>
 
-# whitelist of directories
+# ----------------------------------------------------------------------
+# Better website experience for IE users
+# ----------------------------------------------------------------------
 
-#RewriteRule ^files/ - [L]
-RewriteRule ^galerie/ - [L]
-RewriteRule ^images/ - [L]
-RewriteRule ^styles/ - [L]
-RewriteRule ^flash/ - [L]
-RewriteRule ^js/ - [L]
+# Force the latest IE version, in various cases when it may fall back to IE7 mode
+# github.com/rails/rails/commit/123eb25#commitcomment-118920
+# Use ChromeFrame if it's installed for a better experience for the poor IE folk
 
-RewriteRule ^[\s-a-z0-9_/]*(\.[a-z0-9]+)?$ /index.php [NC,L]
-RewriteRule ^.* /index.php?default_error=400 [L]
+<IfModule mod_headers.c>
+  Header set X-UA-Compatible "IE=Edge,chrome=1"
+  # mod_headers can't match by content-type, but we don't want to send this header on *everything*...
+  <FilesMatch "\.(js|css|gif|png|jpe?g|pdf|xml|oga|ogg|m4a|ogv|mp4|m4v|webm|svg|svgz|eot|ttf|otf|woff|ico|webp|appcache|manifest|htc|crx|oex|xpi|safariextz|vcf)$" >
+    Header unset X-UA-Compatible
+  </FilesMatch>
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Gzip compression
+# ----------------------------------------------------------------------
+
+<IfModule mod_deflate.c>
+	# Force deflate for mangled headers developer.yahoo.com/blogs/ydn/posts/2010/12/pushing-beyond-gzipping/
+	<IfModule mod_setenvif.c>
+		<IfModule mod_headers.c>
+			SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
+			RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
+		</IfModule>
+	</IfModule>
+
+	# Compress all output labeled with one of the following MIME-types
+	<IfModule mod_filter.c>
+		AddOutputFilterByType DEFLATE application/atom+xml \
+			application/javascript \
+			application/json \
+			application/rss+xml \
+			application/vnd.ms-fontobject \
+			application/x-font-ttf \
+			application/xhtml+xml \
+			application/xml \
+			application/x-javascript \
+			font/opentype \
+			image/svg+xml \
+			image/x-icon \
+			text/css \
+			text/html \
+			text/plain \
+			text/x-component \
+			text/xml \
+            text/javascript
+	</IfModule>
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Prevent 404 errors for non-existing redirected folders
+# ----------------------------------------------------------------------
+
+# without -MultiViews, Apache will give a 404 for a rewrite if a folder of the
+# same name does not exist.
+# webmasterworld.com/apache/3808792.htm
+Options -MultiViews
+
+# ----------------------------------------------------------------------
+# UTF-8 encoding
+# ----------------------------------------------------------------------
+
+# Use UTF-8 encoding for anything served text/plain or text/html
+AddDefaultCharset utf-8
+
+# Force UTF-8 for a number of file formats
+AddCharset utf-8 .atom .css .js .json .rss .vtt .xml
+
+# ----------------------------------------------------------------------
+# Prevent 406 error on file upload
+# ----------------------------------------------------------------------
+
+# Disable post buffering for multipart forms
+# https://shopplugin.net/kb/file-uploads-generate-http-error-406/
+<IfModule mod_security.c>
+	SetEnvIfNoCase Content-Type "^multipart/form-data;" "MODSEC_NOPOSTBUFFERING=Do not buffer file uploads"
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Don't let users browse your file system
+# ----------------------------------------------------------------------
+
+# "-Indexes" will have Apache block users from browsing folders without a
+# default document Usually you should leave this activated, because you
+# shouldn't allow everybody to surf through every folder on your server (which
+# includes rather private places like CMS system folders).
+<IfModule mod_autoindex.c>
+	Options -Indexes
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Block access to backup and source files
+# ----------------------------------------------------------------------
+
+# Block access to backup and source files. These files may be left by some
+# text/html editors and pose a great security danger, when anyone can access
+# them.
+<FilesMatch "(\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)|~)$">
+	Order allow,deny
+	Deny from all
+	Satisfy All
+</FilesMatch>
+
+# ----------------------------------------------------------------------
+# Increase cookie security
+# ----------------------------------------------------------------------
+
+<IfModule php5_module>
+	php_value session.cookie_httponly true
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Security headers
+# ----------------------------------------------------------------------
+
+# Disable server signature
+# https://www.unixmen.com/how-to-disable-server-signature-using-htaccess-or-by-editing-apache/
+ServerSignature Off
+
+<IfModule mod_headers.c>
+    Header always set X-XSS-Protection "1; mode=block"
+	Header always set Referrer-Policy "same-origin"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "deny"
+</IfModule>
+
+# ----------------------------------------------------------------------
+# E-Tags / Expire date for content delivered directly by the webserver
+# ----------------------------------------------------------------------
+
+<IfModule mod_expires.c>
+	<FilesMatch "\.(jpg|gif|png|css|js|ico)$">
+		#Header unset Last-Modified
+		Header unset ETag
+		FileETag None
+
+		ExpiresActive on
+		ExpiresDefault "access plus 1 year"
+		Header set Cache-Control "public, max-age=31536000"
+	</FilesMatch>
+</IfModule>

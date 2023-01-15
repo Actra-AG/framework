@@ -7,7 +7,6 @@ $platzhalter['title'] = 'Eidgenössisches Schützenfest 2007 im Tessin';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
-$platzhalter['scripts'] = '';
 
 // Navigation
 $navistufe[1] = 'eidg07';

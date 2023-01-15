@@ -7,7 +7,6 @@ $platzhalter['title'] = 'Foto hochladen/bearbeiten';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
-$platzhalter['scripts'] = '';
 
 // Navigation
 $navistufe[0] = 'fotos';

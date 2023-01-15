@@ -7,7 +7,6 @@ $platzhalter['title'] = 'Details zum Anlass';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
-$platzhalter['scripts'] = '';
 
 // Navigation
 $navistufe[0] = 'jahresprogramm';

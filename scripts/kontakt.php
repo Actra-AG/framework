@@ -3,6 +3,8 @@
 namespace scripts;
 
 use classes\pageClass;
+use framework\form\component\field\EmailField;
+use framework\html\HtmlText;
 use PDO;
 use classes\FormMailer;
 
@@ -58,14 +60,18 @@ WHERE
 				$telefon = $_POST['telefon'];
 			}
 
-			if (!isset($_POST['email']) || $_POST['email'] == '') {
-				$fehlerArr[] = "Es wurde keine E-Mail-Adresse eingegeben.";
-			} else if (!$this->showPage->valemail($_POST['email'])) {
-				$fehlerArr[] = "Es wurde eine ungültige E-Mail-Adresse eingegeben.";
+			$emailField = new EmailField(
+				name: 'email',
+				label: HtmlText::encoded(textContent: 'E-Mail'),
+				value: null,
+				invalidError: HtmlText::encoded(textContent: 'Geben Sie bitte eine gültige E-Mail-Adresse an.'),
+				requiredError: HtmlText::encoded(textContent: 'Geben Sie bitte eine E-Mail-Adresse an.')
+			);
+			if (!$emailField->validate(inputData: $_POST)) {
+				$fehlerArr[] = $emailField->getErrorsAsHtmlTextObjects()[0]->render();
 			} else {
-				$email = $_POST['email'];
+				$email = $emailField->getRawValue();
 			}
-
 			if (!isset($_POST['betreff']) || $_POST['betreff'] == '') {
 				$fehlerArr[] = 'Es wurde kein Betreff eingegeben.';
 			} else {

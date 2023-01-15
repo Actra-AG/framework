@@ -7,7 +7,6 @@ $platzhalter['title'] = 'Tag der Jugend 2010';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
-$platzhalter['scripts'] = '';
 
 // Navigation
 $navistufe[1] = 'tagderjugend2010';

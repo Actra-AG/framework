@@ -3,6 +3,8 @@
 use classes\pageClass;
 use classes\FormMailer;
 use classes\bsvb;
+use framework\form\component\field\EmailField;
+use framework\html\HtmlText;
 use PDO;
 
 class register extends pageClass
@@ -93,14 +95,19 @@ class register extends pageClass
 					$datenArr['telefon'] = $_POST['telefon'];
 				}
 
-				if (!isset($_POST['email']) || $_POST['email'] == '') {
-					$fehlerArr[] = 'Geben Sie bitte eine E-Mail-Adresse an.';
-				} else if (!$this->showPage->valemail($_POST['email'])) {
-					$fehlerArr[] = 'Geben Sie bitte eine gültige E-Mail-Adresse an.';
+				$emailField = new EmailField(
+					name: 'email',
+					label: HtmlText::encoded(textContent: 'E-Mail'),
+					value: null,
+					invalidError: HtmlText::encoded(textContent: 'Geben Sie bitte eine gültige E-Mail-Adresse an.'),
+					requiredError: HtmlText::encoded(textContent: 'Geben Sie bitte eine E-Mail-Adresse an.')
+				);
+				if (!$emailField->validate(inputData: $_POST)) {
+					$fehlerArr[] = $emailField->getErrorsAsHtmlTextObjects()[0]->render();
 				} else {
-					$datenArr['email'] = $_POST['email'];
+					$datenArr['email'] = $emailField->getRawValue();
 					$sql = "SELECT COUNT(*) AS anz FROM benutzer WHERE email=?";
-					$qry = $this->db->query($sql, [$_POST['email']]);
+					$qry = $this->db->query($sql, [$datenArr['email']]);
 					$res = $qry->fetch(PDO::FETCH_ASSOC);
 					if ($res['anz'] != 0) {
 						$fehlerArr[] = 'Die eingegebene E-Mail-Adresse ist bereits registriert. Geben Sie bitte eine andere ein.';

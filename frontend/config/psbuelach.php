@@ -7,7 +7,6 @@ $platzhalter['title'] = 'Pistolen - Schützen Bülach';
 $platzhalter['description'] = 'description';
 
 // Zusatzcode in Header
-$platzhalter['scripts'] = '';
 
 // Navigation
 $navistufe[1] = 'vereine';
