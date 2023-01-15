@@ -6,7 +6,8 @@ use PDO;
 
 class dokumentMod extends pageClass
 {
-	public function execute() {
+	public function execute()
+	{
 		$bsvb = new bsvb();
 
 		$status = '';
@@ -38,7 +39,7 @@ class dokumentMod extends pageClass
 	  WHERE
   	  ID=? AND (registered_by=? OR {$this->showPage->userData->admin}=1)
   	";
-				$qry = $this->db->query($sql, [$objektID, $myID]);
+				$qry = $this->db->prepareAndExecute($sql, [$objektID, $myID]);
 				if ($qry->rowCount() == 0) {
 					$this->showPage->redirect("jp.html");
 				}
@@ -48,7 +49,7 @@ class dokumentMod extends pageClass
 			}
 
 			$sql = "SELECT titel FROM dokumente WHERE objekt=? AND objektID=? AND ID=?";
-			$qry = $this->db->query($sql, [$objekt, $objektID, $ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$objekt, $objektID, $ID]);
 			if ($qry->rowCount() == 1) {
 				$this->showPage->pageArr['platzhalter']['title'] = 'Dokument bearbeiten';
 				$ac = 'mod';
@@ -65,7 +66,7 @@ class dokumentMod extends pageClass
 				if (isset($_FILES['doc']) && $_FILES['doc']['name'] != '') {
 					$mimetype = $_FILES['doc']['type'];
 					$sql = "SELECT extension FROM dateiformate WHERE mimetype=? AND FIND_IN_SET('dokumente', arten)!=0";
-					$qry = $this->db->query($sql, [$mimetype]);
+					$qry = $this->db->prepareAndExecute($sql, [$mimetype]);
 					if ($qry->rowCount() == 1) {
 						$res = $qry->fetch(PDO::FETCH_ASSOC);
 						$extension = $res['extension'];
@@ -117,7 +118,7 @@ class dokumentMod extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= "</ul></div>";
@@ -129,11 +130,8 @@ class dokumentMod extends pageClass
 		$this->placeholders['ID'] = $ID;
 		$this->placeholders['dokument'] = $dokument;
 
-		foreach ($datenArr AS $key => $val) {
+		foreach ($datenArr as $key => $val) {
 			$this->placeholders[$key] = $val;
 		}
 	}
 }
-
-
-/* EOF */

@@ -19,7 +19,7 @@ class archiv extends pageClass
 			if ($typ == 'seite') {
 
 				$sql = "SELECT DATE_FORMAT(s.datum, '%d.%m.%Y %T') AS datum, s.ort, s.seite, s.inhalt, s.config FROM seiteninhalte s WHERE s.ID=?";
-				$qry = $this->db->query($sql, [$ID]);
+				$qry = $this->db->prepareAndExecute($sql, [$ID]);
 				$res = $qry->fetch(PDO::FETCH_ASSOC);
 
 				$backlink = "seiteArchiv-{$res['ort']}-{$res['seite']}.html";

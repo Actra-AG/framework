@@ -19,13 +19,13 @@ class benutzer extends pageClass
 
 			$vArr[0] = 'keine Einschränkungen';
 			$sql = "SELECT ID, name FROM vereine ORDER BY name";
-			$qry = $this->db->query($sql);
+			$qry = $this->db->prepareAndExecute($sql);
 			while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 				$vArr[$res['ID']] = $res['name'];
 			}
 
 			if (isset($_GET['remove'])) {
-				$this->db->query("DELETE FROM benutzer WHERE ID=?", [$_GET['remove']]);
+				$this->db->prepareAndExecute("DELETE FROM benutzer WHERE ID=?", [$_GET['remove']]);
 			}
 
 			$cond = "WHERE 1=1";
@@ -56,7 +56,7 @@ class benutzer extends pageClass
 				$condSearchWord = [];
 
 				$sArr = explode(" ", $stichwort);
-				foreach ($sArr AS $key => $val) {
+				foreach ($sArr as $val) {
 					$sx = trim($val);
 					if ($sx != '') {
 						$condSearchWord[] = "(b.vorname LIKE ? OR b.nachname LIKE ? OR b.email LIKE ?)";
@@ -146,7 +146,7 @@ class benutzer extends pageClass
     
   ";
 			$sql .= " {$cond}";
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			$res = $qry->fetchObject();
 			if ($res->anz == 0) {
 				$liste = "<p>Es wurden keine Einträge gefunden.</p>";
@@ -172,7 +172,7 @@ class benutzer extends pageClass
     LIMIT
       {$pos}, {$this->showPage->config['lists']['entriesPerPage']}";
 
-				$qry = $this->db->query($sql, $paramsArr);
+				$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 				while ($res = $qry->fetchObject()) {
 					$href1 = "benutzerDet-{$res -> ID}.html";
 					$href2 = "benutzer.html?remove={$res -> ID}";
@@ -182,7 +182,7 @@ class benutzer extends pageClass
 				$liste .= $pagination;
 			}
 
-			foreach ($vArr AS $key => $val) {
+			foreach ($vArr as $key => $val) {
 				$vereine .= "<option value=\"{$key}\"";
 				if ($key == $vereinID) {
 					$vereine .= ' selected="selected"';

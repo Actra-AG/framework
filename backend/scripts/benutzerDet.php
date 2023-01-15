@@ -52,7 +52,7 @@ class benutzerDet extends pageClass
 	WHERE
 	  b.ID=?
 	";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			if ($qry->rowCount() == 0) {
 				$this->showPage->redirect("benutzer.html");
 			}
@@ -66,7 +66,7 @@ class benutzerDet extends pageClass
 
 			$cjp = [];
 			$sql = "SELECT vereinID FROM benutzervereine WHERE benutzerID=?";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 				$cjp[] = $res['vereinID'];
 			}
@@ -74,7 +74,7 @@ class benutzerDet extends pageClass
 			$vArr = [];
 			$vArr[0] = 'keiner';
 			$sql = "SELECT ID, name FROM vereine ORDER BY name";
-			$qry = $this->db->query($sql);
+			$qry = $this->db->prepareAndExecute($sql);
 			while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 				$vArr[$res['ID']] = $res['name'];
 			}
@@ -149,7 +149,7 @@ class benutzerDet extends pageClass
   FROM
     jahresprogramm p
     "."{$cond}";
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			$res = $qry->fetchObject();
 			if ($res->anz == 0) {
 				$liste = "<p>Es wurden keine Einträge gefunden.</p>";
@@ -176,7 +176,7 @@ class benutzerDet extends pageClass
     LIMIT
       {$pos}, {$this->showPage->config['lists']['entriesPerPage']}";
 
-				$qry = $this->db->query($sql, $paramsArr);
+				$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 				while ($res = $qry->fetchObject()) {
 					$i++;
 					$alt = ($i % 2 == 0) ? ' class="alt"' : '';

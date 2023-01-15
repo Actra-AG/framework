@@ -18,7 +18,7 @@ class accept extends pageClass
 
 			$ID = (isset($this->showPage->arrVars[1])) ? $this->showPage->arrVars[1] : 0;
 			$sql = "SELECT anrede, nachname, email FROM benutzer WHERE ID=?";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			if ($qry->rowCount() == 0) {
 				$this->showPage->redirect("benutzer.html");
 			}
@@ -37,7 +37,7 @@ class accept extends pageClass
 
 				if (count($fehlerArr) == 0) {
 
-					$this->db->query("UPDATE benutzer SET aktiv=1, accepted=NOW(), denied='0000-00-00 00:00:00' WHERE ID=?", [$ID]);
+					$this->db->prepareAndExecute("UPDATE benutzer SET aktiv=1, accepted=NOW(), denied='0000-00-00 00:00:00' WHERE ID=?", [$ID]);
 
 					$to = $email;
 					$toName = $email;
@@ -53,7 +53,7 @@ class accept extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = '<div id="formfehler"><ul>';
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= '<li>' . $val . '</li>';
 			}
 			$status .= '</ul></div>';
@@ -64,6 +64,3 @@ class accept extends pageClass
 		$this->placeholders['ID'] = $ID;
 	}
 }
-
-
-/* EOF */

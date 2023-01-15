@@ -31,7 +31,7 @@ class vereinMod extends pageClass
 	WHERE
 	  ID=?
 	";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			if ($qry->rowCount() == 1) {
 				$this->showPage->pageArr['platzhalter']['title'] = 'Verein bearbeiten';
 				$ac = 'mod';
@@ -41,9 +41,6 @@ class vereinMod extends pageClass
 				$ac = 'add';
 				$this->showPage->pageArr['platzhalter']['title'] = 'Verein hinzufügen';
 			}
-
-			$optArr[0] = 'Nein';
-			$optArr[1] = 'Ja';
 
 			if (isset($_GET['send'])) {
 
@@ -71,7 +68,7 @@ class vereinMod extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= "</ul></div>";
@@ -80,11 +77,8 @@ class vereinMod extends pageClass
 		$this->placeholders['status'] = $status;
 		$this->placeholders['ID'] = $ID;
 
-		foreach ($datenArr AS $key => $val) {
+		foreach ($datenArr as $key => $val) {
 			$this->placeholders[$key] = $val;
 		}
 	}
 }
-
-
-/* EOF */

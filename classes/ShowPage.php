@@ -80,9 +80,9 @@ class ShowPage extends RequestHandler
 	{
 		$fullArr = [];
 
-		foreach ($this->pageArr['templateArr'] as $lineNum => $line) {
-			if (preg_match_all("{{CONTENT}}", $line, $matches)) {
-				foreach ($this->pageArr['contentArr'] as $lineNum1 => $line1) {
+		foreach ($this->pageArr['templateArr'] as $line) {
+			if (preg_match_all("{{CONTENT}}", $line)) {
+				foreach ($this->pageArr['contentArr'] as $line1) {
 					$fullArr[] = $line1;
 				}
 			} else {
@@ -110,7 +110,7 @@ class ShowPage extends RequestHandler
 		$fullHTML = '';
 		$dontDisplay = [];
 
-		foreach ($fullArr as $lineNum => $line) {
+		foreach ($fullArr as $line) {
 			if (preg_match_all("<!-- sub_([a-zA-Z0-9]*) START -->", $line, $regs)) {
 				$stufenname = $regs[1][0];
 				if (!array_key_exists($stufenname, $stufen)) {
@@ -191,7 +191,7 @@ class ShowPage extends RequestHandler
 			}
 
 			for ($i = 0; $i < $anzObjekte; $i = $i + $proSeite) {
-				if ($i == 0 || $i == $pos || $i == $lastPos || $i <= 0 + ($proSeite * $plusstartende) || $i >= $lastPos - ($proSeite * $plusstartende) || ($i < $pos && $i >= ($pos - ($minusplus * $proSeite))) || ($i > $pos && $i <= ($pos + ($minusplus * $proSeite)))) {
+				if ($i == 0 || $i == $pos || $i == $lastPos || $i <= $proSeite * $plusstartende || $i >= $lastPos - ($proSeite * $plusstartende) || ($i < $pos && $i >= ($pos - ($minusplus * $proSeite))) || ($i > $pos && $i <= ($pos + ($minusplus * $proSeite)))) {
 
 					if ($i == $lastPos - ($proSeite * $plusstartende) && $pos < $lastPos - $proSeite - ($proSeite * $minusplus) - ($proSeite * $plusstartende)) {
 						$seiten .= "<li><span>...</span></li>\n";
@@ -203,7 +203,7 @@ class ShowPage extends RequestHandler
 						$href = "{$link}.html?pos={$i}";
 						$seiten .= "<li><a href=\"{$href}\">{$nr}</a></li>\n";
 					}
-					if ($i == 0 + ($proSeite * $plusstartende) && $pos > 0 + $proSeite + ($proSeite * $minusplus) + ($proSeite * $plusstartende)) {
+					if ($i == $proSeite * $plusstartende && $pos > 0 + $proSeite + ($proSeite * $minusplus) + ($proSeite * $plusstartende)) {
 						$seiten .= "<li><span>...</span></li>\n";
 					}
 				}
@@ -224,7 +224,7 @@ class ShowPage extends RequestHandler
 	public function dynTableHeader($fArr, $orderby = '', $ox = '')
 	{
 		$th = "<tr>\n";
-		foreach ($fArr AS $key => $val) {
+		foreach ($fArr as $key => $val) {
 			$th .= "<th scope=\"col\" {$val['attributes']}>";
 			if ($val['order'] == 1) {
 				$nox = $val['ox'];
@@ -258,5 +258,3 @@ class ShowPage extends RequestHandler
 		return round($size, $precision) . $sizes[$total];
 	}
 }
-
-/* EOF */

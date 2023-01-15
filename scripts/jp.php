@@ -43,12 +43,12 @@ class jp extends pageClass
 		$addCond = (count($jpArr['typen'][$typ]['conditions']) == 0) ? "" : " AND " . implode(" AND ", $jpArr['typen'][$typ]['conditions']);
 
 		$sql = "SELECT DATE_FORMAT(MAX(p.lastmod), '%d.%m.%Y %T') AS lastmod FROM jahresprogramm p".$cond;
-		$qry = $this->db->query($sql, []);
+		$qry = $this->db->prepareAndExecute($sql);
 		$res = $qry->fetch(PDO::FETCH_ASSOC);
 		$lastmod = ($res['lastmod'] != '') ? $res['lastmod'] : 'unbekannt';
 
 		$sql = "SELECT MIN(YEAR(p.datumVon)) AS minJahr, MAX(YEAR(p.datumBis)) AS maxJahr FROM jahresprogramm p ".$cond.$addCond;
-		$qry = $this->db->query($sql, [$typ]);
+		$qry = $this->db->prepareAndExecute($sql, [$typ]);
 		$res = $qry->fetch(PDO::FETCH_ASSOC);
 		$minJahr = ($res['minJahr'] != '') ? $res['minJahr'] : date("Y");
 		$maxJahr = ($res['maxJahr'] != '') ? $res['maxJahr'] : date("Y");
@@ -111,7 +111,7 @@ class jp extends pageClass
 
 		$sql = "SELECT COUNT(p.ID) AS anz FROM jahresprogramm p";
 		$sql .= " " . $cond;
-		$qry = $this->db->query($sql, $paramsArr);
+		$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 		$res = $qry->fetchObject();
 		if ($res->anz == 0) {
 			$liste = "<p class=\"no-entry\">Es sind keine Anlässe erfasst.</p>";
@@ -130,7 +130,7 @@ class jp extends pageClass
 			$sql .= " " . $cond;
 			$sql .= " ORDER BY $orderby $ox";
 
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			while ($res = $qry->fetchObject()) {
 				$i++;
 				$alt = ($i % 2 == 0) ? ' class="alt"' : '';

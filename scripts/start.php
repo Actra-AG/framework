@@ -12,7 +12,7 @@ class start extends pageClass
 		$news = '';
 
 		$sql = "SELECT * FROM news WHERE archiv=0 AND typ=1 ORDER BY datum DESC";
-		$qry = $this->db->query($sql);
+		$qry = $this->db->prepareAndExecute($sql);
 		if ($qry->rowCount() == 0) {
 			$news = "<p>Zurzeit gibt es keine Neuigkeiten.</p>";
 		} else {

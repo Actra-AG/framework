@@ -52,7 +52,6 @@ RewriteRule templates/ - [NC,F,L]
 RewriteRule ^patch\.php$ - [L]
 RewriteRule ^index\.php$ - [L]
 RewriteRule ^robots\.txt$ - [L]
-RewriteRule ^mnauth/login\.php$ - [L]
 
 # whitelist of directories
 

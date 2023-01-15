@@ -41,7 +41,7 @@ FROM
 WHERE
   {$cond}
 ";
-		$qry = $this->db->query($sql, $paramsArr);
+		$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 		$res = $qry->fetchObject();
 		if ($res->anz == 0) {
 			$news = "<p>Es gibt keine archivierten Neuigkeiten.</p>";
@@ -66,7 +66,7 @@ WHERE
   LIMIT
     {$pos}, {$entriesPerPage}";
 
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			while ($res = $qry->fetchObject()) {
 
 				$news .= "<div class=\"startnews group\"><h3>{$res-> titel}</h3>{$res -> teaser}";

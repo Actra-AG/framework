@@ -202,7 +202,7 @@ class RequestHandler
 	{
 		$this->accesscheck();
 
-		return (isset($this->userData->$ug) && $this->userData->$ug == 1) ? true : false;
+		return isset($this->userData->$ug) && $this->userData->$ug == 1;
 	}
 
 	/***** log out *****/

@@ -24,12 +24,12 @@ class passwort extends pageClass
 
 						if (!isset($_POST['passwort1']) || $_POST['passwort1'] == '') {
 							$fehlerArr[] = "Geben Sie ein Passwort ein.";
-						} else if (!isset($_POST['passwort1']) || $_POST['passwort1'] != $_POST['passwort2']) {
+						} else if ($_POST['passwort1'] != $_POST['passwort2']) {
 							$fehlerArr[] = "Sie haben nicht zweimal dasselbe Passwort eingegeben.";
 						} else {
 							$passwort = md5($_POST['passwort1']);
 							$sql = "UPDATE benutzer SET passwort=?, wronglogin=? WHERE ID=?";
-							$this->db->query($sql, [$passwort, 0, $ID]);
+							$this->db->prepareAndExecute($sql, [$passwort, 0, $ID]);
 							$this->showPage->redirect("passwortRes.html");
 						}
 					}
@@ -43,7 +43,7 @@ class passwort extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= '</ul></div>';
@@ -54,4 +54,3 @@ class passwort extends pageClass
 		$this->placeholders['code'] = $code;
 	}
 }
-/* EOF */

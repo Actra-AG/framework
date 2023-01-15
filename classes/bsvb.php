@@ -10,15 +10,13 @@ use metanet\db\DBMySQL;
 
 class bsvb
 {
-	public $userArr;
+	public array $jpArr;
 	/** @var DBMySQL */
 	private $DB_LINK;
-	private $config;
 
 	function __construct()
 	{
 		$this->DB_LINK = Registry::get('DB');
-		$this->config = Registry::get('CONFIG');
 	}
 
 	public function insertEntry($table, $fields = [])
@@ -28,12 +26,12 @@ class bsvb
 		}
 		$fArr = [];
 		$params = [];
-		foreach ($fields AS $key => $val) {
+		foreach ($fields as $key => $val) {
 			$fArr[] = "{$key}=?";
 			$params[] = $val;
 		}
 		$sql = "INSERT INTO {$table} SET " . implode(", ", $fArr);
-		$this->DB_LINK->query($sql, $params);
+		$this->DB_LINK->prepareAndExecute($sql, $params);
 
 		return $this->DB_LINK->lastInsertId();
 	}
@@ -45,23 +43,15 @@ class bsvb
 		}
 		$fArr = [];
 		$params = [];
-		foreach ($fields AS $key => $val) {
+		foreach ($fields as $key => $val) {
 			$fArr[] = "{$key}=?";
 			$params[] = $val;
 		}
 		$params[] = $entryID;
 		$sql = "UPDATE {$table} SET " . implode(", ", $fArr) . " WHERE ID=?";
-		$qry = $this->DB_LINK->query($sql, $params);
+		$qry = $this->DB_LINK->prepareAndExecute($sql, $params);
 
 		return $qry->rowCount();
-	}
-
-	public function deleteEntry($table, $entryID)
-	{
-		$sql = "DELETE FROM {$table} WHERE ID=?";
-		$this->DB_LINK->query($sql, [$entryID]);
-
-		return $entryID;
 	}
 
 	public function getJahresprogramm()
@@ -75,4 +65,3 @@ class bsvb
 		return $this->jpArr;
 	}
 }
-/* EOF */

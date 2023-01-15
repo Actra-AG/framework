@@ -61,7 +61,7 @@ class benutzerMod extends pageClass
 	WHERE
 	  ID=?
 	";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			if ($qry->rowCount() == 1) {
 				$this->showPage->pageArr['platzhalter']['title'] = 'Benutzer bearbeiten';
 				$ac = 'mod';
@@ -69,7 +69,7 @@ class benutzerMod extends pageClass
 				$pwinfo = " <em>Passwortfelder leer lassen um aktuelles Passwort zu behalten</em>";
 
 				$sql = "SELECT vereinID FROM benutzervereine WHERE benutzerID=?";
-				$qry = $this->db->query($sql, [$ID]);
+				$qry = $this->db->prepareAndExecute($sql, [$ID]);
 				while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 					$cjp[] = $res['vereinID'];
 				}
@@ -83,7 +83,7 @@ class benutzerMod extends pageClass
 
 			$vArr[0] = 'keiner';
 			$sql = "SELECT ID, name FROM vereine ORDER BY name";
-			$qry = $this->db->query($sql);
+			$qry = $this->db->prepareAndExecute($sql);
 			while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 				$vArr[$res['ID']] = $res['name'];
 			}
@@ -153,7 +153,7 @@ class benutzerMod extends pageClass
 				} else {
 					$datenArr['email'] = $_POST['email'];
 					$sql = "SELECT COUNT(*) AS anz FROM benutzer WHERE email=? AND ID!=?";
-					$qry = $this->db->query($sql, [$_POST['email'], $ID]);
+					$qry = $this->db->prepareAndExecute($sql, [$_POST['email'], $ID]);
 					$res = $qry->fetch(PDO::FETCH_ASSOC);
 					if ($res['anz'] != 0) {
 						$fehlerArr[] = 'Die eingegebene E-Mail-Adresse ist bereits registriert. Geben Sie bitte eine andere ein.';
@@ -183,10 +183,7 @@ class benutzerMod extends pageClass
 					$datenArr['ernannt'] = $_POST['ernannt'];
 				}
 
-				if (!isset($_POST['passwort']) || $_POST['passwort'] == '') {
-					//    	$datenArr['passwort'] = '';
-
-				} else if (!isset($_POST['passwort2']) || $_POST['passwort2'] == '' || $_POST['passwort'] != $_POST['passwort2']) {
+				if (!isset($_POST['passwort2']) || $_POST['passwort2'] == '' || $_POST['passwort'] != $_POST['passwort2']) {
 					$fehlerArr[] = 'Sie haben nicht zweimal dasselbe Passwort eingegeben.';
 				} else {
 					$datenArr['passwort'] = md5($_POST['passwort']);
@@ -216,7 +213,7 @@ class benutzerMod extends pageClass
 					$datenArr['vorstand'] = $_POST['vorstand'];
 				}
 
-				foreach ($cjp AS $key => $vID) {
+				foreach ($cjp as $key => $vID) {
 					if (!isset($_POST['vwahl']) || !in_array($vID, $_POST['vwahl'])) {
 						$delArr[] = $vID;
 						unset($cjp[$key]);
@@ -224,7 +221,7 @@ class benutzerMod extends pageClass
 				}
 
 				if (isset($_POST['vwahl'])) {
-					foreach ($_POST['vwahl'] AS $vID) {
+					foreach ($_POST['vwahl'] as $vID) {
 						if (!in_array($vID, $cjp)) {
 							$addArr[] = $vID;
 							$cjp[] = $vID;
@@ -243,24 +240,24 @@ class benutzerMod extends pageClass
 					if ($ID == 0) {
 						$datenArr['registered_by'] = $this->showPage->userData->ID;
 						$ID = $bsvb->insertEntry('benutzer', $datenArr);
-						$this->db->query("UPDATE benutzer SET confirmed=NOW() WHERE ID=?", [$ID]);
+						$this->db->prepareAndExecute("UPDATE benutzer SET confirmed=NOW() WHERE ID=?", [$ID]);
 					} else {
 						$bsvb->updateEntry('benutzer', $ID, $datenArr);
 					}
 
-					foreach ($delArr AS $vID) {
-						$this->db->query("DELETE FROM benutzervereine WHERE benutzerID=? AND vereinID=?", [$ID, $vID]);
+					foreach ($delArr as $vID) {
+						$this->db->prepareAndExecute("DELETE FROM benutzervereine WHERE benutzerID=? AND vereinID=?", [$ID, $vID]);
 					}
 
-					foreach ($addArr AS $vID) {
-						$this->db->query("INSERT INTO benutzervereine SET benutzerID=?, vereinID=?", [$ID, $vID]);
+					foreach ($addArr as $vID) {
+						$this->db->prepareAndExecute("INSERT INTO benutzervereine SET benutzerID=?, vereinID=?", [$ID, $vID]);
 					}
 
 					$this->showPage->redirect("benutzerDet-{$ID}.html?ac={$ac}");
 				}
 			}
 
-			foreach ($vArr AS $key => $val) {
+			foreach ($vArr as $key => $val) {
 				$vereine .= "<option value=\"{$key}\"";
 				if ($key == $datenArr['vereinID']) {
 					$vereine .= ' selected="selected"';
@@ -283,7 +280,7 @@ class benutzerMod extends pageClass
 				$herr = ' checked="checked"';
 			}
 
-			foreach ($optArr AS $key => $val) {
+			foreach ($optArr as $key => $val) {
 				$opt1 .= "<option value=\"{$key}\"";
 				if ($key == $datenArr['aktiv']) {
 					$opt1 .= ' selected="selected"';
@@ -318,7 +315,7 @@ class benutzerMod extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= "</ul></div>";
@@ -337,11 +334,8 @@ class benutzerMod extends pageClass
 		$this->placeholders['opt5'] = $opt5;
 		$this->placeholders['jpwahl'] = $jpwahl;
 
-		foreach ($datenArr AS $key => $val) {
+		foreach ($datenArr as $key => $val) {
 			$this->placeholders[$key] = $val;
 		}
 	}
 }
-
-
-/* EOF */

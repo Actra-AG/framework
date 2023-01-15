@@ -10,7 +10,6 @@ namespace classes;
 class ExceptionHandler
 {
 	private $errors;
-	private $error_file;
 
 	function __construct()
 	{
@@ -47,8 +46,8 @@ class ExceptionHandler
 
 	function refreshErrorList($errorFile)
 	{
-		$this->error_file = fopen($errorFile, "r");
-		while ($line = fgets($this->error_file)) {
+		$stream = fopen(filename: $errorFile, mode: 'r');
+		while ($line = fgets(stream: $stream)) {
 			$parts = explode("||", $line);
 			$partKey = trim($parts[0], "\x7f..\xff\x0..\x1f ");
 			if ($partKey != "") {
@@ -57,5 +56,3 @@ class ExceptionHandler
 		}
 	}
 }
-
-/* EOF */

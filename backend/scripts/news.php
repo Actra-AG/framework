@@ -2,7 +2,6 @@
 
 use classes\pageClass;
 
-
 class news extends pageClass
 {
 	public function execute()
@@ -20,7 +19,7 @@ class news extends pageClass
 			$archivArr['x1'] = 'ja';
 
 			if (isset($_GET['remove'])) {
-				$this->db->query("DELETE FROM news WHERE ID=?", [$_GET['remove']]);
+				$this->db->prepareAndExecute("DELETE FROM news WHERE ID=?", [$_GET['remove']]);
 			}
 
 			$cond = "WHERE n.typ=1";
@@ -51,7 +50,7 @@ class news extends pageClass
 				$condSearchWord = [];
 
 				$sArr = explode(" ", $stichwort);
-				foreach ($sArr AS $key => $val) {
+				foreach ($sArr as $val) {
 					$sx = trim($val);
 					if ($sx != '') {
 						$condSearchWord[] = "(n.titel LIKE ? OR n.teaser LIKE ? OR n.text LIKE ?)";
@@ -119,9 +118,9 @@ class news extends pageClass
   FROM
     news n
     
-  "."{$cond}
+  " . "{$cond}
   ";
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			$res = $qry->fetchObject();
 			if ($res->anz == 0) {
 				$liste = "<p>Es wurden keine Einträge gefunden.</p>";
@@ -140,7 +139,7 @@ class news extends pageClass
       news n
       LEFT JOIN benutzer b ON n.registered_by=b.ID
     
-    "."{$cond}
+    " . "{$cond}
     
     ORDER BY
       {$orderby} {$ox}
@@ -148,7 +147,7 @@ class news extends pageClass
     LIMIT
       {$pos}, {$this->showPage->config['lists']['entriesPerPage']}";
 
-				$qry = $this->db->query($sql, $paramsArr);
+				$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 				while ($res = $qry->fetchObject()) {
 					$href1 = "newsMod-{$res -> ID}.html";
 					$href2 = "news.html?remove={$res -> ID}";
@@ -158,7 +157,7 @@ class news extends pageClass
 				$liste .= $pagination;
 			}
 
-			foreach ($archivArr AS $key => $val) {
+			foreach ($archivArr as $key => $val) {
 				$archivwahl .= "<option value=\"{$key}\"";
 				if ($key == $archiv) {
 					$archivwahl .= ' selected="selected"';
@@ -167,12 +166,8 @@ class news extends pageClass
 			}
 		}
 
-
 		$this->placeholders['archivwahl'] = $archivwahl;
 		$this->placeholders['stichwort'] = $stichwort;
 		$this->placeholders['liste'] = $liste;
 	}
 }
-
-
-/* EOF */

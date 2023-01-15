@@ -8,8 +8,8 @@
 # Error Handling
 # --------------
 
-$config['debug'] = true;
-$config['errorEmail'] = 'christof.moser@actra.ch';
+require_once 'settings/EnvSettings.php';
+$config['errorEmail'] = 'error@bsv-buelach.ch';
 $config['errorReporting'] = E_ALL | E_STRICT;
 
 # --------------
@@ -24,7 +24,7 @@ $config['default_timezone'] = "Europe/Zurich";
 # ---------------
 
 $config['reqURI'] = $_SERVER['REQUEST_URI'];
-if (!strpos($config['reqURI'], ".") && !strpos($config['reqURI'], "?") && substr($config['reqURI'], -1) != "/") {
+if (!strpos($config['reqURI'], ".") && !strpos($config['reqURI'], "?") && !str_ends_with($config['reqURI'], "/")) {
 	$config['reqURI'] = $config['reqURI'] . "/";
 }
 
@@ -41,7 +41,6 @@ $config['rootDir'] = $_SERVER['DOCUMENT_ROOT'] . '/frontend/';
 $config['country'] = 'CH';
 $config['language'] = 'de';
 $config['requireSSL'] = true;
-$config['defaultURI'] = "http://www.bsv-buelach.ch";
 
 # ----------------------
 # additional directories
@@ -75,30 +74,3 @@ $config['extension']['cryptLinks']['key'] = '';
 $config['services'] = [];
 $config['services']['dokumente'] = '';
 $config['services']['calendar'] = '';
-
-# ----------------------------
-# domain and database settings
-# ----------------------------
-
-$config['envArr']["bsv-buelach.ch.localhost"] = 'dev';
-$config['envArr']["www.bsv-buelach.ch"] = 'live';
-
-$config['dev']['DB']['DEBUG']['enabled'] = 'true';
-$config['dev']['DB']['engine'] = 'mysqli';
-$config['dev']['DB']['hostname'] = '127.0.0.1';
-$config['dev']['DB']['username'] = 'bsvbuelach';
-$config['dev']['DB']['password'] = 'RiGEYt';
-$config['dev']['DB']['database'] = 'bsvbuelach';
-$config['dev']['requireSSL'] = true;
-$config['dev']['debug'] = true;
-
-$config['live']['DB']['DEBUG']['enabled'] = 'false';
-$config['live']['DB']['engine'] = 'mysqli';
-$config['live']['DB']['hostname'] = 'localhost';
-$config['live']['DB']['username'] = 'bsvbuelach';
-$config['live']['DB']['password'] = 'RiGEYt';
-$config['live']['DB']['database'] = 'bsvbuelach';
-$config['live']['requireSSL'] = true;
-$config['live']['debug'] = false;
-
-/* EOF */

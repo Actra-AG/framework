@@ -5,12 +5,11 @@ use PDO;
 
 class fotos extends pageClass
 {
-	public function execute() {
+	public function execute()
+	{
 		$status = '';
 		$ID = '';
 		$liste = '';
-
-		$fehlerArr = [];
 
 		if ($this->showPage->checkUG('redaktor')) {
 
@@ -25,7 +24,7 @@ class fotos extends pageClass
     
   WHERE
    ID=?";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			if ($qry->rowCount() != 1) {
 				$this->showPage->redirect("alben.html");
 			}
@@ -41,7 +40,7 @@ class fotos extends pageClass
 			}
 			if (isset($_GET['del'])) {
 				$sql = "SELECT typ FROM fotos WHERE ID=?";
-				$qry = $this->db->query($sql, [$_GET['del']]);
+				$qry = $this->db->prepareAndExecute($sql, [$_GET['del']]);
 				if ($qry->rowCount() == 1) {
 					$res = $qry->fetch(PDO::FETCH_ASSOC);
 
@@ -54,7 +53,7 @@ class fotos extends pageClass
 					if (file_exists($_SERVER['DOCUMENT_ROOT'] . "/galerie/tnfoto{$_GET['del']}.{$res['typ']}")) {
 						unlink($_SERVER['DOCUMENT_ROOT'] . "/galerie/tnfoto{$_GET['del']}.{$res['typ']}");
 					}
-					$this->db->query("DELETE FROM fotos WHERE ID=?", [$_GET['del']]);
+					$this->db->prepareAndExecute("DELETE FROM fotos WHERE ID=?", [$_GET['del']]);
 					$status = '<p class="note-pos">Der Eintrag wurde gelöscht.</p>';
 				}
 			}
@@ -62,23 +61,22 @@ class fotos extends pageClass
 			if (isset($_GET['up']) || isset($_GET['down'])) {
 				$action = (isset($_GET['up'])) ? 'up' : 'down';
 				$fotoID = (isset($_GET['up'])) ? $_GET['up'] : $_GET['down'];
-				$qry = $this->db->query("SELECT pos FROM fotos WHERE ID=?", [$fotoID]);
+				$qry = $this->db->prepareAndExecute("SELECT pos FROM fotos WHERE ID=?", [$fotoID]);
 				$res = $qry->fetch(PDO::FETCH_ASSOC);
-				$newPos = $res['pos'];
 				if ($action == 'up') {
 					$newPos = $res['pos'] - 1.5;
-				} else if ($action == "down") {
+				} else {
 					$newPos = $res['pos'] + 1.5;
 				}
 				$newPos = str_replace(",", ".", $newPos);
-				$this->db->query("UPDATE fotos SET pos=? WHERE ID=?", [$newPos, $fotoID]);
+				$this->db->prepareAndExecute("UPDATE fotos SET pos=? WHERE ID=?", [$newPos, $fotoID]);
 
 				$i = 0;
-				$qry = $this->db->query("SELECT ID FROM fotos WHERE albumID=? ORDER BY pos", [$ID]);
+				$qry = $this->db->prepareAndExecute("SELECT ID FROM fotos WHERE albumID=? ORDER BY pos", [$ID]);
 				while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 					$i++;
 					$fotoID = $res['ID'];
-					$this->db->query("UPDATE fotos SET pos={$i} WHERE ID=?", [$fotoID]);
+					$this->db->prepareAndExecute("UPDATE fotos SET pos={$i} WHERE ID=?", [$fotoID]);
 				}
 			}
 
@@ -142,10 +140,10 @@ class fotos extends pageClass
   FROM
     fotos f
   
-  "."{$cond}
+  " . "{$cond}
   
   ";
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			$res = $qry->fetchObject();
 			$anz = $res->anz;
 			if ($anz == 0) {
@@ -165,7 +163,7 @@ class fotos extends pageClass
     FROM
       fotos f
       
-    "."{$cond}
+    " . "{$cond}
     
     ORDER BY
       {$orderby} {$ox}
@@ -174,7 +172,7 @@ class fotos extends pageClass
       {$pos}, {$this->showPage->config['lists']['entriesPerPage']}";
 
 				$i = 0;
-				$qry = $this->db->query($sql, $paramsArr);
+				$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 				while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 
 					$i++;
@@ -203,10 +201,7 @@ class fotos extends pageClass
 					if (count($pArr) == 0) {
 						$liste .= "&nbsp;";
 					} else {
-						$liste .= "<ul>";
-						foreach ($pArr AS $val) {
-							$liste .= $val;
-						}
+						$liste = "<ul>" . implode('', $pArr);
 						$liste .= "</ul>\n";
 					}
 					$href1 = "fotoMod-{$ID}-{$res['ID']}.html";
@@ -218,19 +213,8 @@ class fotos extends pageClass
 			}
 		}
 
-		if (count($fehlerArr) != 0) {
-			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
-				$status .= "<li>{$val}</li>\n";
-			}
-			$status .= "</ul></div>";
-		}
-
 		$this->placeholders['status'] = $status;
 		$this->placeholders['ID'] = $ID;
 		$this->placeholders['liste'] = $liste;
 	}
 }
-
-
-/* EOF */

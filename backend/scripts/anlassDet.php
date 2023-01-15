@@ -34,7 +34,7 @@ class anlassDet extends pageClass
 			$ID = (isset($this->showPage->arrVars[1])) ? $this->showPage->arrVars[1] : 0;
 
 			if (isset($_GET['deny']) && $this->showPage->checkUG('admin')) {
-				$this->db->query("UPDATE jahresprogramm SET denied=NOW(), confirmed='0000-00-00 00:00:00' WHERE ID=?", [$ID]);
+				$this->db->prepareAndExecute("UPDATE jahresprogramm SET denied=NOW(), confirmed='0000-00-00 00:00:00' WHERE ID=?", [$ID]);
 			}
 
 			$sql = "
@@ -52,7 +52,7 @@ class anlassDet extends pageClass
 	WHERE
 	  p.ID=?
 	";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			if ($qry->rowCount() == 0) {
 				$this->showPage->redirect("jp.html");
 			}
@@ -77,12 +77,12 @@ class anlassDet extends pageClass
       WHERE
         d.ID=?
       ";
-					$qry = $this->db->query($sql, [$_GET['delDok']]);
+					$qry = $this->db->prepareAndExecute($sql, [$_GET['delDok']]);
 					$res = $qry->fetch(PDO::FETCH_ASSOC);
 					if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/dokumente/' . $_GET['delDok'] . '.' . $res['extension'])) {
 						unlink($_SERVER['DOCUMENT_ROOT'] . '/dokumente/' . $_GET['delDok'] . '.' . $res['extension']);
 					}
-					$this->db->query("DELETE FROM dokumente WHERE ID=?", [$_GET['delDok']]);
+					$this->db->prepareAndExecute("DELETE FROM dokumente WHERE ID=?", [$_GET['delDok']]);
 				}
 			}
 
@@ -130,7 +130,7 @@ class anlassDet extends pageClass
 
   ORDER BY
     titel";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 				if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/dokumente/' . $res['ID'] . '.' . $res['extension'])) {
 					$key = md5("aasmdsjtk{$res['ID']}asujdt3?nz34g");

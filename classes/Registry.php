@@ -19,18 +19,14 @@ class Registry implements ArrayAccess
 		return new Registry;
 	}
 
-	public static function set($option, &$value)
+	public static function set($option, $value)
 	{
 		self::$options[$option] = $value;
 	}
 
 	public static function get($option)
 	{
-		if (isset(self::$options[$option])) {
-			return self::$options[$option];
-		} else {
-			return null;
-		}
+		return self::$options[$option] ?? null;
 	}
 
 	public static function remove($option)
@@ -40,44 +36,25 @@ class Registry implements ArrayAccess
 		}
 	}
 
-	/**
-	 * @param mixed $offset
-	 *
-	 * @return bool
-	 */
-	public function offsetExists($offset)
+	public function offsetExists(mixed $offset): bool
 	{
-		return (isset(self::$options[$offset])) ? true : false;
+		return isset(self::$options[$offset]);
 	}
 
-	/**
-	 * @param mixed $offset
-	 *
-	 * @return mixed
-	 */
-	public function offsetGet($offset)
+	public function offsetGet(mixed $offset): mixed
 	{
 		return self::$options[$offset];
 	}
 
-	/**
-	 * @param mixed $offset
-	 * @param mixed $value
-	 */
-	public function offsetSet($offset, $value)
+	public function offsetSet(mixed $offset, mixed $value): void
 	{
 		self::$options[$offset] = $value;
 	}
 
-	/**
-	 * @param mixed $offset
-	 */
-	public function offsetUnset($offset)
+	public function offsetUnset(mixed $offset): void
 	{
 		if (isset(self::$options[$offset])) {
 			unset(self::$options[$offset]);
 		}
 	}
 }
-
-/* EOF */

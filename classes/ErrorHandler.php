@@ -23,9 +23,6 @@ class ErrorHandler
 			case 403:
 				header("HTTP/1.1 403 Forbidden");
 				break;
-			case 404:
-				header("HTTP/1.1 404 Not found");
-				break;
 			case 405:
 				header("HTTP/1.1 405 Method Not Allowed");
 				break;
@@ -92,14 +89,7 @@ class ErrorHandler
 		exit;
 	}
 
-	/**
-	 * @param $e_number
-	 * @param $e_message
-	 * @param $e_file
-	 * @param $e_line
-	 * @param $e_vars
-	 */
-	public static function php_error($e_number, $e_message, $e_file, $e_line, $e_vars)
+	public static function php_error(int $e_number, string $e_message, string $e_file, int $e_line)
 	{
 		global $config;
 
@@ -108,10 +98,6 @@ class ErrorHandler
 
 		// add the date and time
 		$message .= "Date/Time: " . date('d.m.Y H:i:s') . "\n";
-
-		//append $e_vars to the $message
-		$message .= print_r($e_vars, 1) . "\n";
-
 		ob_start();
 		debug_print_backtrace();
 		$trace = ob_get_contents();
@@ -129,5 +115,3 @@ class ErrorHandler
 		}
 	}
 }
-
-/* EOF */

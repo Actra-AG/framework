@@ -36,7 +36,7 @@ FROM
 WHERE
   ID=?
 ";
-		$qry = $this->db->query($sql, [$toID]);
+		$qry = $this->db->prepareAndExecute($sql, [$toID]);
 		if ($qry->rowCount() == 1) {
 			$res = $qry->fetch(PDO::FETCH_ASSOC);
 			$this->showPage->pageArr['platzhalter']['title'] = "{$res['vorname']} {$res['nachname']} kontaktieren";
@@ -95,7 +95,7 @@ WHERE
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><p><strong>Folgende Fehler sind aufgetreten:</strong></p><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= "</ul></div>";
@@ -112,4 +112,3 @@ WHERE
 		$this->placeholders['betreff'] = $betreff;
 	}
 }
-/* EOF */

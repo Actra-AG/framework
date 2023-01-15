@@ -33,7 +33,7 @@ class keinpw extends pageClass
 		  
 		  WHERE
   		  b.email=?";
-					$qry = $this->db->query($sql, [$_POST['pwlookup']]);
+					$qry = $this->db->prepareAndExecute($sql, [$_POST['pwlookup']]);
 					if ($qry->rowCount() == 1) {
 						$res = $qry->fetchObject();
 
@@ -58,7 +58,7 @@ class keinpw extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= "</ul></div>";
@@ -68,4 +68,3 @@ class keinpw extends pageClass
 		$this->placeholders['pwlookup'] = $pwlookup;
 	}
 }
-/* EOF */

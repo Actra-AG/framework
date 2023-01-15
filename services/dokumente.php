@@ -29,7 +29,7 @@ class dokumente extends serviceClass
 				$dateiname = $reqArr[4];
 
 				$sql = "SELECT d.type, f.extension, d.dateiname FROM dokumente d INNER JOIN dateiformate f ON d.type=f.mimetype WHERE d.ID=?";
-				$qry = $this->db->query($sql, [$ID]);
+				$qry = $this->db->prepareAndExecute($sql, [$ID]);
 				if ($qry->rowCount() == 1) {
 					$res = $qry->fetch(PDO::FETCH_ASSOC);
 					$file = $_SERVER['DOCUMENT_ROOT'] . '/dokumente/' . $ID . '.' . $res['extension'];
@@ -39,7 +39,7 @@ class dokumente extends serviceClass
 					if (!file_exists($file)) {
 						ErrorHandler::display_error(404);
 					} else {
-						$this->db->query("UPDATE dokumente SET views=views+1 WHERE ID=?", [$ID]);
+						$this->db->prepareAndExecute("UPDATE dokumente SET views=views+1 WHERE ID=?", [$ID]);
 						$ok = 1;
 					}
 				}

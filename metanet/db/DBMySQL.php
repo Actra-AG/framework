@@ -7,9 +7,9 @@
 
 namespace metanet\db;
 
-use \PDO;
-use \PDOException;
-use \PDOStatement;
+use PDO;
+use PDOException;
+use PDOStatement;
 use Exception;
 
 class DBMySQL extends DB
@@ -26,17 +26,12 @@ class DBMySQL extends DB
 			);
 
 			$this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-			//			$this->query("SET NAMES '" . $dbConnect->getCharset() . "'");
-			//			$this->query("SET CHARSET '" . $dbConnect->getCharset() . "'");
-
-			$this->triggerListeners('onConnect', [$this, $this->dbConnect]);
 		} catch (PDOException $e) {
 			throw new Exception('PDO could not connect to the database ' . $dbConnect->getDatabase() . '@' . $dbConnect->getHost(), $e->getCode());
 		}
 	}
 
-	public function query($sql, $params = [])
+	public function prepareAndExecute($sql, $params = []): PDOStatement
 	{
 		$statement = $this->prepare($sql);
 		$statement->execute($params);
@@ -44,39 +39,19 @@ class DBMySQL extends DB
 		return $statement;
 	}
 
-	/**
-	 * @param string $sql
-	 * @param array  $driver_options
-	 *
-	 * @return PDOStatement|void
-	 * @throws Exception
-	 */
-	public function prepare($sql, $driver_options = [])
+	public function prepare(string $query, array $options = []): PDOStatement|false
 	{
 		try {
-			$stmnt = parent::prepare($sql, $driver_options);
-
-			$this->triggerListeners('onPrepare', [$this, $stmnt]);
-
-			return $stmnt;
+			return parent::prepare($query, $options);
 		} catch (PDOException $e) {
 			throw new Exception('PDO could not prepare query: ' . $e->getMessage(), $e->getCode());
 		}
 	}
 
-	/**
-	 * @param PDOStatement $stmnt
-	 * @param array        $params
-	 *
-	 * @return array|void
-	 * @throws Exception
-	 */
-	public function select(PDOStatement $stmnt, array $params = [])
+	public function select(PDOStatement $stmnt, array $params = []): false|array
 	{
-
 		try {
 			$stmnt->execute($params);
-			$this->triggerListeners('onSelect', [$this, $stmnt, $params]);
 
 			return $stmnt->fetchAll(PDO::FETCH_OBJ);
 		} catch (PDOException $e) {
@@ -97,28 +72,17 @@ class DBMySQL extends DB
 
 			$this->execute($stmnt);
 
-			$this->triggerListeners('onSelect', [$this, $stmnt, $params]);
-
 			return $stmnt->fetchAll(PDO::FETCH_CLASS, $className);
 		} catch (PDOException $e) {
 			throw new Exception('PDO could not execute select query: ' . $e->getMessage(), $e->getCode());
 		}
 	}
 
-	/**
-	 * @param PDOStatement $stmnt
-	 * @param array        $params
-	 *
-	 * @return int|void
-	 * @throws Exception
-	 */
-	public function insert(PDOStatement $stmnt, array $params = [])
+	public function insert(PDOStatement $stmnt, array $params = []): false|int|string
 	{
 		$paramCount = count($params);
 
 		try {
-			$this->triggerListeners('beforeMutation', [$this, $stmnt, $params, DBListener::QUERY_TYPE_INSERT]);
-
 			// Bind params to statement
 			for ($i = 0; $i < $paramCount; $i++) {
 				$paramType = (is_int($params[$i])) ? PDO::PARAM_INT : PDO::PARAM_STR;
@@ -126,8 +90,6 @@ class DBMySQL extends DB
 			}
 
 			$this->execute($stmnt);
-
-			$this->triggerListeners('afterMutation', [$this, $stmnt, $params, DBListener::QUERY_TYPE_INSERT]);
 
 			return $this->lastInsertId();
 		} catch (PDOException $e) {
@@ -135,20 +97,11 @@ class DBMySQL extends DB
 		}
 	}
 
-	/**
-	 * @param PDOStatement $stmnt
-	 * @param array        $params
-	 *
-	 * @return int|void
-	 * @throws Exception
-	 */
-	public function update(PDOStatement $stmnt, array $params = [])
+	public function update(PDOStatement $stmnt, array $params = []): int
 	{
 		$paramCount = count($params);
 
 		try {
-			$this->triggerListeners('beforeMutation', [$this, $stmnt, $params, DBListener::QUERY_TYPE_UPDATE]);
-
 			// Bind params to statement
 			for ($i = 0; $i < $paramCount; $i++) {
 				$paramType = (is_int($params[$i])) ? PDO::PARAM_INT : PDO::PARAM_STR;
@@ -156,8 +109,6 @@ class DBMySQL extends DB
 			}
 
 			$this->execute($stmnt);
-
-			$this->triggerListeners('afterMutation', [$this, $stmnt, $params, DBListener::QUERY_TYPE_UPDATE]);
 
 			return $stmnt->rowCount();
 		} catch (PDOException $e) {
@@ -165,20 +116,11 @@ class DBMySQL extends DB
 		}
 	}
 
-	/**
-	 * @param PDOStatement $stmnt
-	 * @param array        $params
-	 *
-	 * @return int|void
-	 * @throws Exception
-	 */
-	public function delete(PDOStatement $stmnt, array $params)
+	public function delete(PDOStatement $stmnt, array $params): int
 	{
 		$paramCount = count($params);
 
 		try {
-			$this->triggerListeners('beforeMutation', [$this, $stmnt, $params, DBListener::QUERY_TYPE_DELETE]);
-
 			// Bind params to statement
 			for ($i = 0; $i < $paramCount; $i++) {
 				$paramType = (is_int($params[$i])) ? PDO::PARAM_INT : PDO::PARAM_STR;
@@ -186,8 +128,6 @@ class DBMySQL extends DB
 			}
 
 			$this->execute($stmnt);
-
-			$this->triggerListeners('afterMutation', [$this, $stmnt, $params, DBListener::QUERY_TYPE_DELETE]);
 
 			return $stmnt->rowCount();
 		} catch (PDOException $e) {
@@ -200,5 +140,3 @@ class DBMySQL extends DB
 		return $this->dbConnect;
 	}
 }
-
-/* EOF */

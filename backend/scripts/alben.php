@@ -10,8 +10,6 @@ class alben extends pageClass
 		$status = '';
 		$liste = '';
 
-		$fehlerArr = [];
-
 		if ($this->showPage->checkUG('redaktor')) {
 
 			if (isset($_GET['add'])) {
@@ -21,30 +19,29 @@ class alben extends pageClass
 				$status = '<p class="note-pos">Die Änderungen wurden gespeichert.</p>';
 			}
 			if (isset($_GET['del'])) {
-				$this->db->query("DELETE FROM alben WHERE ID=?", [$_GET['del']]);
+				$this->db->prepareAndExecute("DELETE FROM alben WHERE ID=?", [$_GET['del']]);
 				$status = '<p class="note-pos">Der Eintrag wurde gelöscht.</p>';
 			}
 
 			if (isset($_GET['up']) || isset($_GET['down'])) {
 				$action = (isset($_GET['up'])) ? 'up' : 'down';
 				$albumID = (isset($_GET['up'])) ? $_GET['up'] : $_GET['down'];
-				$qry = $this->db->query("SELECT pos FROM alben WHERE ID=?", [$albumID]);
+				$qry = $this->db->prepareAndExecute("SELECT pos FROM alben WHERE ID=?", [$albumID]);
 				$res = $qry->fetch(PDO::FETCH_ASSOC);
-				$newPos = $res['pos'];
 				if ($action == 'up') {
 					$newPos = $res['pos'] - 1.5;
-				} else if ($action == "down") {
+				} else {
 					$newPos = $res['pos'] + 1.5;
 				}
 				$newPos = str_replace(",", ".", $newPos);
-				$this->db->query("UPDATE alben SET pos=? WHERE ID=?", [$newPos, $albumID]);
+				$this->db->prepareAndExecute("UPDATE alben SET pos=? WHERE ID=?", [$newPos, $albumID]);
 
 				$i = 0;
-				$qry = $this->db->query("SELECT ID FROM alben ORDER BY pos");
+				$qry = $this->db->prepareAndExecute("SELECT ID FROM alben ORDER BY pos");
 				while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 					$i++;
 					$albumID = $res['ID'];
-					$this->db->query("UPDATE alben SET pos={$i} WHERE ID=?", [$albumID]);
+					$this->db->prepareAndExecute("UPDATE alben SET pos={$i} WHERE ID=?", [$albumID]);
 				}
 			}
 
@@ -102,10 +99,10 @@ class alben extends pageClass
   FROM
     alben a
   
-  "."{$cond}
+  " . "{$cond}
   
   ";
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			$res = $qry->fetchObject();
 			$anz = $res->anz;
 			if ($anz == 0) {
@@ -125,7 +122,7 @@ class alben extends pageClass
     FROM
       alben a
       
-    "."{$cond}
+    " . "{$cond}
     
     ORDER BY
       {$orderby} {$ox}
@@ -134,7 +131,7 @@ class alben extends pageClass
       {$pos}, {$this->showPage->config['lists']['entriesPerPage']}";
 
 				$i = 0;
-				$qry = $this->db->query($sql, $paramsArr);
+				$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 				while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 
 					$i++;
@@ -154,10 +151,7 @@ class alben extends pageClass
 					if (count($pArr) == 0) {
 						$liste .= "&nbsp;";
 					} else {
-						$liste .= "<ul>";
-						foreach ($pArr AS $val) {
-							$liste .= $val;
-						}
+						$liste = "<ul>" . implode('', $pArr);
 						$liste .= "</ul>\n";
 					}
 					$href1 = "albumMod-{$res['ID']}.html";
@@ -169,18 +163,7 @@ class alben extends pageClass
 			}
 		}
 
-		if (count($fehlerArr) != 0) {
-			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
-				$status .= "<li>{$val}</li>\n";
-			}
-			$status .= "</ul></div>";
-		}
-
 		$this->placeholders['status'] = $status;
 		$this->placeholders['liste'] = $liste;
 	}
 }
-
-
-/* EOF */

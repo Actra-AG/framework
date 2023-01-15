@@ -10,8 +10,6 @@ class seiten extends pageClass
 		$frontend = '';
 		$backend = '';
 
-		$fehlerArr = [];
-
 		if ($this->showPage->checkUG('redaktor')) {
 
 			$oArr['frontend']['pages'] = $_SERVER['DOCUMENT_ROOT'] . '/frontend/pages/';
@@ -73,7 +71,7 @@ class seiten extends pageClass
 			} else {
 				$frontend = "<p>Es wurde(n) <strong>{$anz}</strong> Resultat(e) gefunden.</p><div class=\"tablewrap\"><table cellspacing=\"0\" class=\"normtabelle\">\n<thead>\n<tr><th scope=\"col\">Seite</th>\n<th scope=\"col\">&nbsp;</th>\n</tr>\n</thead>\n<tbody>\n";
 
-				foreach ($pArr['frontend'] AS $key => $val) {
+				foreach ($pArr['frontend'] as $val) {
 					$href1 = "seiteMod-frontend-{$val}.html";
 					$href2 = "seiteArchiv-frontend-{$val}.html";
 					$href3 = "seiten-frontend.html?remove={$val}";
@@ -88,7 +86,7 @@ class seiten extends pageClass
 			} else {
 				$backend = "<p>Es wurde(n) <strong>{$anz}</strong> Resultat(e) gefunden.</p><div class=\"tablewrap\"><table cellspacing=\"0\" class=\"normtabelle\">\n<thead>\n<tr><th scope=\"col\">Seite</th>\n<th scope=\"col\">&nbsp;</th>\n</tr>\n</thead>\n<tbody>\n";
 
-				foreach ($pArr['backend'] AS $key => $val) {
+				foreach ($pArr['backend'] as $val) {
 					$href1 = "seiteMod-backend-{$val}.html";
 					$href2 = "seiteArchiv-backend-{$val}.html";
 					$href3 = "seiten-backend.html?remove={$val}";
@@ -98,19 +96,8 @@ class seiten extends pageClass
 			}
 		}
 
-		if (count($fehlerArr) != 0) {
-			$status = '<div id="formfehler"><p><strong>Folgende Fehler sind aufgetreten:</strong></p><ul>';
-			foreach ($fehlerArr as $key => $val) {
-				$status .= '<li>' . $val . '</li>';
-			}
-			$status .= '</ul></div>';
-		}
-
 		$this->placeholders['status'] = $status;
 		$this->placeholders['frontend'] = $frontend;
 		$this->placeholders['backend'] = $backend;
 	}
 }
-
-
-/* EOF */

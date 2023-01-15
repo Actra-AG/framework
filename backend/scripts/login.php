@@ -17,26 +17,17 @@ class login extends pageClass
 
 		$this->showPage->logOut();
 
-		$mnauth = false;
-		require_once($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'mnauth/check.php');
-
-		if (isset($_GET['send']) || $mnauth) {
-
-			if ($mnauth) {
-				$loginemail = 'entwicklung@metanet.ch';
-				$loginpasswort = 'mnauth';
+		if (isset($_GET['send'])) {
+			if (!isset($_POST['loginemail']) || $_POST['loginemail'] == '') {
+				$fehlerArr[] = 'Geben Sie Ihre E-Mail-Adresse ein.';
 			} else {
-				if (!isset($_POST['loginemail']) || $_POST['loginemail'] == '') {
-					$fehlerArr[] = 'Geben Sie Ihre E-Mail-Adresse ein.';
-				} else {
-					$loginemail = $_POST['loginemail'];
-				}
+				$loginemail = $_POST['loginemail'];
+			}
 
-				if (!isset($_POST['loginpasswort']) || $_POST['loginpasswort'] == '') {
-					$fehlerArr[] = 'Geben Sie Ihr Passwort ein.';
-				} else {
-					$loginpasswort = $_POST['loginpasswort'];
-				}
+			if (!isset($_POST['loginpasswort']) || $_POST['loginpasswort'] == '') {
+				$fehlerArr[] = 'Geben Sie Ihr Passwort ein.';
+			} else {
+				$loginpasswort = $_POST['loginpasswort'];
 			}
 
 			if (count($fehlerArr) == 0) {
@@ -51,7 +42,7 @@ class login extends pageClass
   	WHERE
   	  b.email=?
   	";
-				$qry = $this->db->query($sql, [$loginemail]);
+				$qry = $this->db->prepareAndExecute($sql, [$loginemail]);
 				$db_passwort = md5($loginpasswort);
 
 				if ($qry->rowCount() != 1) {
@@ -67,22 +58,22 @@ class login extends pageClass
 					} else if ($personData->wronglogin >= 10) {
 						$href = "keinpw.html";
 						$fehlerArr[] = 'Bei diesem Konto wurde zehnmal hintereinander das falsche Passwort eingegeben. Falls Sie dies nicht waren, muss jemand anderes versucht haben, sich mit Ihren Zugangsdaten einzuloggen. Bitte geben Sie bei <a href="' . $href . '">Passwort vergessen?</a> Ihre E-Mail-Adresse ein. Sie erhalten dann eine E-Mail mit einem bestimmten Link, wo Sie ein neues Passwort wählen können.';
-					} else if ($personData->passwort != $db_passwort && !$mnauth) {
+					} else if ($personData->passwort != $db_passwort) {
 						$fehlerArr[] = 'Sie haben ungültige Zugangsdaten eingegeben.';
-						$this->db->query("UPDATE benutzer SET wronglogin=wronglogin+1 WHERE ID=?", [$personData->ID]);
+						$this->db->prepareAndExecute("UPDATE benutzer SET wronglogin=wronglogin+1 WHERE ID=?", [$personData->ID]);
 					} else {
 						$ip = '';
 						if (isset($_SERVER['REMOTE_ADDR'])) {
 							$ip = $_SERVER['REMOTE_ADDR'];
 						}
-						$this->db->query("UPDATE benutzer SET lastlogin=NOW(), wronglogin=0, visits=visits+1 WHERE ID=?",
+						$this->db->prepareAndExecute("UPDATE benutzer SET lastlogin=NOW(), wronglogin=0, visits=visits+1 WHERE ID=?",
 							[$personData->ID]);
-						$this->db->query("INSERT INTO visits SET benutzerID=?, sessionID=?, ip=?",
+						$this->db->prepareAndExecute("INSERT INTO visits SET benutzerID=?, sessionID=?, ip=?",
 							[$personData->ID, session_id(), $ip]);
 
 						$vArr = [];
 						$sql = "SELECT vereinID FROM benutzervereine WHERE benutzerID=?";
-						$qry = $this->db->query($sql, [$personData->ID]);
+						$qry = $this->db->prepareAndExecute($sql, [$personData->ID]);
 						while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 							$vArr[] = $res['vereinID'];
 						}
@@ -105,7 +96,7 @@ class login extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= '</ul></div>';
@@ -116,5 +107,3 @@ class login extends pageClass
 		$this->placeholders['status'] = $status;
 	}
 }
-
-/* EOF */

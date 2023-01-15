@@ -4,6 +4,8 @@
 # ------------------------------
 # 20.07.2009	CM	new version
 
+use classes\pageClass;
+use classes\serviceClass;
 use metanet\db\DBConnect;
 use metanet\db\DBMySQL;
 use classes\ErrorHandler;
@@ -17,19 +19,23 @@ use classes\ShowPage;
 # load configuration
 # ------------------
 
+$config = [];
 require_once('config.php');
 
 # ----------------
 # autoload classes
 # ----------------
 
-function __autoload($class_name)
-{
-	$path = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] . '/' . $class_name . '.php');
-	if (file_exists($path)) {
+spl_autoload_register(callback: function($class) {
+	$path = str_replace(
+		search: '\\',
+		replace: '/',
+		subject: $_SERVER['DOCUMENT_ROOT'] . '/' . $class . '.php'
+	);
+	if (file_exists(filename: $path)) {
 		require_once $path;
 	}
-}
+});
 
 # --------------------------------------------------------
 # handle default errors (that occur outside our framework)
@@ -42,44 +48,20 @@ if (isset($_GET['default_error'])) {
 # --------------------
 # get current protocol
 # --------------------
-
-if (isset($_SERVER['https']) && $_SERVER['https'] == 1) { /* Apache */
+if (array_key_exists(key: 'HTTPS', array: $_SERVER)) {
+	if (
+		(int)$_SERVER['HTTPS'] === 1 // Apache
+		|| (string)$_SERVER['HTTPS'] === 'on' // IIS
+	) {
+		$config['protocol'] = 'https';
+	}
+}
+if ((int)$_SERVER['SERVER_PORT'] === 443) {
 	$config['protocol'] = 'https';
-} else if (isset($_SERVER['https']) && $_SERVER['https'] == 'on') { /* IIS */
-	$config['protocol'] = 'https';
-} else if (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) { /* others */
-	$config['protocol'] = 'https';
-} else { /* just using http */
-	$config['protocol'] = 'http';
 }
 
-# -------------------------------------------------
-# use individual domain for every country/language?
-# -------------------------------------------------
-
-if (isset($config['envArr'][$_SERVER['SERVER_NAME']])) {
-	$config['env'] = $config['envArr'][$_SERVER['SERVER_NAME']];
-} else {
-	header("Location: {$config['defaultURI']}");
-	exit;
-}
-
-# ---------------------------
-# define environment settings
-# ---------------------------
-
-if ($config['env']) {
-	$config['DB'] = $config[$config['env']]['DB'];
-	$config['requireSSL'] = $config[$config['env']]['requireSSL'];
-	$config['debug'] = $config[$config['env']]['debug'];
-}
-
-# ---------
-# check SSL
-# ---------
-
-if ($config['requireSSL'] && $config['protocol'] == 'http') {
-	RequestHandler::redirect("https://{$_SERVER['SERVER_NAME']}/");
+if ($config['protocol'] == 'http') {
+	RequestHandler::redirect(url: "https://{$_SERVER['SERVER_NAME']}/");
 }
 
 # ------------------
@@ -171,7 +153,7 @@ if ($requestHandler->reqType == 'file') {
 	if ($requestHandler->reqType == 'service' && $requestHandler->serviceName) {
 
 		$className = 'services\\' . $requestHandler->serviceName;
-		/** @var \classes\serviceClass $serviceClass */
+		/** @var serviceClass $serviceClass */
 		$serviceClass = new $className($DB_LINK, $requestHandler);
 		echo $serviceClass->execute();
 	} else {
@@ -190,7 +172,7 @@ if ($requestHandler->reqType == 'file') {
 		if ($showPage->checkScripts()) {
 			$dynPage = str_replace([$_SERVER['DOCUMENT_ROOT'] . '/', '/', '.php'], ['', '\\', ''], $showPage->pageArr['dynPage']);
 
-			/** @var \classes\pageClass $pageClass */
+			/** @var pageClass $pageClass */
 			$pageClass = new $dynPage($DB_LINK, $requestHandler, $showPage);
 			$pageClass->execute();
 			$platzhalter = array_merge($pageClass->getPlaceholders(), $platzhalter);
@@ -198,14 +180,12 @@ if ($requestHandler->reqType == 'file') {
 		if ($showPage->getTemplate()) {
 			$dynTemplate = str_replace([$_SERVER['DOCUMENT_ROOT'] . '/', '/', '.php'], ['', '\\', ''], $showPage->pageArr['dynTemplate']);
 
-			/** @var \classes\pageClass $pageClass */
+			/** @var pageClass $pageClass */
 			$pageClass = new $dynTemplate($DB_LINK, $requestHandler, $showPage);
 			$pageClass->execute();
 			$platzhalter = array_merge($pageClass->getPlaceholders(), $platzhalter);
 		}
-		if (isset($platzhalter)) {
-			$showPage->pageArr['platzhalter'] = array_merge($showPage->pageArr['platzhalter'], $platzhalter);
-		}
+		$showPage->pageArr['platzhalter'] = array_merge($showPage->pageArr['platzhalter'], $platzhalter);
 		$showPage->output();
 	}
 

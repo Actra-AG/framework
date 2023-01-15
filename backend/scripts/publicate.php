@@ -6,7 +6,8 @@ use classes\FormMailer;
 
 class publicate extends pageClass
 {
-	public function execute() {
+	public function execute()
+	{
 		$status = '';
 		$mitteilung = '';
 		$ID = 0;
@@ -17,7 +18,7 @@ class publicate extends pageClass
 
 			$ID = (isset($this->showPage->arrVars[1])) ? $this->showPage->arrVars[1] : 0;
 			$sql = "SELECT p.titel, b.anrede, b.nachname, b.email FROM jahresprogramm p INNER JOIN benutzer b ON p.registered_by=b.ID WHERE p.ID=?";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			if ($qry->rowCount() == 0) {
 				$this->showPage->redirect("jp.html");
 			}
@@ -37,7 +38,7 @@ class publicate extends pageClass
 
 				if (count($fehlerArr) == 0) {
 
-					$this->db->query("UPDATE jahresprogramm SET confirmed=NOW(), denied='0000-00-00 00:00:00' WHERE ID=?", [$ID]);
+					$this->db->prepareAndExecute("UPDATE jahresprogramm SET confirmed=NOW(), denied='0000-00-00 00:00:00' WHERE ID=?", [$ID]);
 
 					$to = $email;
 					$toName = $email;
@@ -53,7 +54,7 @@ class publicate extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = '<div id="formfehler"><ul>';
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= '<li>' . $val . '</li>';
 			}
 			$status .= '</ul></div>';
@@ -64,6 +65,3 @@ class publicate extends pageClass
 		$this->placeholders['ID'] = $ID;
 	}
 }
-
-
-/* EOF */

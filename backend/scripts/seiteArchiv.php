@@ -5,12 +5,11 @@ use PDO;
 
 class seiteArchiv extends pageClass
 {
-	public function execute() {
+	public function execute()
+	{
 		$status = '';
 		$x = '';
 		$liste = '';
-
-		$fehlerArr = [];
 
 		if ($this->showPage->checkUG('redaktor') && isset($this->showPage->arrVars[2])) {
 			$oArr['frontend']['pages'] = $_SERVER['DOCUMENT_ROOT'] . '/frontend/pages/';
@@ -41,7 +40,7 @@ class seiteArchiv extends pageClass
 			$paramsArr[] = $seite;
 
 			$sql = "SELECT s.ID, DATE_FORMAT(s.datum, '%d.%m.%Y %T') AS datum, CONCAT(b.vorname, ' ', b.nachname) AS name FROM seiteninhalte s LEFT JOIN benutzer b ON s.benutzerID=b.ID WHERE s.ort=? AND s.seite=? ORDER BY s.datum DESC";
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			if ($qry->rowCount() == 0) {
 				$liste = "<p>Von dieser Seite gibt es keine archivierte Versionen.</p>";
 			} else {
@@ -55,19 +54,8 @@ class seiteArchiv extends pageClass
 			}
 		}
 
-		if (count($fehlerArr) != 0) {
-			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
-				$status .= "<li>{$val}</li>\n";
-			}
-			$status .= "</ul></div>";
-		}
-
 		$this->placeholders['status'] = $status;
 		$this->placeholders['x'] = $x;
 		$this->placeholders['liste'] = $liste;
 	}
 }
-
-
-/* EOF */

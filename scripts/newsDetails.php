@@ -12,7 +12,7 @@ class newsDetails extends pageClass
 		$ID = (isset($this->showPage->arrVars[1])) ? $this->showPage->arrVars[1] : 0;
 
 		$sql = "SELECT titel, teaser, text FROM news WHERE ID='{$ID}'";
-		$qry = $this->db->query($sql);
+		$qry = $this->db->prepareAndExecute($sql);
 		if ($qry->rowCount() != 1) {
 			$this->showPage->redirect("newsArchiv.html");
 		}

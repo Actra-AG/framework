@@ -56,7 +56,7 @@ class anlassMod extends pageClass
 	WHERE
 	  ID=? AND (registered_by=? OR {$this->showPage->userData->admin}=1)
 	";
-			$qry = $this->db->query($sql, [$ID, $myID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID, $myID]);
 			if ($qry->rowCount() == 1) {
 				$this->showPage->pageArr['platzhalter']['title'] = 'Anlass bearbeiten';
 				$ac = 'mod';
@@ -71,7 +71,7 @@ class anlassMod extends pageClass
 
 			$vArr[0] = 'Ohne Zuteilung';
 			$sql = "SELECT ID, name FROM vereine WHERE ID IN (SELECT vereinID FROM benutzervereine WHERE benutzerID=?) ORDER BY name";
-			$qry = $this->db->query($sql, [$myID]);
+			$qry = $this->db->prepareAndExecute($sql, [$myID]);
 			while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 				$vArr[$res['ID']] = $res['name'];
 			}
@@ -125,14 +125,14 @@ class anlassMod extends pageClass
 					$datenArr['bemerkungen'] = $_POST['bemerkungen'];
 				}
 
-				foreach ($jpArr['typen'] AS $typ => $typData) {
+				foreach ($jpArr['typen'] as $typ => $typData) {
 					if (!isset($_POST['twahl']) || !in_array($typ, $_POST['twahl'])) {
 						$datenArr[$typ] = 0;
 					}
 				}
 
 				if (isset($_POST['twahl'])) {
-					foreach ($_POST['twahl'] AS $typ) {
+					foreach ($_POST['twahl'] as $typ) {
 						if (array_key_exists($typ, $jpArr['typen'])) {
 							$datenArr[$typ] = 1;
 						}
@@ -162,7 +162,7 @@ class anlassMod extends pageClass
 						$ID = $bsvb->insertEntry('jahresprogramm', $datenArr);
 
 						if ($this->showPage->checkUG('admin') == 1) {
-							$this->db->query("UPDATE jahresprogramm SET confirmed=NOW() WHERE ID=?", [$ID]);
+							$this->db->prepareAndExecute("UPDATE jahresprogramm SET confirmed=NOW() WHERE ID=?", [$ID]);
 						} else {
 							$to = "webmaster@bsv-buelach.ch";
 							$toName = "webmaster@bsv-buelach.ch";
@@ -173,7 +173,6 @@ class anlassMod extends pageClass
 							$text = "Grüezi\n\nEs gibt einen neuen Anlass bei {$_SERVER['SERVER_NAME']}. Bitte prüfen und veröffentlichen oder löschen Sie diesen Anlass.\n\nFreundliche Grüsse\n\nBezirksschützenverband Bülach";
 
 							(new FormMailer())->send($to, $toName, $from, $fromName, $subject, $text);
-
 						}
 					} else {
 						$bsvb->updateEntry('jahresprogramm', $ID, $datenArr);
@@ -188,13 +187,13 @@ class anlassMod extends pageClass
 
 						(new FormMailer())->send($to, $toName, $from, $fromName, $subject, $text);
 					}
-					$this->db->query("UPDATE jahresprogramm SET lastmod=NOW() WHERE ID=?", [$ID]);
+					$this->db->prepareAndExecute("UPDATE jahresprogramm SET lastmod=NOW() WHERE ID=?", [$ID]);
 
 					$this->showPage->redirect("anlassDet-{$ID}.html?ac={$ac}");
 				}
 			}
 
-			foreach ($vArr AS $key => $val) {
+			foreach ($vArr as $key => $val) {
 				$vereine .= "<option value=\"{$key}\"";
 				if ($key == $datenArr['vereinID']) {
 					$vereine .= ' selected="selected"';
@@ -202,7 +201,7 @@ class anlassMod extends pageClass
 				$vereine .= ">{$val}</option>\n";
 			}
 
-			foreach ($jpArr['typen'] AS $typ => $typData) {
+			foreach ($jpArr['typen'] as $typ => $typData) {
 				$kategorien .= "<li><input type=\"checkbox\" name=\"twahl[]\" value=\"{$typ}\" id=\"twahl{$typ}\"";
 				if (isset($datenArr[$typ]) && $datenArr[$typ] == 1) {
 					$kategorien .= ' checked="checked"';
@@ -213,7 +212,7 @@ class anlassMod extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= "</ul></div>";
@@ -225,11 +224,8 @@ class anlassMod extends pageClass
 		$this->placeholders['kategorien'] = $kategorien;
 		$this->placeholders['chkexport'] = ($datenArr['export'] == 1) ? ' checked="checked"' : '';
 
-		foreach ($datenArr AS $key => $val) {
+		foreach ($datenArr as $key => $val) {
 			$this->placeholders[$key] = $val;
 		}
 	}
 }
-
-
-/* EOF */

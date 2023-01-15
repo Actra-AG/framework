@@ -29,13 +29,6 @@ class anlass extends pageClass
 				$typ = $gruppe;
 			} else {
 				$typ = (isset($this->showPage->arrVars[2]) && in_array($this->showPage->arrVars[2], $jpArr['gruppen'][$gruppe])) ? $this->showPage->arrVars[2] : current($jpArr['gruppen'][$gruppe]);
-
-				$gruppen = "<ul>\n";
-				foreach ($jpArr['gruppen'][$gruppe] AS $val) {
-					$href = "jp-{$gruppe}-{$val}.html";
-					$gt = ($val == $typ) ? "<strong>{$jpArr['typen'][$val]['titel']}</strong>" : "<a href=\"{$href}\">{$jpArr['typen'][$val]['titel']}</a>";
-					$gruppen .= "<li>{$gt}</li>\n";
-				}
 			}
 
 			$this->showPage->pageArr['navistufe'][2] = "jp{$gruppe}";
@@ -57,7 +50,7 @@ FROM
 WHERE
   p.ID=?
 ";
-		$qry = $this->db->query($sql, [$ID]);
+		$qry = $this->db->prepareAndExecute($sql, [$ID]);
 		if ($qry->rowCount() == 0) {
 			$this->showPage->redirect("jp.html");
 		}
@@ -89,7 +82,7 @@ WHERE
 		ORDER BY
   			titel
   		";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 				if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/dokumente/' . $res['ID'] . '.' . $res['extension'])) {
 					$key = md5("aasmdsjtk{$res['ID']}asujdt3?nz34g");

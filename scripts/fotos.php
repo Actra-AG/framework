@@ -14,7 +14,7 @@ class fotos extends pageClass
 		$ID = (isset($this->showPage->arrVars[1])) ? $this->showPage->arrVars[1] : 0;
 
 		$sql = "SELECT titel FROM alben WHERE ID=?";
-		$qry = $this->db->query($sql, [$ID]);
+		$qry = $this->db->prepareAndExecute($sql, [$ID]);
 		if ($qry->rowCount() != 1) {
 			$this->showPage->redirect("alben.html");
 		}
@@ -56,7 +56,7 @@ FROM
 WHERE
   {$cond}
 ";
-		$qry = $this->db->query($sql, $paramsArr);
+		$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 		$res = $qry->fetchObject();
 		if ($res->anz == 0) {
 			$fotos = "<p>Es gibt keine Fotos in diesem Album.</p>";
@@ -81,7 +81,7 @@ WHERE
     {$pos}, {$proSeite}
   ";
 
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			$fotos .= $pagination;
 			$fotos .= "<div id=\"thumbnails\">\n";
 			while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {

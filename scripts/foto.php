@@ -17,7 +17,7 @@ class foto extends pageClass
 		$fotoID = (isset($this->showPage->arrVars[2])) ? $this->showPage->arrVars[2] : 0;
 
 		$sql = "SELECT titel FROM alben WHERE ID=?";
-		$qry = $this->db->query($sql, [$albumID]);
+		$qry = $this->db->prepareAndExecute($sql, [$albumID]);
 		if ($qry->rowCount() != 1) {
 			$this->showPage->redirect("alben.html");
 		}
@@ -28,7 +28,7 @@ class foto extends pageClass
 		$this->showPage->pageArr['grundkonf']['navigator']['title'] = $titel;
 
 		$sql = "SELECT f.text, f.typ, (SELECT ID FROM fotos WHERE albumID=f.albumID AND pos<f.pos ORDER BY pos DESC LIMIT 1) AS lastID, (SELECT ID FROM fotos WHERE albumID=f.albumID AND pos>f.pos ORDER BY pos LIMIT 1) AS nextID FROM fotos f WHERE f.ID=?";
-		$qry = $this->db->query($sql, [$fotoID]);
+		$qry = $this->db->prepareAndExecute($sql, [$fotoID]);
 		if ($qry->rowCount() != 1) {
 			$this->showPage->redirect("fotos-{$albumID}.html");
 		}

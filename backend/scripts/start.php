@@ -13,7 +13,7 @@ class start extends pageClass
 		if ($this->showPage->checkUG('admin')) {
 
 			$sql = "SELECT b.ID, b.vorname, b.nachname, DATE_FORMAT(b.registered, '%d.%m.%Y %T') AS registered FROM benutzer b WHERE b.accepted='0000-00-00 00:00:00' AND b.denied='0000-00-00 00:00:00' ORDER BY b.registered DESC";
-			$qry = $this->db->query($sql);
+			$qry = $this->db->prepareAndExecute($sql);
 			if ($qry->rowCount() == 0) {
 				$unconfirmed = "<p>Zurzeit gibt es keine unbestätigten Registrierungen.</p>";
 			} else {
@@ -27,7 +27,7 @@ class start extends pageClass
 			}
 
 			$sql = "SELECT p.ID, p.titel, DATE_FORMAT(p.registered, '%d.%m.%Y %T') AS registered FROM jahresprogramm p WHERE p.confirmed='0000-00-00 00:00:00' AND p.denied='0000-00-00 00:00:00' ORDER BY p.registered DESC";
-			$qry = $this->db->query($sql);
+			$qry = $this->db->prepareAndExecute($sql);
 			if ($qry->rowCount() == 0) {
 				$tocheck = "<p>Zurzeit gibt es keine zu prüfenden Anlässe.</p>";
 			} else {

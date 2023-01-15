@@ -9,7 +9,7 @@ class alben extends pageClass
 	public function execute()
 	{
 		$sql = "SELECT ID, titel FROM alben WHERE typ=1 ORDER BY pos";
-		$qry = $this->db->query($sql);
+		$qry = $this->db->prepareAndExecute($sql);
 		if ($qry->rowCount() == 0) {
 			$alben = "<p>Es gibt zurzeit keine Alben.</p>";
 

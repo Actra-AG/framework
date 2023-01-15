@@ -6,7 +6,7 @@
 
 namespace metanet\db;
 
-use \PDOStatement;
+use PDOStatement;
 
 abstract class DBListener
 {

@@ -4,7 +4,8 @@ use classes\pageClass;
 
 class visits extends pageClass
 {
-	public function execute() {
+	public function execute()
+	{
 		$stichwort = '';
 		$liste = '';
 
@@ -31,7 +32,7 @@ class visits extends pageClass
 				} else {
 					$condSearchWord = [];
 					$sArr = explode(" ", $stichwort);
-					foreach ($sArr AS $key => $val) {
+					foreach ($sArr as $val) {
 						$sx = trim($val);
 						if ($sx != '') {
 							$condSearchWord[] = "(u.vorname LIKE ? OR u.nachname LIKE ? OR v.sessionID LIKE ? OR v.ip LIKE ?)";
@@ -97,10 +98,10 @@ class visits extends pageClass
     visits v
     LEFT JOIN benutzer u ON v.benutzerID=u.ID
   
-  "."{$cond}
+  " . "{$cond}
   
   ";
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			$res = $qry->fetchObject();
 			if ($res->anz == 0) {
 				$liste = "<p>Es wurden keine Einträge gefunden.</p>";
@@ -119,7 +120,7 @@ class visits extends pageClass
       visits v
       LEFT JOIN benutzer u ON v.benutzerID=u.ID
       
-    "."{$cond}
+    " . "{$cond}
     
     ORDER BY
       {$orderby} {$ox}
@@ -127,7 +128,7 @@ class visits extends pageClass
     LIMIT
       {$pos}, {$this->showPage->config['lists']['entriesPerPage']}";
 
-				$qry = $this->db->query($sql, $paramsArr);
+				$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 				while ($res = $qry->fetchObject()) {
 					$href1 = "benutzerDet-{$res -> benutzerID}.html";
 					$href2 = "visits.html?stichwort=sessionID::{$res -> sessionID}";
@@ -143,6 +144,3 @@ class visits extends pageClass
 		$this->placeholders['liste'] = $liste;
 	}
 }
-
-
-/* EOF */

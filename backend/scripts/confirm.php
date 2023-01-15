@@ -17,13 +17,13 @@ class confirm extends pageClass
 				$status = "<p class=\"error\">Es wurde ein ungültiger Link geöffnet.</p>";
 			} else {
 				$sql = "SELECT confirmed, DATE_FORMAT(confirmed, '%d.%m.%Y') AS cf, accepted FROM benutzer WHERE ID=?";
-				$qry = $this->db->query($sql, [$ID]);
+				$qry = $this->db->prepareAndExecute($sql, [$ID]);
 				if ($qry->rowCount() != 1) {
 					$status = "<p class=\"error\">Es wurde ein ungültiger Link geöffnet.</p>";
 				} else {
 					$res = $qry->fetch(PDO::FETCH_ASSOC);
 					if ($res['confirmed'] == '0000-00-00 00:00:00') {
-						$this->db->query("UPDATE benutzer SET confirmed=NOW() WHERE ID=?", [$ID]);
+						$this->db->prepareAndExecute("UPDATE benutzer SET confirmed=NOW() WHERE ID=?", [$ID]);
 						$status = "<p>Ihr Zugang wurde aktiviert.</p>";
 					} else {
 						$status = "<p class=\"error\">Dieser Zugang wurde bereits am {$res['cf']} aktiviert.</p>";

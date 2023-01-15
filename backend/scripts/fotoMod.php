@@ -35,12 +35,12 @@ class fotoMod extends pageClass
 
   WHERE
    ID=?";
-			$qry = $this->db->query($sql, [$albumID]);
+			$qry = $this->db->prepareAndExecute($sql, [$albumID]);
 			if ($qry->rowCount() != 1) {
 				$this->showPage->redirect("alben.html");
 			}
 			$sql = "SELECT text, typ FROM fotos WHERE ID=?";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			if ($qry->rowCount() == 1) {
 				$this->showPage->pageArr['platzhalter']['title'] = 'Foto bearbeiten';
 				$this->showPage->pageArr['grundkonf']['navigator']['title'] = 'Foto bearbeiten';
@@ -66,7 +66,7 @@ class fotoMod extends pageClass
 					$imgArr = getimagesize($_FILES['foto']['tmp_name']);
 					$mime = strtolower($imgArr['mime']);
 					$sql = "SELECT extension FROM dateiformate WHERE mimetype=? AND FIND_IN_SET('foto', arten)!=0";
-					$qry = $this->db->query($sql, [$mime]);
+					$qry = $this->db->prepareAndExecute($sql, [$mime]);
 					if ($qry->rowCount() != 1) {
 						$fehlerArr[] = 'Leider ist das Foto in einem ungültigen Dateiformat (' . $mime . ').';
 					} else {
@@ -81,10 +81,10 @@ class fotoMod extends pageClass
 									 }*/
 
 						$imgRes = new ImageResize();
-						$imgRes->resize_image($_FILES['foto']['tmp_name'], $datenArr['typ'], $_SERVER['DOCUMENT_ROOT'] . '/galerie/', 'foto' . $tempID, 510, 0, 90, 0, 1);
+						$imgRes->resize_image($_FILES['foto']['tmp_name'], $datenArr['typ'], $_SERVER['DOCUMENT_ROOT'] . '/galerie/', 'foto' . $tempID, 510);
 						$imgRes->resize_image($_SERVER['DOCUMENT_ROOT'] . '/galerie/orig_foto' . $tempID . '.' . $datenArr['typ'], $datenArr['typ'], $_SERVER['DOCUMENT_ROOT'] . '/galerie/', 'tnfoto' . $tempID, $w, $h, 90, 1, 0);
 						if ($ac == 'mod') {
-							$this->db->query("UPDATE fotos SET typ=? WHERE ID=?", [$datenArr['typ'], $tempID]);
+							$this->db->prepareAndExecute("UPDATE fotos SET typ=? WHERE ID=?", [$datenArr['typ'], $tempID]);
 						}
 					}
 				} else if ($ac == 'add') {
@@ -99,7 +99,7 @@ class fotoMod extends pageClass
 
 					if ($ID == 0) {
 						$sql = "SELECT MAX(pos)+1 AS pos FROM fotos WHERE albumID=?";
-						$qry = $this->db->query($sql, [$albumID]);
+						$qry = $this->db->prepareAndExecute($sql, [$albumID]);
 						$res = $qry->fetch(PDO::FETCH_ASSOC);
 						$datenArr['albumID'] = $albumID;
 						$datenArr['pos'] = $res['pos'];
@@ -137,7 +137,7 @@ class fotoMod extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= "</ul></div>";
@@ -148,11 +148,8 @@ class fotoMod extends pageClass
 		$this->placeholders['ID'] = $ID;
 		$this->placeholders['foto'] = $foto;
 
-		foreach ($datenArr AS $key => $val) {
+		foreach ($datenArr as $key => $val) {
 			$this->placeholders[$key] = htmlentities($val);
 		}
 	}
 }
-
-
-/* EOF */

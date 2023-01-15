@@ -31,13 +31,13 @@ class jp extends pageClass
 			//  }
 
 			$sql = "SELECT ID, name FROM vereine WHERE ID IN (SELECT vereinID FROM benutzervereine WHERE benutzerID=?) ORDER BY name";
-			$qry = $this->db->query($sql, [$myID]);
+			$qry = $this->db->prepareAndExecute($sql, [$myID]);
 			while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 				$vArr[$res['ID']] = $res['name'];
 			}
 
 			if (isset($_GET['remove'])) {
-				$this->db->query("DELETE FROM jahresprogramm WHERE ID=? AND (registered_by=? OR {$this->showPage->userData->admin}=1)", [
+				$this->db->prepareAndExecute("DELETE FROM jahresprogramm WHERE ID=? AND (registered_by=? OR {$this->showPage->userData->admin}=1)", [
 					$_GET['remove'], $myID,
 				]);
 			}
@@ -87,7 +87,7 @@ class jp extends pageClass
 				$condSearchWord = [];
 
 				$sArr = explode(" ", $stichwort);
-				foreach ($sArr AS $key => $val) {
+				foreach ($sArr as $val) {
 					$sx = trim($val);
 					if ($sx != '') {
 						$condSearchWord[] = "(j.titel LIKE ? OR j.ort LIKE ? OR j.bemerkungen LIKE ?)";
@@ -165,9 +165,9 @@ class jp extends pageClass
   FROM
     jahresprogramm j
     
-  "."{$cond}
+  " . "{$cond}
   ";
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			$res = $qry->fetchObject();
 			if ($res->anz == 0) {
 				$liste = "<p>Es wurden keine Einträge gefunden.</p>";
@@ -187,7 +187,7 @@ class jp extends pageClass
       jahresprogramm j
       LEFT JOIN benutzer b ON j.registered_by=b.ID
     
-    "."{$cond}
+    " . "{$cond}
     
     ORDER BY
       {$orderby} {$ox}
@@ -195,7 +195,7 @@ class jp extends pageClass
     LIMIT
       {$pos}, {$this->showPage->config['lists']['entriesPerPage']}";
 
-				$qry = $this->db->query($sql, $paramsArr);
+				$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 				while ($res = $qry->fetchObject()) {
 
 					$xs = ($res->co == 'tocheck') ? 'zu prüfen' : 'aktiv';
@@ -215,7 +215,7 @@ class jp extends pageClass
 				$liste .= $pagination;
 			}
 
-			foreach ($jpArr['typen'] AS $key => $val) {
+			foreach ($jpArr['typen'] as $key => $val) {
 				$typen .= "<option value=\"{$key}\"";
 				if ((string)$key === $typ) {
 					$typen .= ' selected="selected"';
@@ -223,7 +223,7 @@ class jp extends pageClass
 				$typen .= ">{$val['titel']}</option>\n";
 			}
 
-			foreach ($vArr AS $key => $val) {
+			foreach ($vArr as $key => $val) {
 				$vereine .= "<option value=\"{$key}\"";
 				if ((string)$key === $vereinID) {
 					$vereine .= ' selected="selected"';
@@ -238,6 +238,3 @@ class jp extends pageClass
 		$this->placeholders['liste'] = $liste;
 	}
 }
-
-
-/* EOF */

@@ -7,19 +7,15 @@
 
 namespace metanet\db;
 
-use \PDO;
-use \PDOStatement;
-use \PDOException;
-use \ArrayObject;
+use PDO;
+use PDOStatement;
+use PDOException;
+use ArrayObject;
 use Exception;
 
 abstract class DB extends PDO
 {
-	const TYPE_MYSQL = 'mysql';
-	const TYPE_POSTGRESQL = 2;
-	const TYPE_MSSQL = 3;
 	protected $listeners;
-	protected $muteListeners;
 	protected $transactionName;
 	protected $dbConnect;
 
@@ -28,7 +24,6 @@ abstract class DB extends PDO
 		parent::__construct($dsn, $username, $passwd, $options);
 
 		$this->listeners = new ArrayObject();
-		$this->muteListeners = false;
 		$this->transactionName = null;
 	}
 
@@ -101,151 +96,8 @@ abstract class DB extends PDO
 			$stmnt->execute($params);
 
 			setlocale(LC_NUMERIC, $old);
-
-			$this->triggerListeners('onExecute', [$this, $stmnt]);
 		} catch (PDOException $e) {
 			throw new Exception('PDO could not execute query: ' . $e->getMessage() . ' ' . $e->errorInfo[1] . ' ' . $stmnt->queryString);
 		}
 	}
-
-	public function beginTransaction($transactionName = null)
-	{
-		$this->transactionName = $transactionName;
-
-		try {
-			$this->triggerListeners('beforeBeginTransaction', [$this]);
-
-			parent::beginTransaction();
-		} catch (PDOException $e) {
-			throw new Exception('PDO could not begin transaction: ' . $e->getMessage() . ' ' . $e->getCode());
-		}
-	}
-
-	/**
-	 * @throws Exception
-	 */
-	public function commit()
-	{
-		try {
-			parent::commit();
-
-			$this->triggerListeners('afterCommit', [$this]);
-
-			$this->transactionName = null;
-		} catch (PDOException $e) {
-			throw new Exception('PDO could not commit transaction: ' . $e->getMessage() . ' ' . $e->getCode());
-		}
-	}
-
-	/**
-	 * Adds a DBListener to listen on some events of the DB class
-	 *
-	 * @param DBListener $listener The listener object to register
-	 * @param string     $name     The name of the listener [optional]
-	 */
-	public function addListener(DBListener $listener, $name = null)
-	{
-		if ($name !== null) {
-			$this->listeners->offsetSet($name, $listener);
-		} else {
-			$this->listeners->append($listener);
-		}
-	}
-
-	/**
-	 * Removes the listener
-	 *
-	 * @param string $name The name of the listener which should be removed
-	 */
-	public function removeListener($name)
-	{
-		$this->listeners->offsetUnset($name);
-	}
-
-	/**
-	 * Removes all registered listeners at once
-	 */
-	public function removeAllListeners()
-	{
-		$this->listeners = new ArrayObject();
-	}
-
-	/**
-	 * Returns the name of the current transaction or null if none given
-	 *
-	 * @return string|null
-	 */
-	public function getTransactionName()
-	{
-		return $this->transactionName;
-	}
-
-	/**
-	 * Sets the listeners to mute so they'll be not triggered until mute is set to false again
-	 *
-	 * @param boolean $mute Mute = true, unmute = false
-	 */
-	public function setListenersMute($mute)
-	{
-		$this->muteListeners = $mute;
-	}
-
-	/**
-	 * Returns the state of the listeners if they're mute or not
-	 *
-	 * @return bool The mute state of the listeners
-	 */
-	public function areListenersMute()
-	{
-		return $this->muteListeners;
-	}
-
-	/**
-	 * Returns all the current registered listeners
-	 *
-	 * @return ArrayObject List of registered listeners
-	 */
-	public function getListeners()
-	{
-		return $this->listeners;
-	}
-
-	/**
-	 * Triggers a call of a specific method from all registered listener classes if the listeners are not set to mute
-	 *
-	 * @param string $method listener method that should be called
-	 * @param array  $params The parameters for the listener method
-	 */
-	protected function triggerListeners($method, array $params = [])
-	{
-		if ($this->muteListeners === true) {
-			return;
-		}
-
-		// Mute all the listeners cause we don't want listeners called in listeners
-		// If we do so: unmute the listeners in the listener method itself
-		$this->muteListeners = true;
-
-		foreach ($this->listeners as $l) {
-			/** @var DBListener $l */
-			call_user_func_array([$l, $method], $params);
-		}
-
-		// Unmute listeners cause from now on we're not in a listener method anymore
-		$this->muteListeners = false;
-	}
-
-	/**
-	 * Creates a string like "?,?,?,..." for the number of array entries given
-	 *
-	 * @param $paramArr
-	 *
-	 * @return string
-	 */
-	public static function createInQuery($paramArr)
-	{
-		return implode(',', array_fill(0, count($paramArr), '?'));
-	}
 }
-
-/* EOF */

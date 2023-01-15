@@ -4,7 +4,8 @@ use classes\pageClass;
 
 class vereine extends pageClass
 {
-	public function execute() {
+	public function execute()
+	{
 		$stichwort = '';
 		$liste = '';
 
@@ -13,7 +14,7 @@ class vereine extends pageClass
 		if ($this->showPage->checkUG('admin')) {
 
 			if (isset($_GET['remove'])) {
-				$this->db->query("DELETE FROM vereine WHERE ID=?", [$_GET['remove']]);
+				$this->db->prepareAndExecute("DELETE FROM vereine WHERE ID=?", [$_GET['remove']]);
 			}
 
 			$cond = "WHERE 1=1";
@@ -32,7 +33,7 @@ class vereine extends pageClass
 				$condSearchWord = [];
 
 				$sArr = explode(" ", $stichwort);
-				foreach ($sArr AS $key => $val) {
+				foreach ($sArr as $val) {
 					$sx = trim($val);
 					if ($sx != '') {
 						$condSearchWord[] = "(v.name LIKE ?)";
@@ -88,9 +89,9 @@ class vereine extends pageClass
   FROM
     vereine v
     
-  "."{$cond}
+  " . "{$cond}
   ";
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			$res = $qry->fetchObject();
 			if ($res->anz == 0) {
 				$liste = "<p>Es wurden keine Einträge gefunden.</p>";
@@ -108,7 +109,7 @@ class vereine extends pageClass
     FROM
       vereine v
     
-    "."{$cond}
+    " . "{$cond}
     
     ORDER BY
       {$orderby} {$ox}
@@ -116,7 +117,7 @@ class vereine extends pageClass
     LIMIT
       {$pos}, {$this->showPage->config['lists']['entriesPerPage']}";
 
-				$qry = $this->db->query($sql, $paramsArr);
+				$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 				while ($res = $qry->fetchObject()) {
 					$href1 = "vereinMod-{$res -> ID}.html";
 					$href2 = "vereine.html?remove={$res -> ID}";
@@ -131,6 +132,3 @@ class vereine extends pageClass
 		$this->placeholders['liste'] = $liste;
 	}
 }
-
-
-/* EOF */

@@ -20,7 +20,7 @@ class vorstand extends pageClass
 			$addCond = (count($jpArr['typen'][$typ]['conditions']) == 0) ? "" : " AND " . implode(" AND ", $jpArr['typen'][$typ]['conditions']);
 
 			$sql = "SELECT MIN(YEAR(p.datumVon)) AS minJahr, MAX(YEAR(p.datumBis)) AS maxJahr FROM jahresprogramm p WHERE p.{$typ}=1 AND p.confirmed!='0000-00-00 00:00:00'{$addCond}";
-			$qry = $this->db->query($sql, []);
+			$qry = $this->db->prepareAndExecute($sql);
 			$res = $qry->fetch(PDO::FETCH_ASSOC);
 			$minJahr = ($res['minJahr'] != '') ? $res['minJahr'] : date("Y");
 			$maxJahr = ($res['maxJahr'] != '') ? $res['maxJahr'] : date("Y");
@@ -85,7 +85,7 @@ class vorstand extends pageClass
   
   "."{$cond}
   ";
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			$res = $qry->fetchObject();
 			if ($res->anz == 0) {
 				$liste = "<p class=\"no-entry\">Es sind keine Anlässe erfasst.</p>";
@@ -106,7 +106,7 @@ class vorstand extends pageClass
       {$orderby} {$ox}
     ";
 
-				$qry = $this->db->query($sql, $paramsArr);
+				$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 				while ($res = $qry->fetchObject()) {
 					$i++;
 					$alt = ($i % 2 == 0) ? ' class="alt"' : '';

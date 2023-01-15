@@ -11,7 +11,7 @@ class jpAll extends pageClass
 	{
 
 		$sql = "SELECT DATE_FORMAT(MAX(lastmod), '%d.%m.%Y %T') AS lastmod, MIN(datumVon) AS minDate, MAX(datumBis) AS maxDate FROM jahresprogramm WHERE confirmed!='0000-00-00 00:00:00'";
-		$qry = $this->db->query($sql, []);
+		$qry = $this->db->prepareAndExecute($sql);
 		$res = $qry->fetch(PDO::FETCH_ASSOC);
 		$lastmod = ($res['lastmod'] != '') ? $res['lastmod'] : 'unbekannt';
 		$minDate = ($res['minDate'] != '') ? $res['minDate'] : date("Y-m-d");
@@ -23,8 +23,8 @@ class jpAll extends pageClass
 		$minYear = $minArr[0];
 		$maxYear = $maxArr[0];
 
-		$currentYear = (int)(isset($this->showPage->arrVars[1]) ? $this->showPage->arrVars[1] : date('Y'));
-		$currentMonth = (int)(isset($this->showPage->arrVars[2]) ? $this->showPage->arrVars[2] : date('m'));
+		$currentYear = (int)($this->showPage->arrVars[1] ?? date('Y'));
+		$currentMonth = (int)($this->showPage->arrVars[2] ?? date('m'));
 
 		if ($currentYear < $minYear) {
 			$currentYear = $minYear;
@@ -85,7 +85,7 @@ class jpAll extends pageClass
 		$paramsArr[] = date('Y-m-d', mktime(0, 0, 0, $currentMonth, 1, $currentYear));
 
 		$sql = "SELECT COUNT(p.ID) AS anz FROM jahresprogramm p WHERE p.confirmed!='0000-00-00 00:00:00' AND p.datumVon<=? AND p.datumBis>=?";
-		$qry = $this->db->query($sql, $paramsArr);
+		$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 		$res = $qry->fetchObject();
 		if ($res->anz == 0) {
 			$list = "<p class=\"no-entry\">Es sind keine Anlässe erfasst.</p>";
@@ -136,7 +136,7 @@ class jpAll extends pageClass
 				p.datumVon, p.datumBis, p.zeit
 			";
 
-			$qry = $this->db->query($sql, $paramsArr);
+			$qry = $this->db->prepareAndExecute($sql, $paramsArr);
 			while ($res = $qry->fetchObject()) {
 				$i++;
 				$alt = ($i % 2 == 0) ? ' class="alt"' : '';

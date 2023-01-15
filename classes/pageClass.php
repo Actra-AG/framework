@@ -10,7 +10,7 @@ abstract class pageClass
 	protected $db;
 	/** @var RequestHandler */
 	protected $requestHandler;
-	/** @var \classes\ShowPage */
+	/** @var ShowPage */
 	protected $showPage;
 	protected $placeholders = [];
 

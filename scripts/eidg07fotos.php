@@ -15,13 +15,13 @@ class eidg07fotos extends pageClass
 		}
 
 		$sql = "SELECT titel FROM alben WHERE ID=?";
-		$qry = $this->db->query($sql, [$katID]);
+		$qry = $this->db->prepareAndExecute($sql, [$katID]);
 		$res = $qry->fetch(PDO::FETCH_ASSOC);
 		$title = $res['titel'];
 
 		$fotos = '';
 		$sql = "SELECT * FROM fotos WHERE albumID=? ORDER BY pos";
-		$qry = $this->db->query($sql, [$katID]);
+		$qry = $this->db->prepareAndExecute($sql, [$katID]);
 		if ($qry->rowCount() == 0) {
 			$fotos = '<p class="noentry">In dieser Kategorie gibt es noch keine Fotos.</p>';
 		} else {

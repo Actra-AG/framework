@@ -4,7 +4,8 @@ use classes\pageClass;
 
 class seiteAdd extends pageClass
 {
-	public function execute() {
+	public function execute()
+	{
 		$status = '';
 		$ort = '';
 		$ortname = '';
@@ -70,7 +71,7 @@ class seiteAdd extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= "</ul></div>";
@@ -82,6 +83,3 @@ class seiteAdd extends pageClass
 		$this->placeholders['seite'] = $seite;
 	}
 }
-
-
-/* EOF */

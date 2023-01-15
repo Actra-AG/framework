@@ -6,7 +6,8 @@ use PDO;
 
 class newsMod extends pageClass
 {
-	public function execute() {
+	public function execute()
+	{
 		$bsvb = new bsvb();
 
 		$status = '';
@@ -36,7 +37,7 @@ class newsMod extends pageClass
 	WHERE
 	  ID=?
 	";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			if ($qry->rowCount() == 1) {
 				$this->showPage->pageArr['platzhalter']['title'] = 'Neuigkeit bearbeiten';
 				$ac = 'mod';
@@ -106,7 +107,7 @@ class newsMod extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= "</ul></div>";
@@ -117,11 +118,8 @@ class newsMod extends pageClass
 		$this->placeholders['archiv0'] = $archiv0;
 		$this->placeholders['archiv1'] = $archiv1;
 
-		foreach ($datenArr AS $key => $val) {
+		foreach ($datenArr as $key => $val) {
 			$this->placeholders[$key] = $val;
 		}
 	}
 }
-
-
-/* EOF */

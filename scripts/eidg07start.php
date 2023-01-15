@@ -3,16 +3,15 @@
 namespace scripts;
 
 use classes\pageClass;
+use DateTimeImmutable;
 use PDO;
 
 class eidg07start extends pageClass
 {
 	public function execute()
 	{
-		$datum = strftime("%A, %e. %B");
-
 		$sql = "SELECT n.ID, n.titel, n.teaser, n.text, DATE_FORMAT(n.datum, '%d.%m.%Y') AS datum, DATE_FORMAT(n.datum, '%T') AS zeit FROM news n WHERE n.archiv='0' AND n.typ=2 ORDER BY n.datum DESC LIMIT 0,3";
-		$qry = $this->db->query($sql);
+		$qry = $this->db->prepareAndExecute($sql);
 		if ($qry->rowCount() == 0) {
 			$eidgnews = '<span>keine Neuigkeiten</span>';
 		} else {
@@ -45,15 +44,14 @@ ORDER BY
   
 LIMIT 0,1
 ";
-		$qry = $this->db->query($sql);
+		$qry = $this->db->prepareAndExecute($sql);
 		$res = $qry->fetch(PDO::FETCH_ASSOC);
 		$href = 'eidg07foto-' . $res['albumID'] . '-' . $res['fotoID'] . '.html';
 		$src = '/gallery/tnfoto' . $res['fotoID'] . '.jpg';
 		$foto = '<a href="'.$href.'"><img src="'.$src.'" width="125" height="90" alt="" /></a>';
 
 		$this->placeholders['foto'] = $foto;
-		$this->placeholders['datum'] = $datum;
+		$this->placeholders['datum'] = (new DateTimeImmutable())->format(format: 'd.m.Y');
 		$this->placeholders['eidgnews'] = $eidgnews;
 	}
 }
-/* EOF */

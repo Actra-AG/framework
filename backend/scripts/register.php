@@ -7,7 +7,8 @@ use PDO;
 
 class register extends pageClass
 {
-	public function execute() {
+	public function execute()
+	{
 		$bsvb = new bsvb();
 
 		$status = '';
@@ -35,7 +36,7 @@ class register extends pageClass
 
 			$vArr[0] = 'keiner';
 			$sql = "SELECT ID, name FROM vereine ORDER BY name";
-			$qry = $this->db->query($sql);
+			$qry = $this->db->prepareAndExecute($sql);
 			while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
 				$vArr[$res['ID']] = $res['name'];
 			}
@@ -100,7 +101,7 @@ class register extends pageClass
 				} else {
 					$datenArr['email'] = $_POST['email'];
 					$sql = "SELECT COUNT(*) AS anz FROM benutzer WHERE email=?";
-					$qry = $this->db->query($sql, [$_POST['email']]);
+					$qry = $this->db->prepareAndExecute($sql, [$_POST['email']]);
 					$res = $qry->fetch(PDO::FETCH_ASSOC);
 					if ($res['anz'] != 0) {
 						$fehlerArr[] = 'Die eingegebene E-Mail-Adresse ist bereits registriert. Geben Sie bitte eine andere ein.';
@@ -142,8 +143,6 @@ class register extends pageClass
 
 					$to = "webmaster@bsv-buelach.ch";
 					$toName = "webmaster@bsv-buelach.ch";
-					$from = "webmaster@bsv-buelach.ch";
-					$fromName = "webmaster@bsv-buelach.ch";
 					$subject = "Neue Registrierung bei {$_SERVER['SERVER_NAME']}";
 
 					$text = "Grüezi\n\nEs gibt eine neue Registrierung bei {$_SERVER['SERVER_NAME']}. Bitte prüfen Sie diese und akzeptieren oder verweigern Sie den Zugriff.\n\nFreundliche Grüsse\n\nBezirksschützenverband Bülach";
@@ -157,13 +156,13 @@ class register extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= '<li>' . $val . '</li>';
 			}
 			$status .= '</ul></div>';
 		}
 
-		foreach ($datenArr AS $key => $val) {
+		foreach ($datenArr as $key => $val) {
 			if ($key == 'anrede') {
 				$$val = ' checked="checked"';
 			} else {
@@ -171,7 +170,7 @@ class register extends pageClass
 			}
 		}
 
-		foreach ($vArr AS $key => $val) {
+		foreach ($vArr as $key => $val) {
 			$vereine .= "<option value=\"{$key}\"";
 			if ($key == $datenArr['vereinID']) {
 				$vereine .= ' selected="selected"';
@@ -185,6 +184,3 @@ class register extends pageClass
 		$this->placeholders['vereine'] = $vereine;
 	}
 }
-
-
-/* EOF */

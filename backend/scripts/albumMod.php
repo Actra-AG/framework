@@ -6,7 +6,8 @@ use PDO;
 
 class albumMod extends pageClass
 {
-	public function execute() {
+	public function execute()
+	{
 		$bsvb = new bsvb();
 
 		$status = '';
@@ -21,7 +22,7 @@ class albumMod extends pageClass
 			$ID = (isset($this->showPage->arrVars[1])) ? $this->showPage->arrVars[1] : 0;
 
 			$sql = "SELECT titel FROM alben WHERE ID=?";
-			$qry = $this->db->query($sql, [$ID]);
+			$qry = $this->db->prepareAndExecute($sql, [$ID]);
 			if ($qry->rowCount() == 1) {
 				$this->showPage->pageArr['platzhalter']['title'] = 'Album bearbeiten';
 				$this->showPage->pageArr['grundkonf']['navigator']['title'] = 'Album bearbeiten';
@@ -47,7 +48,7 @@ class albumMod extends pageClass
 
 					if ($ID == 0) {
 						$sql = "SELECT MAX(pos)+1 AS pos FROM alben";
-						$qry = $this->db->query($sql);
+						$qry = $this->db->prepareAndExecute($sql);
 						$res = $qry->fetch(PDO::FETCH_ASSOC);
 						$datenArr['pos'] = $res['pos'];
 						$datenArr['typ'] = 1;
@@ -64,7 +65,7 @@ class albumMod extends pageClass
 
 		if (count($fehlerArr) != 0) {
 			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
+			foreach ($fehlerArr as $val) {
 				$status .= "<li>{$val}</li>\n";
 			}
 			$status .= "</ul></div>";
@@ -73,11 +74,8 @@ class albumMod extends pageClass
 		$this->placeholders['status'] = $status;
 		$this->placeholders['ID'] = $ID;
 
-		foreach ($datenArr AS $key => $val) {
+		foreach ($datenArr as $key => $val) {
 			$this->placeholders[$key] = htmlentities($val);
 		}
 	}
 }
-
-
-/* EOF */

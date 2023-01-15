@@ -21,12 +21,12 @@ class eidg07foto extends pageClass
 		}
 
 		$sql = "SELECT titel FROM alben WHERE ID=?";
-		$qry = $this->db->query($sql, array($katID));
+		$qry = $this->db->prepareAndExecute($sql, array($katID));
 		$res = $qry->fetch(PDO::FETCH_ASSOC);
 		$title = $res['titel'];
 
 		$sql = "SELECT text FROM fotos WHERE ID =?";
-		$qry = $this->db->query($sql, array($fotoID));
+		$qry = $this->db->prepareAndExecute($sql, array($fotoID));
 		$res = $qry->fetch(PDO::FETCH_ASSOC);
 		if ($res['text'] != '') {
 			$text = '<p>' . nl2br($res['text']) . '</p>';

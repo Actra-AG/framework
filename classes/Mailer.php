@@ -151,7 +151,7 @@ abstract class Mailer
 		$this->mailer->Body = $body;
 
 		if ($format == 'html') {
-			$this->mailer->isHTML(true);
+			$this->mailer->isHTML();
 			if ($altBody != '') {
 				$this->mailer->AltBody = $altBody;
 			}

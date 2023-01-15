@@ -23,7 +23,7 @@ FROM
 WHERE
   ID=?
 ";
-		$qry = $this->db->query($sql, [$toID]);
+		$qry = $this->db->prepareAndExecute($sql, [$toID]);
 		if ($qry->rowCount() == 1) {
 			$res = $qry->fetch(PDO::FETCH_ASSOC);
 			$this->showPage->pageArr['platzhalter']['title'] = "{$res['vorname']} {$res['nachname']} kontaktieren";

@@ -40,7 +40,7 @@ class calendar extends serviceClass
 		WHERE
 			ID=? AND export=1
 		";
-		$qry = $this->db->query($sql, [$eventID]);
+		$qry = $this->db->prepareAndExecute($sql, [$eventID]);
 		if ($qry->rowCount() != 1) {
 			ErrorHandler::display_error(404);
 		}
@@ -115,7 +115,7 @@ EOD;
 		//set correct content-type-header
 		header('Content-type: text/calendar; charset=utf-8');
 		header('Content-Disposition: attachment; filename=' . $data['filename']);
-		echo utf8_encode($ical);
+		echo mb_convert_encoding(string: $ical, to_encoding: 'UTF-8');
 		exit;
 	}
 
@@ -125,4 +125,3 @@ EOD;
 	}
 
 }
-/* EOF */

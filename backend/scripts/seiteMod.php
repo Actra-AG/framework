@@ -4,15 +4,14 @@ use classes\pageClass;
 
 class seiteMod extends pageClass
 {
-	public function execute() {
+	public function execute()
+	{
 		$status = '';
 		$ort = '';
 		$seite = '';
 
 		$datenArr['text'] = '';
 		$datenArr['config'] = '';
-
-		$fehlerArr = [];
 
 		if ($this->showPage->checkUG('redaktor') && isset($this->showPage->arrVars[2])) {
 			$benutzerID = (int)$this->showPage->userData->ID;
@@ -61,35 +60,19 @@ class seiteMod extends pageClass
 				$paramsArr[] = $_POST['text'];
 				$paramsArr[] = $_POST['config'];
 
-				$this->db->query("INSERT INTO seiteninhalte SET benutzerID=?, ort=?, seite=?, inhalt=?, config=?", $paramsArr);
-
-				if (count($fehlerArr) == 0) {
-					$this->showPage->redirect("seiten.html");
-				}
+				$this->db->prepareAndExecute("INSERT INTO seiteninhalte SET benutzerID=?, ort=?, seite=?, inhalt=?, config=?", $paramsArr);
 			}
 
 			$datenArr['text'] = htmlentities($datenArr['text'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
 			$datenArr['config'] = htmlentities($datenArr['config'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
 		}
 
-		if (count($fehlerArr) != 0) {
-			$status = "<div id=\"formfehler\"><ul>\n";
-			foreach ($fehlerArr as $key => $val) {
-				$status .= "<li>{$val}</li>\n";
-			}
-			$status .= "</ul></div>";
-		}
-
 		$this->placeholders['status'] = $status;
 		$this->placeholders['ort'] = $ort;
 		$this->placeholders['seite'] = $seite;
 
-		foreach ($datenArr AS $key => $val) {
+		foreach ($datenArr as $key => $val) {
 			$this->placeholders[$key] = $val;
 		}
-
 	}
 }
-
-
-/* EOF */
