@@ -31,10 +31,10 @@ class DBMySQL extends DB
 		}
 	}
 
-	public function prepareAndExecute($sql, $params = []): PDOStatement
+	public function prepareAndExecute(string $sql, array $parameters = []): PDOStatement
 	{
-		$statement = $this->prepare($sql);
-		$statement->execute($params);
+		$statement = $this->prepare(query: $sql);
+		$statement->execute(params: $parameters);
 
 		return $statement;
 	}
@@ -59,7 +59,7 @@ class DBMySQL extends DB
 		}
 	}
 
-	public function selectAsObjects(PDOStatement $stmnt, $className, array $params = [])
+	public function selectAsObjects(PDOStatement $stmnt, $className, array $params = []): false|array
 	{
 		$paramCount = count($params);
 
@@ -135,7 +135,7 @@ class DBMySQL extends DB
 		}
 	}
 
-	public function getDbConnect()
+	public function getDbConnect(): DBConnect
 	{
 		return $this->dbConnect;
 	}

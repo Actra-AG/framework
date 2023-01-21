@@ -47,7 +47,7 @@ LIMIT 0,1
 		$qry = $this->db->prepareAndExecute($sql);
 		$res = $qry->fetch(PDO::FETCH_ASSOC);
 		$href = 'eidg07foto-' . $res['albumID'] . '-' . $res['fotoID'] . '.html';
-		$src = '/gallery/tnfoto' . $res['fotoID'] . '.jpg';
+		$src = '/galerie/tnfoto' . $res['fotoID'] . '.jpg';
 		$foto = '<a href="'.$href.'"><img src="'.$src.'" width="125" height="90" alt="" /></a>';
 
 		$this->placeholders['foto'] = $foto;
