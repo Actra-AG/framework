@@ -18,7 +18,7 @@ class jp extends pageClass
 		$jpArr = $bsvb->getJahresprogramm();
 
 		$gruppe = (isset($this->showPage->arrVars[1]) && array_key_exists($this->showPage->arrVars[1], $jpArr['gruppen']) && $this->showPage->arrVars[1] != 'vorstand') ? $this->showPage->arrVars[1] : '';
-		if(!isset($jpArr['gruppen'][$gruppe])) {
+		if (!isset($jpArr['gruppen'][$gruppe])) {
 			$this->showPage->redirect("jpAll.html");
 		}
 
@@ -28,7 +28,7 @@ class jp extends pageClass
 			$typ = (isset($this->showPage->arrVars[2]) && in_array($this->showPage->arrVars[2], $jpArr['gruppen'][$gruppe])) ? $this->showPage->arrVars[2] : current($jpArr['gruppen'][$gruppe]);
 
 			$gruppen = "<div id=\"nav-content\" class=\"group\"><ul>\n";
-			foreach ($jpArr['gruppen'][$gruppe] AS $val) {
+			foreach ($jpArr['gruppen'][$gruppe] as $val) {
 				$href = "jp-{$gruppe}-{$val}.html";
 				$gt = ($val == $typ) ? "<strong>{$jpArr['typen'][$val]['kurz']}</strong>" : "<a href=\"{$href}\">{$jpArr['typen'][$val]['kurz']}</a>";
 				$gruppen .= "<li>{$gt}</li>\n";
@@ -42,13 +42,11 @@ class jp extends pageClass
 		$cond = " WHERE p.{$typ}=1 AND p.confirmed!='0000-00-00 00:00:00'";
 		$addCond = (count($jpArr['typen'][$typ]['conditions']) == 0) ? "" : " AND " . implode(" AND ", $jpArr['typen'][$typ]['conditions']);
 
-		$sql = "SELECT DATE_FORMAT(MAX(p.lastmod), '%d.%m.%Y %T') AS lastmod FROM jahresprogramm p".$cond;
-		$qry = $this->db->prepareAndExecute($sql);
+		$qry = $this->db->prepareAndExecute(sql: "SELECT DATE_FORMAT(MAX(p.lastmod), '%d.%m.%Y %T') AS lastmod FROM jahresprogramm p" . $cond);
 		$res = $qry->fetch(PDO::FETCH_ASSOC);
 		$lastmod = ($res['lastmod'] != '') ? $res['lastmod'] : 'unbekannt';
 
-		$sql = "SELECT MIN(YEAR(p.datumVon)) AS minJahr, MAX(YEAR(p.datumBis)) AS maxJahr FROM jahresprogramm p ".$cond.$addCond;
-		$qry = $this->db->prepareAndExecute($sql, [$typ]);
+		$qry = $this->db->prepareAndExecute(sql: "SELECT MIN(YEAR(p.datumVon)) AS minJahr, MAX(YEAR(p.datumBis)) AS maxJahr FROM jahresprogramm p " . $cond . $addCond);
 		$res = $qry->fetch(PDO::FETCH_ASSOC);
 		$minJahr = ($res['minJahr'] != '') ? $res['minJahr'] : date("Y");
 		$maxJahr = ($res['maxJahr'] != '') ? $res['maxJahr'] : date("Y");
