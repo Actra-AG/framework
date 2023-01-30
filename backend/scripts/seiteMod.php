@@ -43,29 +43,31 @@ class seiteMod extends pageClass
 
 			if (isset($_GET['send'])) {
 				if (isset($_POST['text'])) {
+					$datenArr['text'] = $_POST['text'];
 					$f = fopen($path_pages . "{$seite}.html", "w");
-					fwrite($f, stripslashes($_POST['text']));
+					fwrite($f, stripslashes($datenArr['text']));
 					fclose($f);
 				}
 
 				if (isset($_POST['config'])) {
+					$datenArr['config'] = $_POST['config'];
 					$f = fopen($path_config . "{$seite}.php", "w");
-					fwrite($f, stripslashes($_POST['config']));
+					fwrite($f, stripslashes($datenArr['config']));
 					fclose($f);
 				}
 
 				$paramsArr[] = $benutzerID;
 				$paramsArr[] = $ort;
 				$paramsArr[] = $seite;
-				$paramsArr[] = $_POST['text'];
-				$paramsArr[] = $_POST['config'];
+				$paramsArr[] = $datenArr['text'];
+				$paramsArr[] = $datenArr['config'];
 
 				$this->db->prepareAndExecute("INSERT INTO seiteninhalte SET benutzerID=?, ort=?, seite=?, inhalt=?, config=?", $paramsArr);
 			}
 
-			$datenArr['text'] = htmlentities($datenArr['text'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
-			$datenArr['config'] = htmlentities($datenArr['config'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
 		}
+		$datenArr['text'] = htmlentities($datenArr['text'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
+		$datenArr['config'] = htmlentities($datenArr['config'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
 
 		$this->placeholders['status'] = $status;
 		$this->placeholders['ort'] = $ort;
