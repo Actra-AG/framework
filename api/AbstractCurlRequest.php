@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\api;
@@ -11,13 +11,13 @@ use LogicException;
 
 abstract class AbstractCurlRequest
 {
-	private const CONTENT_TYPE = 'Content-Type';
-	private const CONTENT_LENGTH = 'Content-Length';
-	private const PROTECTED_HTTP_HEADERS = [
+	private const string CONTENT_TYPE = 'Content-Type';
+	private const string CONTENT_LENGTH = 'Content-Length';
+	private const array PROTECTED_HTTP_HEADERS = [
 		AbstractCurlRequest::CONTENT_TYPE,
 		AbstractCurlRequest::CONTENT_LENGTH,
 	];
-	private const PROTECTED_CURL_OPTIONS = [
+	private const array PROTECTED_CURL_OPTIONS = [
 		CURLOPT_URL,
 		CURLOPT_CONNECTTIMEOUT,
 		CURLOPT_TIMEOUT,

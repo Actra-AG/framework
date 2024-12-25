@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\security;
@@ -10,8 +10,8 @@ use framework\core\HttpRequest;
 
 readonly class CspPolicySettingsModel
 {
-	public const PROTOCOL_PLACEHOLDER = '{PROTOCOL}';
-	public const HOST_PLACEHOLDER = '{HOST}';
+	public const string PROTOCOL_PLACEHOLDER = '{PROTOCOL}';
+	public const string HOST_PLACEHOLDER = '{HOST}';
 
 	// Content Security Policy Reference: https://content-security-policy.com/
 
@@ -39,7 +39,11 @@ readonly class CspPolicySettingsModel
 		}
 		if ($this->styleSrc !== '') {
 			$val = $this->styleSrc;
-			if (!str_contains(haystack: $val, needle: "'none'") && !str_contains(haystack: $val, needle: "'unsafe-inline'")) {
+			if (
+				!str_contains(haystack: $val, needle: "'none'")
+				&& !str_contains(haystack: $val, needle: "'unsafe-inline'")
+				&& $nonce !== ''
+			) {
 				$val .= " 'nonce-" . $nonce . "'";
 			}
 			$dataArray[] = 'style-src ' . $val;

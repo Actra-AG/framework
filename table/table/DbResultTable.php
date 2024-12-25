@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\table\table;
@@ -19,14 +19,14 @@ use framework\table\TableItemModel;
 
 class DbResultTable extends SmartTable
 {
-	protected const PARAM_SORT = 'sort';
-	protected const PARAM_RESET = 'reset';
-	protected const PARAM_PAGE = 'page';
-	public const PARAM_FIND = 'find';
+	protected const string PARAM_SORT = 'sort';
+	protected const string PARAM_RESET = 'reset';
+	protected const string PARAM_PAGE = 'page';
+	public const string PARAM_FIND = 'find';
 
-	protected const sessionDataType = 'table';
-	protected const filter = '[filter]';
-	protected const pagination = '[pagination]';
+	protected const string sessionDataType = 'table';
+	protected const string filter = '[filter]';
+	protected const string pagination = '[pagination]';
 	private bool $filledDataBySelectQuery = false;
 	private ?AbstractTableColumn $defaultSortColumn = null;
 	private TablePaginationRenderer $tablePaginationRenderer;

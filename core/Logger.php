@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\core;
@@ -12,7 +12,7 @@ use Throwable;
 
 class Logger
 {
-	private const dnl = PHP_EOL . PHP_EOL;
+	private const string dnl = PHP_EOL . PHP_EOL;
 	private int $maxLogSize = 10000000;
 
 	private static ?Logger $registeredInstance = null;

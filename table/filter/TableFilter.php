@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\table\filter;
@@ -17,7 +17,7 @@ use LogicException;
 
 class TableFilter
 {
-	private const sessionDataType = 'tableFilter';
+	private const string sessionDataType = 'tableFilter';
 	/** @var TableFilter[] */
 	private static array $instances = [];
 

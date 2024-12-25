@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\core;
@@ -75,7 +75,10 @@ class HttpResponse
 			contentFilePath: null
 		);
 		if (!is_null(value: $cspPolicySettingsModel)) {
-			$httpResponse->setHeader(key: 'Content-Security-Policy', val: $cspPolicySettingsModel->getHttpHeaderDataString(nonce: $nonce));
+			$httpResponse->setHeader(
+				key: 'Content-Security-Policy',
+				val: $cspPolicySettingsModel->getHttpHeaderDataString(nonce: $nonce)
+			);
 		}
 
 		return $httpResponse;

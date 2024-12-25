@@ -1,24 +1,24 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\core;
 
 class ContentType
 {
-	public const HTML = 'html';
-	public const JSON = 'json';
-	public const XML = 'xml';
-	public const TXT = 'txt';
-	public const CSV = 'csv';
-	public const JS = 'js';
-	public const CSS = 'css';
-	public const JPG = 'jpg';
-	public const GIF = 'gif';
-	public const PNG = 'png';
-	public const MOV = 'mov';
+	public const string HTML = 'html';
+	public const string JSON = 'json';
+	public const string XML = 'xml';
+	public const string TXT = 'txt';
+	public const string CSV = 'csv';
+	public const string JS = 'js';
+	public const string CSS = 'css';
+	public const string JPG = 'jpg';
+	public const string GIF = 'gif';
+	public const string PNG = 'png';
+	public const string MOV = 'mov';
 
 	public function __construct(
 		public readonly string   $type,

@@ -1,14 +1,14 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\template\template;
 
 class DirectoryTemplateCache extends TemplateCacheStrategy
 {
-	protected const CACHE_SUFFIX = '.php';
+	protected const string CACHE_SUFFIX = '.php';
 	protected string $templateBaseDirectory;
 	protected int $baseDirLength;
 

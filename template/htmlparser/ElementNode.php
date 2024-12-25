@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\template\htmlparser;
@@ -10,9 +10,9 @@ use framework\html\HtmlTagAttribute;
 
 class ElementNode extends HtmlNode
 {
-	const TAG_OPEN = 1;
-	const TAG_CLOSE = 2;
-	const TAG_SELF_CLOSING = 3;
+	const int TAG_OPEN = 1;
+	const int TAG_CLOSE = 2;
+	const int TAG_SELF_CLOSING = 3;
 
 	public ?int $tagType = null;
 	public ?string $tagName = null;

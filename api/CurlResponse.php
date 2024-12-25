@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\api;
@@ -14,7 +14,7 @@ use stdClass;
 
 class CurlResponse
 {
-	public const ERROR_BAD_HTTP_RESPONSE_CODE = 900;
+	public const int ERROR_BAD_HTTP_RESPONSE_CODE = 900;
 
 	private function __construct(
 		public readonly false|string   $rawResponseBody,

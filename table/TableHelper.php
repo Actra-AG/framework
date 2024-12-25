@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\table;
@@ -22,9 +22,9 @@ use framework\table\table\SmartTable;
 
 class TableHelper
 {
-	public const SORT_ASC = 'ASC';
-	public const SORT_DESC = 'DESC';
-	public const OPPOSITE_SORT_DIRECTION = [
+	public const string SORT_ASC = 'ASC';
+	public const string SORT_DESC = 'DESC';
+	public const array OPPOSITE_SORT_DIRECTION = [
 		TableHelper::SORT_ASC  => TableHelper::SORT_DESC,
 		TableHelper::SORT_DESC => TableHelper::SORT_ASC,
 	];

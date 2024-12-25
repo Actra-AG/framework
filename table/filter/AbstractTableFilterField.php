@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\table\filter;
@@ -14,7 +14,7 @@ use LogicException;
 
 abstract class AbstractTableFilterField
 {
-	private const sessionDataType = 'columnFilter';
+	private const string sessionDataType = 'columnFilter';
 
 	/** @var AbstractTableFilterField[] */
 	private static array $instances = [];

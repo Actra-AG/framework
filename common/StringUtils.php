@@ -1,14 +1,14 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\common;
 
 class StringUtils
 {
-	public const IMPLODE_DEFAULT_SEPARATOR = ''; // https://github.com/php/php-src/issues/10197
+	public const string IMPLODE_DEFAULT_SEPARATOR = ''; // https://github.com/php/php-src/issues/10197
 
 	public static function beforeLast(string $str, string $before): string
 	{

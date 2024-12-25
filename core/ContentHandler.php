@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\core;
@@ -46,7 +46,10 @@ class ContentHandler
 		ob_implicit_flush(enable: false);
 		$this->loadLocalizedText();
 		$viewClass = $this->getViewClass();
-		if (!$this->hasContent() && !is_null(value: $viewClass)) {
+		if (
+			!$this->hasContent()
+			&& !is_null(value: $viewClass)
+		) {
 			$viewClass->execute();
 		}
 		if (!$this->hasContent() && $this->contentType->isHtml()) {

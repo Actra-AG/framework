@@ -1,14 +1,14 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\auth;
 
 class AccessRightCollection
 {
-	public const ACCESS_DO_PASSWORD_LOGIN = 'doPasswordLogin';
+	public const string ACCESS_DO_PASSWORD_LOGIN = 'doPasswordLogin';
 
 	/** @var string[] */
 	private array $accessRights = [];

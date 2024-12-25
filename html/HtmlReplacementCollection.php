@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\html;
@@ -65,10 +65,12 @@ class HtmlReplacementCollection
 
 	public function getArrayObject(): ArrayObject
 	{
-		$items = [];
-		foreach ($this->replacements as $identifier => $htmlReplacement) {
-			$items[$identifier] = is_null(value: $htmlReplacement) ? null : $htmlReplacement->getDataForRenderer();
-		}
+		$items = array_map(
+			callback: function($htmlReplacement) {
+				return is_null(value: $htmlReplacement) ? null : $htmlReplacement->getDataForRenderer();
+			},
+			array: $this->replacements
+		);
 
 		return new ArrayObject(array: $items);
 	}

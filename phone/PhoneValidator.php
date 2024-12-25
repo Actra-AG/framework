@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  * .
  * Adapted work based on https://github.com/giggsey/libphonenumber-for-php , which was published
  * with "Apache License Version 2.0, January 2004" ( http://www.apache.org/licenses/ )
@@ -14,24 +14,24 @@ class PhoneValidator
 	/**
 	 * The number length matches that of valid numbers for this region
 	 */
-	public const IS_POSSIBLE = 0;
+	public const int IS_POSSIBLE = 0;
 
 	/**
 	 * The number is shorter than all valid numbers for this region.
 	 */
-	public const TOO_SHORT = 2;
+	public const int TOO_SHORT = 2;
 
 	/**
 	 * The number is longer than all valid numbers for this region.
 	 */
-	public const TOO_LONG = 3;
+	public const int TOO_LONG = 3;
 
 	/**
 	 * The number length matches that of local numbers for this region only (i.e. numbers that may
 	 * be able to be dialled within an area, but do not have all the information to be dialled from
 	 * anywhere inside or outside the country).
 	 */
-	public const IS_POSSIBLE_LOCAL_ONLY = 4;
+	public const int IS_POSSIBLE_LOCAL_ONLY = 4;
 
 	/**
 	 * The number is longer than the shortest valid numbers for this region, shorter than the
@@ -40,7 +40,7 @@ class PhoneValidator
 	 * isPossibleNumberForTypeWithReason was called, and there are no numbers of this type at all
 	 * for this region.
 	 */
-	public const INVALID_LENGTH = 5;
+	public const int INVALID_LENGTH = 5;
 
 	/**
 	 * Checks to see if the string of characters could possibly be a phone number at all.

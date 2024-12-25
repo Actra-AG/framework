@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\template\htmlparser;
@@ -10,18 +10,18 @@ use Exception;
 
 abstract class HtmlNode
 {
-	public const ELEMENT_NODE = 1;
-	public const ATTRIBUTE_NODE = 2;
-	public const TEXT_NODE = 3;
-	public const CDATA_SECTION_NODE = 4;
-	public const ENTITY_REFERENCE_NODE = 5;
-	public const ENTITY_NODE = 6;
-	public const PROCESSING_INSTRUCTION_NODE = 7;
-	public const COMMENT_NODE = 8;
-	public const DOCUMENT_NODE = 9;
-	public const DOCUMENT_TYPE_NODE = 10;
-	public const DOCUMENT_FRAGMENT_NODE = 11;
-	public const NOTATION_NODE = 12;
+	public const int ELEMENT_NODE = 1;
+	public const int ATTRIBUTE_NODE = 2;
+	public const int TEXT_NODE = 3;
+	public const int CDATA_SECTION_NODE = 4;
+	public const int ENTITY_REFERENCE_NODE = 5;
+	public const int ENTITY_NODE = 6;
+	public const int PROCESSING_INSTRUCTION_NODE = 7;
+	public const int COMMENT_NODE = 8;
+	public const int DOCUMENT_NODE = 9;
+	public const int DOCUMENT_TYPE_NODE = 10;
+	public const int DOCUMENT_FRAGMENT_NODE = 11;
+	public const int NOTATION_NODE = 12;
 
 	public string $nodeType;
 	public ?int $line = null;

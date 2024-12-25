@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  * =============================================================
  * this class uses original source (10.2016) from:
  * http://www.pixelenvision.com/1708/zip-postal-code-validation-regex-php-code-for-12-countries/
@@ -22,7 +22,7 @@ use LogicException;
 
 class ZipCodeRule extends FormRule
 {
-	private const ZIP_CODE_REGULAR_EXPRESSION = [
+	private const array ZIP_CODE_REGULAR_EXPRESSION = [
 		//		'US'=>'^\d{5}([\-]?\d{4})?$',
 		//		'UK'=>'^(GIR|[A-Z]\d[A-Z\d]??|[A-Z]{2}\d[A-Z\d]??)[ ]??(\d[A-Z]{2})$',
 		'DE' => '\b((?:0[1-46-9]\d{3})|(?:[1-357-9]\d{4})|(?:[4][0-24-9]\d{3})|(?:[6][013-9]\d{3}))\b',

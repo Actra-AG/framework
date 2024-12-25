@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\auth;
@@ -13,7 +13,7 @@ use stdClass;
 
 class MicrosoftIdToken extends AuthWebToken
 {
-	private const PUBLIC_KEYS_PATH = 'https://login.microsoftonline.com/{tenantID}/discovery/keys';
+	private const string PUBLIC_KEYS_PATH = 'https://login.microsoftonline.com/{tenantID}/discovery/keys';
 
 	public function __construct(
 		private readonly string $tenantID,

@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\common;
@@ -13,8 +13,8 @@ use Throwable;
 
 class SearchHelper
 {
-	public const PARAM_RESET = 'reset';
-	public const PARAM_FIND = 'find';
+	public const string PARAM_RESET = 'reset';
+	public const string PARAM_FIND = 'find';
 
 	private string $sessionRootName = 'searchHelper';
 	private string $instanceName;

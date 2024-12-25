@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland - www.actra.ch
  */
 
 namespace framework\session;
@@ -17,13 +17,13 @@ use Throwable;
 
 abstract class AbstractSessionHandler extends SessionHandler
 {
-	private static ?AbstractSessionHandler $registeredInstance = null;
+	private static null|false|AbstractSessionHandler $abstractSessionHandler = null;
 
-	private const SESSION_CREATED_INDICATOR = 'sessionCreated';
-	private const TRUSTED_REMOTE_ADDRESS_INDICATOR = 'trustedRemoteAddress';
-	private const TRUSTED_USER_AGENT_INDICATOR = 'trustedUserAgent';
-	private const LAST_ACTIVITY_INDICATOR = 'lastActivity';
-	private const PREFERRED_LANGUAGE_INDICATOR = 'preferredLanguage';
+	private const string SESSION_CREATED_INDICATOR = 'sessionCreated';
+	private const string TRUSTED_REMOTE_ADDRESS_INDICATOR = 'trustedRemoteAddress';
+	private const string TRUSTED_USER_AGENT_INDICATOR = 'trustedUserAgent';
+	private const string LAST_ACTIVITY_INDICATOR = 'lastActivity';
+	private const string PREFERRED_LANGUAGE_INDICATOR = 'preferredLanguage';
 
 	private int $currentTime;
 	private ?string $ID = null;
@@ -32,21 +32,26 @@ abstract class AbstractSessionHandler extends SessionHandler
 	private string $clientUserAgent;
 	private ?string $fingerprint = null;
 
-	public static function register(?AbstractSessionHandler $individualSessionHandler): void
+	public static function register(false|AbstractSessionHandler $individualSessionHandler): void
 	{
-		if (!is_null(value: AbstractSessionHandler::$registeredInstance)) {
+		if (!is_null(value: AbstractSessionHandler::$abstractSessionHandler)) {
 			throw new LogicException(message: 'SessionHandler handler is already registered.');
 		}
-		AbstractSessionHandler::$registeredInstance = is_null(value: $individualSessionHandler) ? new FileSessionHandler(sessionSettingsModel: new SessionSettingsModel()) : $individualSessionHandler;
+		AbstractSessionHandler::$abstractSessionHandler = $individualSessionHandler;
+	}
+
+	public static function enabled(): bool
+	{
+		return (array_key_exists(
+			key: '_SESSION',
+			array: $GLOBALS
+		)
+		);
 	}
 
 	public static function getSessionHandler(): AbstractSessionHandler
 	{
-		if (is_null(value: AbstractSessionHandler::$registeredInstance)) {
-			AbstractSessionHandler::register(individualSessionHandler: null);
-		}
-
-		return AbstractSessionHandler::$registeredInstance;
+		return AbstractSessionHandler::$abstractSessionHandler;
 	}
 
 	protected function __construct(private readonly SessionSettingsModel $sessionSettingsModel)
@@ -65,7 +70,10 @@ abstract class AbstractSessionHandler extends SessionHandler
 		$this->setDefaultSecuritySettings(isSameSiteStrict: $sessionSettingsModel->isSameSiteStrict);
 		$this->setSessionName(individualName: $sessionSettingsModel->individualName);
 		$this->executePreStartActions();
-		session_set_save_handler($this, true); // TODO: PHP 8.2 does not know the named parameters
+		session_set_save_handler( // Named parameters are not supported for alternative prototypes: https://github.com/php/php-src/issues/17263
+			$this,
+			true
+		);
 		try {
 			session_start(options: [
 				'use_strict_mode' => true,
@@ -234,11 +242,6 @@ abstract class AbstractSessionHandler extends SessionHandler
 		}
 
 		return $this->fingerprint;
-	}
-
-	public function get(string $propertyName)
-	{
-		return array_key_exists(key: $propertyName, array: $_SESSION) ? $_SESSION[$propertyName] : null;
 	}
 
 	private function setSessionCreated(): void

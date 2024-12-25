@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\auth;
@@ -10,7 +10,7 @@ use framework\common\StringUtils;
 
 class Password
 {
-	public const HASH_ALGORITHM = 'sha256';
+	public const string HASH_ALGORITHM = 'sha256';
 
 	public function __construct(
 		public readonly string $salt,

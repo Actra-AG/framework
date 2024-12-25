@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\auth;
@@ -10,9 +10,9 @@ use framework\session\AbstractSessionHandler;
 
 class AuthSession
 {
-	private const SESSION_KEY = 'auth_userSession';
-	private const isLoggedInIndicator = 'isLoggedIn';
-	private const authSessionIdIndicator = 'authSessionID';
+	private const string SESSION_KEY = 'auth_userSession';
+	private const string isLoggedInIndicator = 'isLoggedIn';
+	private const string authSessionIdIndicator = 'authSessionID';
 
 	final public static function logIn(int $authSessionID): void
 	{

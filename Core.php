@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework;
@@ -21,6 +21,8 @@ use framework\exception\ExceptionHandler;
 use framework\exception\NotFoundException;
 use framework\security\CspNonce;
 use framework\session\AbstractSessionHandler;
+use framework\session\FileSessionHandler;
+use framework\session\SessionSettingsModel;
 use LogicException;
 
 class Core
@@ -64,12 +66,12 @@ class Core
 			subject: $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR
 		);
 		$this->frameworkDirectory = $frameworkDirectory = dirname(path: __FILE__) . DIRECTORY_SEPARATOR;
-		$this->siteDirectory = $this->documentRoot . $siteDirectoryName . DIRECTORY_SEPARATOR;
-		$this->cacheDirectory = $this->siteDirectory . $cacheDirectoryName . DIRECTORY_SEPARATOR;
-		$this->errorDocsDirectory = $this->siteDirectory . $errorDocsDirectoryName . DIRECTORY_SEPARATOR;
-		$this->logDirectory = $this->siteDirectory . $logsDirectoryName . DIRECTORY_SEPARATOR;
-		$this->settingsDirectory = $this->siteDirectory . $settingsDirectoryName . DIRECTORY_SEPARATOR;
-		$this->viewDirectory = $this->siteDirectory . $viewDirectoryName . DIRECTORY_SEPARATOR;
+		$this->siteDirectory = $this->createIfNotExists(path: $this->documentRoot . $siteDirectoryName . DIRECTORY_SEPARATOR);
+		$this->cacheDirectory = $this->createIfNotExists(path: $this->siteDirectory . $cacheDirectoryName . DIRECTORY_SEPARATOR);
+		$this->errorDocsDirectory = $this->createIfNotExists(path: $this->siteDirectory . $errorDocsDirectoryName . DIRECTORY_SEPARATOR);
+		$this->logDirectory = $this->createIfNotExists(path: $this->siteDirectory . $logsDirectoryName . DIRECTORY_SEPARATOR);
+		$this->settingsDirectory = $this->createIfNotExists(path: $this->siteDirectory . $settingsDirectoryName . DIRECTORY_SEPARATOR);
+		$this->viewDirectory = $this->createIfNotExists(path: $this->siteDirectory . $viewDirectoryName . DIRECTORY_SEPARATOR);
 
 		require_once $frameworkDirectory . 'autoloader' . DIRECTORY_SEPARATOR . 'Autoloader.php';
 		$autoloader = Autoloader::register(cacheFilePath: $this->cacheDirectory . 'cache.autoload');
@@ -87,12 +89,24 @@ class Core
 		}
 	}
 
+	private function createIfNotExists(string $path): string
+	{
+		if (!file_exists(filename: $path)) {
+			mkdir(
+				directory: $path,
+				recursive: true
+			);
+		}
+
+		return $path;
+	}
+
 	public function prepareHttpResponse(
-		EnvironmentSettingsModel $environmentSettingsModel,
-		Logger                   $logger,
-		RouteCollection          $routeCollection,
-		?ExceptionHandler        $individualExceptionHandler,
-		?AbstractSessionHandler  $individualSessionHandler
+		EnvironmentSettingsModel     $environmentSettingsModel,
+		Logger                       $logger,
+		RouteCollection              $routeCollection,
+		?ExceptionHandler            $individualExceptionHandler,
+		false|AbstractSessionHandler $individualSessionHandler = new FileSessionHandler(sessionSettingsModel: new SessionSettingsModel())
 	): HttpResponse {
 		if (!is_null(value: Core::$httpResponse)) {
 			throw new LogicException(message: 'The HttpResponse is already prepared');

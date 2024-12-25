@@ -1,14 +1,16 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\security;
 
+use framework\session\AbstractSessionHandler;
+
 class CsrfToken
 {
-	const CSRFTOKENSTORAGE = 'csrftoken';
+	const string CSRFTOKENSTORAGE = 'csrftoken';
 
 	/**
 	 * Returns a CSRF-Token (generate and stores it, if not already done)
@@ -41,6 +43,10 @@ class CsrfToken
 	 */
 	public static function renderAsHiddenPostField(): string
 	{
+		if (!AbstractSessionHandler::enabled()) {
+			return '';
+		}
+
 		// The token is a base64_encoded string which doesn't contain characters that need to be html encoded for rendering
 		return '<input type="hidden" name="' . CsrfToken::CSRFTOKENSTORAGE . '" value="' . CsrfToken::getToken() . '">';
 	}

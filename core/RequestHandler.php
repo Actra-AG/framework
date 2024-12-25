@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\core;
@@ -59,10 +59,15 @@ class RequestHandler
 			$this->fileName = $forceFileName;
 		}
 		$this->language = !is_null(value: $this->route->language) ? $this->route->language : $environmentSettingsModel->availableLanguages->getFirstLanguage();
-		$sessionHandler = AbstractSessionHandler::getSessionHandler();
-		$preferredLanguageCode = $sessionHandler->getPreferredLanguageCode();
-		if (is_null(value: $preferredLanguageCode) || $preferredLanguageCode !== $this->language->code) {
-			$sessionHandler->setPreferredLanguage(language: $this->language);
+		if (AbstractSessionHandler::enabled()) {
+			$sessionHandler = AbstractSessionHandler::getSessionHandler();
+			$preferredLanguageCode = $sessionHandler->getPreferredLanguageCode();
+			if (
+				is_null(value: $preferredLanguageCode)
+				|| $preferredLanguageCode !== $this->language->code
+			) {
+				$sessionHandler->setPreferredLanguage(language: $this->language);
+			}
 		}
 		$fileName = (trim(string: $this->fileName) === '') ? $this->route->defaultFileName : $this->fileName;
 		$dotPos = strripos(haystack: $fileName, needle: '.');
@@ -170,11 +175,13 @@ class RequestHandler
 		}
 		if (HttpRequest::getURI() === '/') {
 			$defaultRoutesByLanguage = $this->defaultRoutesByLanguage;
-			$preferredLanguageCode = AbstractSessionHandler::getSessionHandler()->getPreferredLanguageCode();
-			if (!is_null(value: $preferredLanguageCode)) {
-				foreach ($defaultRoutesByLanguage->getRoutes() as $route) {
-					if ($route->language->code === $preferredLanguageCode) {
-						HttpResponse::redirectAndExit(relativeOrAbsoluteUri: $route->path);
+			if(AbstractSessionHandler::enabled()) {
+				$preferredLanguageCode = AbstractSessionHandler::getSessionHandler()->getPreferredLanguageCode();
+				if (!is_null(value: $preferredLanguageCode)) {
+					foreach ($defaultRoutesByLanguage->getRoutes() as $route) {
+						if ($route->language->code === $preferredLanguageCode) {
+							HttpResponse::redirectAndExit(relativeOrAbsoluteUri: $route->path);
+						}
 					}
 				}
 			}

@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\datacheck\validatorTypes;
@@ -15,7 +15,7 @@ class TldValidator
 
 	// Source: https://data.iana.org/TLD/tlds-alpha-by-domain.txt
 	# Version 2021111500, Last Updated Mon Nov 15 07:07:01 2021 UTC
-	private const TLD_LIST = [
+	private const array TLD_LIST = [
 		'AAA',
 		'AARP',
 		'ABARTH',

@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\core;
@@ -11,9 +11,9 @@ use framework\common\StringUtils;
 
 class HttpRequest
 {
-	public const PROTOCOL_HTTP = 'http';
-	public const PROTOCOL_HTTPS = 'https';
-	public const SSL_PORT = 443;
+	public const string PROTOCOL_HTTP = 'http';
+	public const string PROTOCOL_HTTPS = 'https';
+	public const int SSL_PORT = 443;
 
 	private static ?array $inputData = null;
 	private static ?string $host = null;

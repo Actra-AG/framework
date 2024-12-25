@@ -1,20 +1,20 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\core;
 
 class MimeType
 {
-	public const DEFAULT = 'application/octet-stream';
-	public const HTML = 'text/html';
-	public const JSON = 'application/json';
-	public const XML = 'application/xml';
-	public const TXT = 'text/plain';
-	public const CSV = 'text/csv';
-	public const JS = 'application/javascript';
+	public const string DEFAULT = 'application/octet-stream';
+	public const string HTML = 'text/html';
+	public const string JSON = 'application/json';
+	public const string XML = 'application/xml';
+	public const string TXT = 'text/plain';
+	public const string CSV = 'text/csv';
+	public const string JS = 'application/javascript';
 
 	public function __construct(
 		public readonly string $value

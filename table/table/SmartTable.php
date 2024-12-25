@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\table\table;
@@ -15,14 +15,14 @@ use LogicException;
 // Can be extended or used directly to render a table with data from different sources
 class SmartTable
 {
-	public const totalAmount = '[totalAmount]';
-	public const table = '[table]';
-	public const tableHeader = '[tableHeader]';
-	public const tableBody = '[tableBody]';
-	public const cells = '[cells]';
+	public const string totalAmount = '[totalAmount]';
+	public const string table = '[table]';
+	public const string tableHeader = '[tableHeader]';
+	public const string tableBody = '[tableBody]';
+	public const string cells = '[cells]';
 
-	public const totalAmountMessagePlaceholder = '[TOTAL_AMOUNT_MESSAGE]';
-	public const amount = '[AMOUNT]';
+	public const string totalAmountMessagePlaceholder = '[TOTAL_AMOUNT_MESSAGE]';
+	public const string amount = '[AMOUNT]';
 
 	private string $noDataHtml = '<p class="no-entry">Es wurden keine Einträge gefunden.</p>';
 	private string $totalAmountHtml = '<p class="search-result">' . SmartTable::totalAmountMessagePlaceholder . '</p>';

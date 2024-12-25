@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\db;
@@ -13,11 +13,11 @@ class DbSettingsModel
 	private static array $instances = [];
 	public readonly string $charset;
 
-	public const IDX_IDENTIFIER = 'identifier';
-	public const IDX_HOSTNAME = 'hostname';
-	public const IDX_DATABASE = 'database';
-	public const IDX_USERNAME = 'username';
-	public const IDX_PASSWORD = 'password';
+	public const string IDX_IDENTIFIER = 'identifier';
+	public const string IDX_HOSTNAME = 'hostname';
+	public const string IDX_DATABASE = 'database';
+	public const string IDX_USERNAME = 'username';
+	public const string IDX_PASSWORD = 'password';
 
 	public function __construct(
 		public readonly string  $identifier,

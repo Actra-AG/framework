@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\form\component\field;
@@ -18,17 +18,17 @@ use framework\html\HtmlText;
 
 class FileField extends FormField
 {
-	public const VALUE_NAME = 'name';
-	public const VALUE_TMP_NAME = 'tmp_name';
-	public const VALUE_TYPE = 'type';
-	public const VALUE_ERROR = 'error';
-	public const VALUE_SIZE = 'size';
+	public const string VALUE_NAME = 'name';
+	public const string VALUE_TMP_NAME = 'tmp_name';
+	public const string VALUE_TYPE = 'type';
+	public const string VALUE_ERROR = 'error';
+	public const string VALUE_SIZE = 'size';
 
 	// Hint: We need searchable Strings outside this class, therefore please do NOT insert dynamic Strings into them:
-	public const ERRMSG_FILE_EMPTY = 'Die Datei war leer: ';
-	public const ERRMSG_FILE_INCOMPLETE = 'Die Datei wurde unvollständig hochgeladen: ';
-	public const ERRMSG_FILE_TOO_BIG = 'Die Datei war zu gross: ';
-	public const ERRMSG_FILE_TECHERROR = 'Es ist ein technischer Fehler beim Hochladen der Datei aufgetreten: ';
+	public const string ERRMSG_FILE_EMPTY = 'Die Datei war leer: ';
+	public const string ERRMSG_FILE_INCOMPLETE = 'Die Datei wurde unvollständig hochgeladen: ';
+	public const string ERRMSG_FILE_TOO_BIG = 'Die Datei war zu gross: ';
+	public const string ERRMSG_FILE_TECHERROR = 'Es ist ein technischer Fehler beim Hochladen der Datei aufgetreten: ';
 
 	private string $uniqueSessFileStorePointer;
 	private HtmlText $tooManyFilesErrMsg;

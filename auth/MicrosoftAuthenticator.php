@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\auth;
@@ -15,7 +15,7 @@ use Throwable;
 
 abstract class MicrosoftAuthenticator extends Authenticator
 {
-	private const AUTHORIZE_PATH = 'https://login.microsoftonline.com/{tenantID}/oauth2/v2.0/' . 'authorize';
+	private const string AUTHORIZE_PATH = 'https://login.microsoftonline.com/{tenantID}/oauth2/v2.0/' . 'authorize';
 
 	protected function redirectToMicrosoftLogin(string $tenantID, string $clientID, string $redirectUri, string $ssoNonce): void
 	{

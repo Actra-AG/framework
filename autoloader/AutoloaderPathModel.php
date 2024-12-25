@@ -1,15 +1,15 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\autoloader;
 
 class AutoloaderPathModel
 {
-	const MODE_UNDERSCORE = 'underscore';
-	const MODE_NAMESPACE = 'namespace';
+	const string MODE_UNDERSCORE = 'underscore';
+	const string MODE_NAMESPACE = 'namespace';
 
 	private string $path;
 	private string $mode;

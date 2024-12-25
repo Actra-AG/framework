@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\response;
@@ -11,7 +11,7 @@ use stdClass;
 
 class HttpErrorResponseContent extends HttpResponseContent
 {
-	private const ERROR_STATUS = 'error';
+	private const string ERROR_STATUS = 'error';
 
 	private function __construct(string $content)
 	{

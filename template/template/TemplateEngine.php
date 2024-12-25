@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\template\template;
@@ -36,7 +36,7 @@ use Throwable;
 
 class TemplateEngine
 {
-	public const ERR_MISSING_TEMPLATEVARIABLE = 1;
+	public const int ERR_MISSING_TEMPLATEVARIABLE = 1;
 
 	protected ?HtmlDoc $htmlDoc = null;
 	protected string $tplNsPrefix;

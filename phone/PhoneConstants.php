@@ -1,7 +1,7 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @author    Christof Moser
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  * .
  * Adapted work based on https://github.com/giggsey/libphonenumber-for-php , which was published
  * with "Apache License Version 2.0, January 2004" ( http://www.apache.org/licenses/ )
@@ -11,36 +11,36 @@ namespace framework\phone;
 
 class PhoneConstants
 {
-	public const DOUBLE_ZERO = '00';
-	public const PLUS_SIGN = '+';
-	public const MAX_INPUT_STRING_LENGTH = 250;
-	public const RFC3966_ISDN_SUBADDRESS = ';isub=';
-	public const PLUS_CHARS = '+＋';
-	public const DIGITS = "\\p{Nd}";
-	public const RFC3966_PHONE_CONTEXT = ';phone-context=';
-	public const RFC3966_PREFIX = 'tel:';
-	public const MIN_LENGTH_FOR_NSN = 2;
-	public const MAX_LENGTH_FOR_NSN = 17;
-	public const VALID_PUNCTUATION = "-x\xE2\x80\x90-\xE2\x80\x95\xE2\x88\x92\xE3\x83\xBC\xEF\xBC\x8D-\xEF\xBC\x8F \xC2\xA0\xC2\xAD\xE2\x80\x8B\xE2\x81\xA0\xE3\x80\x80()\xEF\xBC\x88\xEF\xBC\x89\xEF\xBC\xBB\xEF\xBC\xBD.\\[\\]/~\xE2\x81\x93\xE2\x88\xBC";
-	public const STAR_SIGN = '*';
-	public const VALID_ALPHA = 'A-Za-z';
-	public const RFC3966_EXTN_PREFIX = ';ext=';
-	public const CAPTURING_EXTN_DIGITS = '(' . PhoneConstants::DIGITS . '{1,7})';
-	public const REGEX_FLAGS = 'ui'; //Unicode and case-insensitive
-	public const VALID_PHONE_NUMBER = '[' . PhoneConstants::PLUS_CHARS . ']*(?:[' . PhoneConstants::VALID_PUNCTUATION . PhoneConstants::STAR_SIGN . ']*[' . PhoneConstants::DIGITS . ']){3,}[' . PhoneConstants::VALID_PUNCTUATION . PhoneConstants::STAR_SIGN . PhoneConstants::VALID_ALPHA . PhoneConstants::DIGITS . ']*';
+	public const string DOUBLE_ZERO = '00';
+	public const string PLUS_SIGN = '+';
+	public const int MAX_INPUT_STRING_LENGTH = 250;
+	public const string RFC3966_ISDN_SUBADDRESS = ';isub=';
+	public const string PLUS_CHARS = '+＋';
+	public const string DIGITS = "\\p{Nd}";
+	public const string RFC3966_PHONE_CONTEXT = ';phone-context=';
+	public const string RFC3966_PREFIX = 'tel:';
+	public const int MIN_LENGTH_FOR_NSN = 2;
+	public const int MAX_LENGTH_FOR_NSN = 17;
+	public const string VALID_PUNCTUATION = "-x\xE2\x80\x90-\xE2\x80\x95\xE2\x88\x92\xE3\x83\xBC\xEF\xBC\x8D-\xEF\xBC\x8F \xC2\xA0\xC2\xAD\xE2\x80\x8B\xE2\x81\xA0\xE3\x80\x80()\xEF\xBC\x88\xEF\xBC\x89\xEF\xBC\xBB\xEF\xBC\xBD.\\[\\]/~\xE2\x81\x93\xE2\x88\xBC";
+	public const string STAR_SIGN = '*';
+	public const string VALID_ALPHA = 'A-Za-z';
+	public const string RFC3966_EXTN_PREFIX = ';ext=';
+	public const string CAPTURING_EXTN_DIGITS = '(' . PhoneConstants::DIGITS . '{1,7})';
+	public const string REGEX_FLAGS = 'ui'; //Unicode and case-insensitive
+	public const string VALID_PHONE_NUMBER = '[' . PhoneConstants::PLUS_CHARS . ']*(?:[' . PhoneConstants::VALID_PUNCTUATION . PhoneConstants::STAR_SIGN . ']*[' . PhoneConstants::DIGITS . ']){3,}[' . PhoneConstants::VALID_PUNCTUATION . PhoneConstants::STAR_SIGN . PhoneConstants::VALID_ALPHA . PhoneConstants::DIGITS . ']*';
 
 	// The country_code is derived based on a phone number with a leading "+", e.g. the French number "+33 1 42 68 53 00".
-	public const FROM_NUMBER_WITH_PLUS_SIGN = 0;
+	public const int FROM_NUMBER_WITH_PLUS_SIGN = 0;
 	// The country_code is derived based on a phone number with a leading IDD, e.g. the French number "011 33 1 42 68 53 00", as it is dialled from US.
-	public const FROM_NUMBER_WITH_IDD = 1;
+	public const int FROM_NUMBER_WITH_IDD = 1;
 	/**
 	 * The country_code is derived NOT based on the phone number itself, but from the defaultCountry parameter provided in the parsing function by the clients.
 	 * This happens mostly for numbers written in the national format (without country code).
 	 * For example, this would be set when parsing the French number "01 42 68 53 00", when defaultCountry is supplied as France.
 	 */
-	public const FROM_DEFAULT_COUNTRY = 3;
+	public const int FROM_DEFAULT_COUNTRY = 3;
 
-	public const ALPHA_MAPPINGS = [
+	public const array ALPHA_MAPPINGS = [
 		'A' => '2',
 		'B' => '2',
 		'C' => '2',
@@ -68,7 +68,7 @@ class PhoneConstants
 		'Y' => '9',
 		'Z' => '9',
 	];
-	public const ASCII_DIGIT_MAPPINGS = [
+	public const array ASCII_DIGIT_MAPPINGS = [
 		'0' => '0',
 		'1' => '1',
 		'2' => '2',
@@ -80,8 +80,8 @@ class PhoneConstants
 		'8' => '8',
 		'9' => '9',
 	];
-	public const ALPHA_PHONE_MAPPINGS = PhoneConstants::ALPHA_MAPPINGS + PhoneConstants::ASCII_DIGIT_MAPPINGS;
-	public const NUMERIC_CHARACTERS = [
+	public const array ALPHA_PHONE_MAPPINGS = PhoneConstants::ALPHA_MAPPINGS + PhoneConstants::ASCII_DIGIT_MAPPINGS;
+	public const array NUMERIC_CHARACTERS = [
 		"\xef\xbc\x90" => 0,
 		"\xef\xbc\x91" => 1,
 		"\xef\xbc\x92" => 2,
@@ -126,7 +126,7 @@ class PhoneConstants
 		"\xe1\xa0\x98" => 8,
 		"\xe1\xa0\x99" => 9,
 	];
-	public const MAX_LENGTH_COUNTRY_CODE = 3;
-	public const DEFAULT_EXTN_PREFIX = ' ext. ';
-	public const ITALIAN_LEADING_ZERO_COUNTRY_CODES = [PhoneCountryCodes::IT];
+	public const int MAX_LENGTH_COUNTRY_CODE = 3;
+	public const string DEFAULT_EXTN_PREFIX = ' ext. ';
+	public const array ITALIAN_LEADING_ZERO_COUNTRY_CODES = [PhoneCountryCodes::IT];
 }
