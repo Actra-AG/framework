@@ -1,7 +1,7 @@
 <?php
 /**
  * @author    Christof Moser
- * @copyright Actra AG, Embrach, Switzerland - www.actra.ch
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
 namespace framework\session;
@@ -45,8 +45,7 @@ abstract class AbstractSessionHandler extends SessionHandler
 		return (array_key_exists(
 			key: '_SESSION',
 			array: $GLOBALS
-		)
-		);
+		));
 	}
 
 	public static function getSessionHandler(): AbstractSessionHandler

@@ -68,8 +68,14 @@ class PhoneNumberField extends InputField
 			return '';
 		}
 		$currentValue = $this->getRawValue();
+		if ($this->hasErrors(withChildElements: true)) {
+			return $currentValue;
+		}
 		try {
-			$phoneNumber = PhoneNumber::createFromString(input: $currentValue, defaultCountryCode: $this->countryCode);
+			$phoneNumber = PhoneNumber::createFromString(
+				input: $currentValue,
+				defaultCountryCode: $this->countryCode
+			);
 		} catch (PhoneParseException) {
 			return HtmlEncoder::encode(value: $currentValue);
 		}
@@ -85,8 +91,12 @@ class PhoneNumberField extends InputField
 		$originalValue = Sanitizer::trimmedString(input: $this->getOriginalValue());
 		if ($originalValue !== '') {
 			try {
-				$parsedOriginalValue = PhoneNumber::createFromString(input: $this->getOriginalValue(), defaultCountryCode: $this->countryCode);
-				$originalValue = PhoneRenderer::renderInternalFormat(phoneNumber: $parsedOriginalValue);
+				$originalValue = PhoneRenderer::renderInternalFormat(
+					phoneNumber: PhoneNumber::createFromString(
+						input: $this->getOriginalValue(),
+						defaultCountryCode: $this->countryCode
+					)
+				);
 			} catch (PhoneParseException) {
 				$originalValue = '';
 			}

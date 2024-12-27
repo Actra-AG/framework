@@ -20,7 +20,8 @@ class SMTPMailer extends AbstractMailer
 		private readonly string $smtpUserName,
 		private readonly string $smtpPassword,
 		private readonly int    $port = 587,
-		private readonly bool   $useTls = true
+		private readonly bool   $useTls = true,
+		private readonly int    $streamTimeoutInSeconds = 8
 	) {
 	}
 
@@ -54,8 +55,12 @@ class SMTPMailer extends AbstractMailer
 		if (!$this->stream) {
 			throw new RuntimeException(message: 'Socket connection error: ' . $this->hostName);
 		}
+		stream_set_timeout(
+			stream: $this->stream,
+			seconds: $this->streamTimeoutInSeconds
+		);
 		$serverName = $this->getServerName();
-		$this->response(expectedCode: '220');
+		$this->response(expectedCode: 220);
 		$this->sendCommand(
 			command: 'EHLO ' . $serverName,
 			expectedCode: 250
@@ -143,14 +148,17 @@ class SMTPMailer extends AbstractMailer
 
 	private function response(int $expectedCode): void
 	{
-		stream_set_timeout(stream: $this->stream, seconds: 8);
 		$result = fread(stream: $this->stream, length: 768);
+		$this->log[] = ($result === false) ? 'false' : $result;
 		$meta = stream_get_meta_data(stream: $this->stream);
 		if ($meta['timed_out'] === true) {
 			fclose(stream: $this->stream);
 			throw new RuntimeException(message: 'Server timeout');
 		}
-		$this->log[] = $result;
+		if ($result === false) {
+			fclose(stream: $this->stream);
+			throw new RuntimeException(message: 'fread() returned false');
+		}
 		$responseCode = (int)substr(string: $result, offset: 0, length: 3);
 		if ($responseCode === $expectedCode) {
 			return;
