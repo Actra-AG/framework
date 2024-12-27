@@ -34,9 +34,9 @@ abstract class AuthUser
 		return $this->accessRightCollection->hasOneOfAccessRights(accessRightCollection: $accessRightCollection);
 	}
 
-	protected function changePassword(string $newUnencryptedPassword): void
+	protected function changePassword(Password $newPassword): void
 	{
-		$this->password = Password::generateNew(rawPassword: $newUnencryptedPassword);
+		$this->password = $newPassword;
 	}
 
 	public function getWrongPasswordAttempts(): int
