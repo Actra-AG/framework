@@ -13,6 +13,7 @@ use framework\auth\UnauthorizedIpAddressException;
 use framework\common\JsonUtils;
 use framework\common\SimpleXMLExtended;
 use framework\datacheck\Sanitizer;
+use framework\datacheck\validatorTypes\IpValidator;
 use framework\exception\NotFoundException;
 use framework\response\HttpErrorResponseContent;
 use framework\response\HttpSuccessResponseContent;
@@ -32,8 +33,15 @@ abstract class BaseView
 		if ($viewGroup !== $requiredViewGroupName) {
 			throw new LogicException(message: 'View group needs to be ' . $requiredViewGroupName . ' instead of ' . $viewGroup);
 		}
-		if (count(value: $ipWhitelist) > 0 && !in_array(needle: HttpRequest::getRemoteAddress(), haystack: $ipWhitelist)) {
-			throw new UnauthorizedIpAddressException();
+		$ipAddress = HttpRequest::getRemoteAddress();
+		if (
+			count(value: $ipWhitelist) > 0
+			&& !IpValidator::isInWhitelist(
+				whiteList: $ipWhitelist,
+				ipAddressToCheck: $ipAddress
+			)
+		) {
+			throw new UnauthorizedIpAddressException(message: 'Invalid IP address ' . $ipAddress);
 		}
 		if (
 			!$requiredAccessRights->isEmpty()
