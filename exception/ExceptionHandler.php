@@ -59,13 +59,19 @@ class ExceptionHandler
 
 		if ($throwable instanceof NotFoundException) {
 			$httpStatusCode = HttpStatusCode::HTTP_NOT_FOUND;
-			$placeholders = ['title' => 'Page not found'];
+			$placeholders = [
+				'title' => 'Page not found',
+			];
 		} else if ($throwable instanceof UnauthorizedException) {
 			$httpStatusCode = HttpStatusCode::HTTP_UNAUTHORIZED;
-			$placeholders = ['title' => 'Unauthorized'];
+			$placeholders = [
+				'title' => 'Unauthorized',
+			];
 		} else {
 			$httpStatusCode = HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR;
-			$placeholders = ['title' => 'Internal Server Error'];
+			$placeholders = [
+				'title' => 'Internal Server Error',
+			];
 		}
 
 		$placeholders['errorType'] = get_class(object: $throwable);
@@ -95,7 +101,9 @@ class ExceptionHandler
 			errorMessage: $throwable->getMessage(),
 			errorCode: $throwable->getCode(),
 			htmlFileName: 'notFound.html',
-			placeholders: []
+			placeholders: [
+				'title' => 'Page not found',
+			]
 		);
 	}
 
@@ -106,7 +114,9 @@ class ExceptionHandler
 			errorMessage: $throwable->getMessage(),
 			errorCode: $throwable->getCode(),
 			htmlFileName: 'unauthorized.html',
-			placeholders: []
+			placeholders: [
+				'title' => 'Unauthorized',
+			]
 		);
 	}
 
@@ -117,7 +127,9 @@ class ExceptionHandler
 			errorMessage: 'Internal Server Error',
 			errorCode: $throwable->getCode(),
 			htmlFileName: 'default.html',
-			placeholders: []
+			placeholders: [
+				'title' => 'Internal Server Error',
+			]
 		);
 	}
 
