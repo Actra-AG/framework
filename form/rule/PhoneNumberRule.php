@@ -25,11 +25,13 @@ class PhoneNumberRule extends FormRule
 			return true;
 		}
 		try {
-			$phoneNumber = PhoneNumber::createFromString(input: $formField->getRawValue(), defaultCountryCode: $formField->getCountryCode());
+			$phoneNumber = PhoneNumber::createFromString(
+				input: $formField->getRawValue(),
+				defaultCountryCode: $formField->getCountryCode()
+			);
 		} catch (PhoneParseException) {
 			return false;
 		}
-
 		$formField->setValue(value: PhoneRenderer::renderInternalFormat(phoneNumber: $phoneNumber));
 
 		return true;
