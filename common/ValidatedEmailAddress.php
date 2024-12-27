@@ -21,7 +21,7 @@ class ValidatedEmailAddress
 	public function __construct(string $emailAddress)
 	{
 		$this->sanitizedValue = mb_strtolower(string: $this->silentlyReplaceInvalidWhitespaces(emailAddress: $emailAddress));
-		$this->isValidSyntax = $this->validateSyntax();
+		$this->isValidSyntax = $this->validateSyntax(input: $this->sanitizedValue);
 	}
 
 	/**
@@ -48,23 +48,22 @@ class ValidatedEmailAddress
 	 * We purposely do NOT allow commas/semicolons (preventing "multiple" email address entered, where NOT expected)
 	 * ':' Will catch "mailto:" copy&paste errors from users, which also result in an invalid email address
 	 *
+	 * @param string $input
+	 *
 	 * @return bool
 	 */
-	private function validateSyntax(): bool
+	private function validateSyntax(string $input): bool
 	{
-		if ($this->sanitizedValue === '') {
+		if ($input === '') {
 			$this->lastErrorCode = 'emptyValue';
-			$this->lastErrorMessage = 'Empty email address value';
+			$this->lastErrorMessage = 'Empty email address value.';
 
 			return false;
 		}
-		if ($this->hasInvalidCharacter(value: $this->sanitizedValue)) {
-			$this->lastErrorCode = 'invalidCharacters';
-			$this->lastErrorMessage = 'The email address contains invalid characters.';
-
-			return false;
-		}
-		$emailParts = explode(separator: '@', string: $this->sanitizedValue);
+		$emailParts = explode(
+			separator: '@',
+			string: $input
+		);
 		if (count(value: $emailParts) !== 2) {
 			$this->lastErrorCode = 'atCharacterError';
 			$this->lastErrorMessage = 'The email address contains not exactly one at-character (@).';
@@ -79,35 +78,33 @@ class ValidatedEmailAddress
 
 			return false;
 		}
-		if (filter_var(value: $this->sanitizedValue, filter: FILTER_VALIDATE_EMAIL) === false) {
+		$input = $local . '@' . $domain;
+		if (filter_var(value: $input, filter: FILTER_VALIDATE_EMAIL) === false) {
 			$this->lastErrorCode = 'invalidSyntax';
 			$this->lastErrorMessage = 'The FILTER_VALIDATE_EMAIL filter returned false due to an invalid syntax.';
 
 			return false;
 		}
-		$this->validatedValue = $local . '@' . $domain;
+		if (!$this->additionalSyntaxValidation(input: $input)) {
+			$this->lastErrorCode = 'invalidCharacters';
+			$this->lastErrorMessage = 'The additional syntax validation failed.';
+
+			return false;
+		}
+		$this->validatedValue = $input;
 		$this->domain = $domain;
 
 		return true;
 	}
 
-	private function hasInvalidCharacter(string $value): bool
+	private function additionalSyntaxValidation(string $input): bool
 	{
-		foreach (
-			[
-				'"',
-				'\'',
-				',',
-				';',
-				':',
-			] as $invalidCharacters
-		) {
-			if (str_contains(haystack: $value, needle: $invalidCharacters)) {
-				return true;
-			}
-		}
-
-		return false;
+		return (
+			preg_match(
+				pattern: '/^[a-zA-Z0-9.!#$%&\'*+=?^_`{|}~][a-zA-Z0-9.!#$%&\'*+\-=?^_`{|}~]*@(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9]|[a-zA-Z0-9][-a-zA-Z0-9]*[a-zA-Z0-9])\.)+[a-zA-Z0-9][-a-zA-Z0-9]*[a-zA-Z0-9]$/',
+				subject: $input
+			) === 1
+		);
 	}
 
 	public function isResolvable(bool $returnTrueOnDnsGetRecordFailure): bool
@@ -139,7 +136,7 @@ class ValidatedEmailAddress
 			return true;
 		}
 
-		// Port 25 fallback check if there's no MX record (or an error occu
+		// Port 25 fallback check if there's no MX record (or an error occurred)
 		try {
 			$aRecords = dns_get_record(hostname: $this->domain, type: DNS_A);
 		} catch (Throwable $throwable) {
