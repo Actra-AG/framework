@@ -26,7 +26,7 @@ class DateField extends DateTimeFieldCore
 			inputType: InputTypeValue::DATE,
 			name: $name,
 			label: $label,
-			renderValueFormat: 'd.m.Y',
+			renderValueFormat: 'Y-m-d',
 			value: $value,
 			requiredError: $requiredError,
 			placeholder: $placeholder,
