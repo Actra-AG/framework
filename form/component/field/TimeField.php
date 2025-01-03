@@ -8,6 +8,7 @@ namespace framework\form\component\field;
 
 use framework\form\rule\ValidTimeRule;
 use framework\form\settings\AutoCompleteValue;
+use framework\form\settings\InputTypeValue;
 use framework\html\HtmlText;
 
 class TimeField extends DateTimeFieldCore
@@ -22,14 +23,15 @@ class TimeField extends DateTimeFieldCore
 		?AutoCompleteValue $autoComplete = null
 	) {
 		parent::__construct(
+			inputType: InputTypeValue::TIME,
 			name: $name,
 			label: $label,
+			renderValueFormat: 'H:i',
 			value: $value,
 			requiredError: $requiredError,
 			placeholder: $placeholder,
 			autoComplete: $autoComplete
 		);
-		$this->setRenderValueFormat(renderValueFormat: 'H:i');
 		$this->addRule(formRule: new ValidTimeRule(defaultErrorMessage: $invalidError));
 	}
 }

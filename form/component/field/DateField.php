@@ -8,6 +8,7 @@ namespace framework\form\component\field;
 
 use framework\form\rule\ValidDateRule;
 use framework\form\settings\AutoCompleteValue;
+use framework\form\settings\InputTypeValue;
 use framework\html\HtmlText;
 
 class DateField extends DateTimeFieldCore
@@ -22,14 +23,15 @@ class DateField extends DateTimeFieldCore
 		?AutoCompleteValue $autoComplete = null
 	) {
 		parent::__construct(
+			inputType: InputTypeValue::DATE,
 			name: $name,
 			label: $label,
+			renderValueFormat: 'd.m.Y',
 			value: $value,
 			requiredError: $requiredError,
 			placeholder: $placeholder,
 			autoComplete: $autoComplete
 		);
-		$this->setRenderValueFormat(renderValueFormat: 'd.m.Y');
 		$this->addRule(formRule: new ValidDateRule(defaultErrorMessage: $invalidError));
 	}
 }

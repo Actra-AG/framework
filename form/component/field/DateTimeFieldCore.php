@@ -8,16 +8,36 @@ namespace framework\form\component\field;
 
 use DateTimeImmutable;
 use framework\datacheck\Sanitizer;
+use framework\form\rule\RequiredRule;
+use framework\form\settings\AutoCompleteValue;
+use framework\form\settings\InputTypeValue;
 use framework\html\HtmlEncoder;
+use framework\html\HtmlText;
 use Throwable;
 
-abstract class DateTimeFieldCore extends TextField
+abstract class DateTimeFieldCore extends InputField
 {
-	private string $renderValueFormat;
-
-	public function setRenderValueFormat(string $renderValueFormat): void
-	{
-		$this->renderValueFormat = $renderValueFormat;
+	public function __construct(
+		InputTypeValue     $inputType,
+		string             $name,
+		HtmlText           $label,
+		private string     $renderValueFormat,
+		?string            $value = null,
+		?HtmlText          $requiredError = null,
+		?string            $placeholder = null,
+		?AutoCompleteValue $autoComplete = null
+	) {
+		parent::__construct(
+			inputType: $inputType,
+			name: $name,
+			label: $label,
+			value: $value,
+			placeholder: $placeholder,
+			autoComplete: $autoComplete
+		);
+		if (!is_null(value: $requiredError)) {
+			$this->addRule(formRule: new RequiredRule(defaultErrorMessage: $requiredError));
+		}
 	}
 
 	public function renderValue(): string
