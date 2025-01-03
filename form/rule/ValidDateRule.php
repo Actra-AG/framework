@@ -19,7 +19,27 @@ class ValidDateRule extends FormRule
 			return true;
 		}
 		$value = $formField->getRawValue();
-		if (preg_match(pattern: '/^\d{1,2}\.\d{1,2}\.\d{4}$/', subject: $value) !== 1) {
+		if (
+			preg_match(
+				pattern: '/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/',
+				subject: $value,
+				matches: $matches
+			) === 1
+		) {
+			$value = implode(
+				separator: '-',
+				array: [
+					$matches[3],
+					$matches[2],
+					$matches[1],
+				]
+			);
+		} else if (
+			preg_match(
+				pattern: '/^\d{4}-\d{1,2}-\d{1,2}$/',
+				subject: $value
+			) !== 1
+		) {
 			return false;
 		}
 		try {
