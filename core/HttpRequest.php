@@ -237,4 +237,28 @@ class HttpRequest
 
 		return $files;
 	}
+
+	public static function getBearer(): false|string
+	{
+		$allHeaders = getallheaders();
+		if (!array_key_exists(
+			key: 'Authorization',
+			array: $allHeaders
+		)) {
+			return false;
+		}
+		if (!str_starts_with(
+			haystack: $allHeaders['Authorization'],
+			needle: 'Bearer '
+		)) {
+			return false;
+		}
+
+		return trim(
+			string: substr(
+				string: $allHeaders['Authorization'],
+				offset: 7
+			)
+		);
+	}
 }
