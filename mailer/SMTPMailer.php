@@ -6,13 +6,16 @@
 
 namespace framework\mailer;
 
+use Exception;
 use framework\common\StringUtils;
 use RuntimeException;
+use Throwable;
 
 class SMTPMailer extends AbstractMailer
 {
 	/** @var resource $stream */
 	private $stream;
+	private string $lastReply = '';
 	private array $log = [];
 
 	public function __construct(
@@ -20,8 +23,7 @@ class SMTPMailer extends AbstractMailer
 		private readonly string $smtpUserName,
 		private readonly string $smtpPassword,
 		private readonly int    $port = 587,
-		private readonly bool   $useTls = true,
-		private readonly int    $streamTimeoutInSeconds = 8
+		private readonly bool   $useTls = true
 	) {
 	}
 
@@ -52,69 +54,38 @@ class SMTPMailer extends AbstractMailer
 			error_message: $estr,
 			timeout: 30
 		);
-		if (!$this->stream) {
+		if ($this->stream === false) {
 			throw new RuntimeException(message: 'Socket connection error: ' . $this->hostName);
 		}
-		stream_set_timeout(
-			stream: $this->stream,
-			seconds: $this->streamTimeoutInSeconds
+		$this->checkResponse(
+			expectedCode: 220,
+			commandTimeout: 300
 		);
 		$serverName = $this->getServerName();
-		$this->response(expectedCode: 220);
-		$this->sendCommand(
-			command: 'EHLO ' . $serverName,
-			expectedCode: 250
-		);
+		$this->sendCommandEHLO(serverName: $serverName);
 		if ($this->useTls) {
-			$this->sendCommand(
-				command: 'STARTTLS',
-				expectedCode: 220
-			);
+			$this->sendCommandSTARTTLS();
 			stream_socket_enable_crypto(
 				stream: $this->stream,
 				enable: true,
 				crypto_method: STREAM_CRYPTO_METHOD_TLS_CLIENT
 			);
-			$this->sendCommand(
-				command: 'EHLO ' . $serverName,
-				expectedCode: 250
-			);
+			$this->sendCommandEHLO(serverName: $serverName);
 		}
 		if ($this->smtpUserName !== '') {
-			$this->sendCommand(
-				command: 'AUTH LOGIN',
-				expectedCode: 334
-			);
-			$this->sendCommand(
-				command: base64_encode(string: $this->smtpUserName),
-				expectedCode: 334
-			);
-			$this->sendCommand(
-				command: base64_encode(string: $this->smtpPassword),
-				expectedCode: 235
-			);
+			$this->sendCommandAuthLogin();
+			$this->sendCommandSmtpUserName();
+			$this->sendCommandSmtpPassword();
 		}
-		$this->sendCommand(
-			command: 'MAIL FROM: <' . $abstractMail->sender->getPunyEncodedEmail() . '>',
-			expectedCode: 250
-		);
+		$this->sendCommandMailFrom(sender: $abstractMail->sender);
 		foreach ($abstractMail->mailerAddressCollection->list(mailerAddressKindEnum: MailerAddressKindEnum::KIND_TO) as $mailerAddress) {
-			$this->sendCommand(
-				command: 'RCPT TO: <' . $mailerAddress->getPunyEncodedEmail() . '>',
-				expectedCode: 250
-			);
+			$this->sendCommandRecipient(recipient: $mailerAddress);
 		}
 		foreach ($abstractMail->mailerAddressCollection->list(mailerAddressKindEnum: MailerAddressKindEnum::KIND_CC) as $mailerAddress) {
-			$this->sendCommand(
-				command: 'RCPT TO: <' . $mailerAddress->getPunyEncodedEmail() . '>',
-				expectedCode: 250
-			);
+			$this->sendCommandRecipient(recipient: $mailerAddress);
 		}
 		foreach ($abstractMail->mailerAddressCollection->list(mailerAddressKindEnum: MailerAddressKindEnum::KIND_BCC) as $mailerAddress) {
-			$this->sendCommand(
-				command: 'RCPT TO: <' . $mailerAddress->getPunyEncodedEmail() . '>',
-				expectedCode: 250
-			);
+			$this->sendCommandRecipient(recipient: $mailerAddress);
 		}
 		$this->sendData(
 			data: implode(
@@ -127,44 +98,218 @@ class SMTPMailer extends AbstractMailer
 				]
 			)
 		);
-		$this->sendCommand(
-			command: 'QUIT',
-			expectedCode: 221
-		);
+		$this->sendCommandQuit();
 		$this->close();
 	}
 
-	private function sendCommand(string $command, int $expectedCode): void
-	{
+	private function sendCommand(
+		string $command,
+		int    $expectedResponseCode,
+		int    $commandTimeout
+	): void {
+		if (!$this->isConnected()) {
+			throw new Exception(message: 'Tried to send command without being connected');
+		}
+		if (
+			str_contains(haystack: $command, needle: "\n")
+			|| str_contains(haystack: $command, needle: "\r")
+		) {
+			throw new Exception(message: 'Command contained line breaks');
+		}
 		$this->sendRawDataToServer(data: $command);
-		$this->response(expectedCode: $expectedCode);
+		$this->checkResponse(
+			expectedCode: $expectedResponseCode,
+			commandTimeout: $commandTimeout
+		);
+	}
+
+	private function sendCommandEHLO(string $serverName): void
+	{
+		$this->sendCommand(
+			command: 'EHLO ' . $serverName,
+			expectedResponseCode: 250,
+			commandTimeout: 10
+		);
+	}
+
+	private function sendCommandSTARTTLS(): void
+	{
+		$this->sendCommand(
+			command: 'STARTTLS',
+			expectedResponseCode: 220,
+			commandTimeout: 10
+		);
+	}
+
+	private function sendCommandAuthLogin(): void
+	{
+		$this->sendCommand(
+			command: 'AUTH LOGIN',
+			expectedResponseCode: 334,
+			commandTimeout: 10
+		);
+	}
+
+	private function sendCommandSmtpUserName(): void
+	{
+		$this->sendCommand(
+			command: base64_encode(string: $this->smtpUserName),
+			expectedResponseCode: 334,
+			commandTimeout: 10
+		);
+	}
+
+	private function sendCommandSmtpPassword(): void
+	{
+		$this->sendCommand(
+			command: base64_encode(string: $this->smtpPassword),
+			expectedResponseCode: 235,
+			commandTimeout: 10
+		);
+	}
+
+	private function sendCommandMailFrom(MailerAddress $sender): void
+	{
+		$this->sendCommand(
+			command: 'MAIL FROM: <' . $sender->getPunyEncodedEmail() . '>',
+			expectedResponseCode: 250,
+			commandTimeout: 300
+		);
+	}
+
+	private function sendCommandRecipient(MailerAddress $recipient): void
+	{
+		$this->sendCommand(
+			command: 'RCPT TO: <' . $recipient->getPunyEncodedEmail() . '>',
+			expectedResponseCode: 250,
+			commandTimeout: 300
+		);
+	}
+
+	private function sendCommandDataStart(): void
+	{
+		$this->sendCommand(
+			command: 'DATA',
+			expectedResponseCode: 354,
+			commandTimeout: 120
+		);
+	}
+
+	private function sendCommandDataEnd(): void
+	{
+		$this->sendCommand(
+			command: '.',
+			expectedResponseCode: 250,
+			commandTimeout: 600
+		);
+	}
+
+	private function sendCommandQuit(): void
+	{
+		$this->sendCommand(
+			command: 'QUIT',
+			expectedResponseCode: 221,
+			commandTimeout: 60
+		);
 	}
 
 	private function sendRawDataToServer(string $data): void
 	{
-		$this->log[] = htmlspecialchars(string: $data);
+		$this->log[] = $data;
 		fwrite(stream: $this->stream, data: $data . MailerConstants::CRLF);
 	}
 
-	private function response(int $expectedCode): void
+	private function checkResponse(
+		int $expectedCode,
+		int $commandTimeout // https://www.rfc-editor.org/rfc/rfc2821#section-4.5.3.2
+	): void
 	{
-		$result = fread(stream: $this->stream, length: 768);
-		$this->log[] = ($result === false) ? 'false' : $result;
-		$meta = stream_get_meta_data(stream: $this->stream);
-		if ($meta['timed_out'] === true) {
+		stream_set_timeout(
+			stream: $this->stream,
+			seconds: $commandTimeout
+		);
+		$this->lastReply = $this->getLines(commandTimeout: $commandTimeout);
+		if ($this->lastReply === '') {
 			fclose(stream: $this->stream);
-			throw new RuntimeException(message: 'Server timeout');
+			throw new RuntimeException(message: 'Empty response');
 		}
-		if ($result === false) {
-			fclose(stream: $this->stream);
-			throw new RuntimeException(message: 'fread() returned false');
+		if (
+			preg_match(
+				pattern: '/^(\d{3})[ -](?:(\d\.\d\.\d{1,2}) )?/',
+				subject: $this->lastReply,
+				matches: $matches
+			) === 1
+		) {
+			$responseCode = (int)$matches[1];
+		} else {
+			$responseCode = (int)substr(
+				string: $this->lastReply,
+				offset: 0,
+				length: 3
+			);
 		}
-		$responseCode = (int)substr(string: $result, offset: 0, length: 3);
 		if ($responseCode === $expectedCode) {
 			return;
 		}
 		fclose(stream: $this->stream);
 		throw new RuntimeException(message: 'Unexpected server response code ' . $responseCode);
+	}
+
+	private function getLines(int $commandTimeout): string
+	{
+		if (!is_resource(value: $this->stream)) {
+			return '';
+		}
+		$data = '';
+		$endTime = time() + $commandTimeout;
+		$selectRead = [$this->stream];
+		$selectWrite = null;
+		while (
+			is_resource(value: $this->stream)
+			&& !feof(stream: $this->stream)
+		) {
+			try {
+				stream_select(
+					read: $selectRead,
+					write: $selectWrite,
+					except: $selectWrite,
+					seconds: $commandTimeout
+				);
+			} catch (Throwable $throwable) {
+				if (str_contains(haystack: $throwable->getMessage(), needle: 'interrupted system call')) {
+					continue;
+				}
+				throw $throwable;
+			}
+			$str = fgets(
+				stream: $this->stream,
+				length: 512 // https://www.rfc-editor.org/rfc/rfc5321#section-4.5.3.1.5
+			);
+			$this->log[] = $str;
+			$data .= $str;
+			//If response is only 3 chars (not valid, but RFC5321 S4.2 says it must be handled),
+			//or 4th character is a space or a line break char, we are done reading, break the loop.
+			if (in_array(
+				needle: substr(string: $str, offset: 3, length: 1),
+				haystack: [
+					'',
+					' ',
+					"\r",
+					"\n",
+				]
+			)) {
+				break;
+			}
+			$info = stream_get_meta_data(stream: $this->stream);
+			if ($info['timed_out']) {
+				throw new RuntimeException(message: 'Server timeout');
+			}
+			if ($endTime && time() > $endTime) {
+				throw new RuntimeException(message: 'Time limit reached (' . $commandTimeout . ' seconds)');
+			}
+		}
+
+		return $data;
 	}
 
 	private function close(): void
@@ -198,10 +343,7 @@ class SMTPMailer extends AbstractMailer
 	 */
 	public function sendData(string $data): void
 	{
-		$this->sendCommand(
-			command: 'DATA',
-			expectedCode: 354
-		);
+		$this->sendCommandDataStart();
 		/**
 		 * The server is ready to accept data!
 		 * According to rfc821 we should not send more than 1000 characters on a single line (including the LE)
@@ -288,7 +430,24 @@ class SMTPMailer extends AbstractMailer
 				$this->sendRawDataToServer(data: $line_out);
 			}
 		}
-		// Message data has been sent, complete the command
-		$this->sendCommand(command: '.', expectedCode: 250); // DATA END
+		$this->sendCommandDataEnd();
+	}
+
+	private function isConnected(): bool
+	{
+		if (!is_resource(value: $this->stream)) {
+			return false;
+		}
+		$sock_status = stream_get_meta_data(stream: $this->stream);
+		if ($sock_status['eof']) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public function getLastReply(): string
+	{
+		return $this->lastReply;
 	}
 }
