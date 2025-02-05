@@ -18,17 +18,17 @@ class Validator
 {
 	public static function stringWithoutWhitespaces(string $input): bool
 	{
-		return (preg_match('#\s#', $input) === 0);
+		return (preg_match(pattern: '#\s#', subject: $input) === 0);
 	}
 
 	public static function domain(string $input): bool
 	{
-		return DomainValidator::validate($input);
+		return DomainValidator::validate(input: $input);
 	}
 
 	public static function tld(string $input): bool
 	{
-		return TldValidator::validate($input);
+		return TldValidator::validate(input: $input);
 	}
 
 	public static function ip(string $input): bool
@@ -38,11 +38,11 @@ class Validator
 
 	public static function ipv4(mixed $input): bool
 	{
-		return IpValidator::validate($input, ipType: IpTypeEnum::ipv4);
+		return IpValidator::validate(input: $input, ipType: IpTypeEnum::ipv4);
 	}
 
 	public static function ipv6(mixed $input): bool
 	{
-		return IpValidator::validate($input, ipType: IpTypeEnum::ipv6);
+		return IpValidator::validate(input: $input, ipType: IpTypeEnum::ipv6);
 	}
 }
