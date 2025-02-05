@@ -15,15 +15,18 @@ class DomainValidator
 		if (!Validator::stringWithoutWhitespaces(input: $input)) {
 			return false;
 		}
-		$pieces = explode(separator: '.', string: $input);
-		if ($pieces < 2) {
-			return false;
-		}
 		// Domainname + '.' + TLD = minimum 5 characters
 		if (mb_strlen(string: $input) < 5) {
 			return false;
 		}
-		$realTld = array_pop($pieces);
+		$pieces = explode(
+			separator: '.',
+			string: $input
+		);
+		if ($pieces < 2) {
+			return false;
+		}
+		$realTld = array_pop(array: $pieces);
 		if (!TldValidator::validate(input: $realTld)) {
 			return false;
 		}
@@ -31,7 +34,7 @@ class DomainValidator
 		if ($encodedData === false) {
 			return false;
 		}
-		if (filter_var(value: 'https://' . $encodedData, filter: FILTER_VALIDATE_URL) === false) {
+		if (filter_var(value: $encodedData, filter: FILTER_VALIDATE_DOMAIN, options: FILTER_FLAG_HOSTNAME) === false) {
 			return false;
 		}
 
