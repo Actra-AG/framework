@@ -2,6 +2,7 @@
 /**
  * @author    Christof Moser <contact@actra.ch>
  * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
+ * @license   MIT
  */
 
 namespace framework\common;
@@ -22,8 +23,8 @@ class ValidatedEmailAddress
     {
         $this->sanitizedValue = mb_strtolower(
             string: $this->silentlyReplaceInvalidWhitespaces(
-            emailAddress: $emailAddress
-        )
+                emailAddress: $emailAddress
+            )
         );
         $this->isValidSyntax = $this->validateSyntax(input: $this->sanitizedValue);
     }
@@ -35,18 +36,18 @@ class ValidatedEmailAddress
     {
         return trim(
             string: str_replace(
-            search: [
-                ' ',
-                "\t",
-                "\n",
-                "\r",
-                "&#8203;",
-                "\xE2\x80\x8C",
-                "\xE2\x80\x8B", // https://stackoverflow.com/questions/22600235/remove-unicode-zero-width-space-php
-            ],
-            replace: '',
-            subject: $emailAddress
-        )
+                search: [
+                    ' ',
+                    "\t",
+                    "\n",
+                    "\r",
+                    "&#8203;",
+                    "\xE2\x80\x8C",
+                    "\xE2\x80\x8B", // https://stackoverflow.com/questions/22600235/remove-unicode-zero-width-space-php
+                ],
+                replace: '',
+                subject: $emailAddress
+            )
         );
     }
 

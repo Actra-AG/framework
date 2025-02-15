@@ -2,6 +2,7 @@
 /**
  * @author    Christof Moser <contact@actra.ch>
  * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
+ * @license   MIT
  */
 
 namespace framework\form\component\field;
@@ -38,10 +39,10 @@ class EmailField extends InputField
         }
         $this->addRule(
             formRule: new ValidEmailAddressRule(
-            errorMessage: $invalidError,
-            dnsCheck: $dnsCheck,
-            trueOnDnsError: $trueOnDnsError
-        )
+                errorMessage: $invalidError,
+                dnsCheck: $dnsCheck,
+                trueOnDnsError: $trueOnDnsError
+            )
         );
     }
 }

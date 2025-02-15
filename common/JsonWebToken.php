@@ -2,6 +2,7 @@
 /**
  * @author    Christof Moser <contact@actra.ch>
  * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
+ * @license   MIT
  */
 
 namespace framework\common;
@@ -89,13 +90,13 @@ readonly class JsonWebToken
             token: $token,
             headers: JsonWebToken::jsonDecode(
                 input: JsonWebToken::urlSafeBase64Decode(
-                base64EncodedString: $encodedHeader
-            )
+                    base64EncodedString: $encodedHeader
+                )
             ),
             payload: JsonWebToken::jsonDecode(
                 input: JsonWebToken::urlSafeBase64Decode(
-                base64EncodedString: $encodedPayload
-            )
+                    base64EncodedString: $encodedPayload
+                )
             ),
             signature: JsonWebToken::urlSafeBase64Decode(base64EncodedString: $encodedSignature),
             encodedHeader: $encodedHeader,

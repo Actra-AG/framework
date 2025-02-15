@@ -2,6 +2,7 @@
 /**
  * @author    Christof Moser <contact@actra.ch>
  * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
+ * @license   MIT
  */
 
 namespace framework\table;
@@ -33,12 +34,12 @@ readonly class TableItemModel
         if ($renderNewLines) {
             return nl2br(
                 string: HtmlEncoder::encodeKeepQuotes(
-                value: str_replace(
-                search: '<br>',
-                replace: PHP_EOL,
-                subject: $value
-            )
-            )
+                    value: str_replace(
+                        search: '<br>',
+                        replace: PHP_EOL,
+                        subject: $value
+                    )
+                )
             );
         }
 

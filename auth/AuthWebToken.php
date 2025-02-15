@@ -2,6 +2,7 @@
 /**
  * @author    Christof Moser <contact@actra.ch>
  * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
+ * @license   MIT
  */
 
 namespace framework\auth;
@@ -30,13 +31,13 @@ abstract class AuthWebToken
         $this->base64Secret = $this->jwtArray[2];
         $this->header = AuthWebToken::jsonDecode(
             input: AuthWebToken::urlSafeBase64Decode(
-            base64EncodedString: $this->base64Header
-        )
+                base64EncodedString: $this->base64Header
+            )
         );
         $this->payload = AuthWebToken::jsonDecode(
             input: AuthWebToken::urlSafeBase64Decode(
-            base64EncodedString: $this->base64Payload
-        )
+                base64EncodedString: $this->base64Payload
+            )
         );
         $this->secret = AuthWebToken::urlSafeBase64Decode(base64EncodedString: $this->base64Secret);
         if (!$this->verify()) {
