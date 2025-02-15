@@ -25,9 +25,6 @@ class UrlHelper
         } else {
             $absoluteUri = $relativeOrAbsoluteUri;
         }
-        if (defined(constant_name: 'SID') && SID !== '') {
-            $absoluteUri .= ((preg_match(pattern: '/(.*)\?(.+)/', subject: $absoluteUri)) ? '&' : '?') . SID;
-        }
 
         return $absoluteUri;
     }
