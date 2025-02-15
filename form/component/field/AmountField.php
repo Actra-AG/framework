@@ -2,6 +2,7 @@
 /**
  * @author    Christof Moser <contact@actra.ch>
  * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
+ * @license   MIT
  */
 
 namespace framework\form\component\field;
@@ -32,11 +33,11 @@ class AmountField extends TextField
         );
         $this->addRule(
             formRule: new ValidAmountRule(
-            valueIsFloat: $valueIsFloat,
-            errorMessage: is_null(value: $individualInvalidError) ? HtmlText::encoded(
-                textContent: 'Der angegebene Wert ist ungültig.'
-            ) : $individualInvalidError
-        )
+                valueIsFloat: $valueIsFloat,
+                errorMessage: is_null(value: $individualInvalidError) ? HtmlText::encoded(
+                    textContent: 'Der angegebene Wert ist ungültig.'
+                ) : $individualInvalidError
+            )
         );
     }
 }
