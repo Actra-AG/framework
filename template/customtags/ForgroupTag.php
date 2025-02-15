@@ -35,7 +35,7 @@ class ForgroupTag extends TemplateTag implements TagNode
 
     public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
     {
-        $var = Sanitizer::trimmedString($elementNode->getAttribute('var')->getValue());
+        $var = Sanitizer::trimmedString($elementNode->getAttribute('var')->value);
         $entryNoArr = explode(':', $var);
         $this->no = $entryNoArr[0];
         $this->var = $entryNoArr[1];
@@ -52,7 +52,7 @@ class ForgroupTag extends TemplateTag implements TagNode
         $replNode->content .= ForgroupTag::prepareHtml($elementNode->getInnerHtml());
         $replNode->content .= "<?php } ?>";
 
-        $elementNode->getParentNode()->replaceNode($elementNode, $replNode);
+        $elementNode->parentNode->replaceNode($elementNode, $replNode);
     }
 
     private function prepareHtml($html): array|string|null

@@ -18,7 +18,7 @@ class ZipCodeField extends TextField
         ?string $value = null,
         ?HtmlText $requiredError = null,
         ?HtmlText $individualInvalidError = null,
-        private string $countryCode = 'CH',
+        private(set) string $countryCode = 'CH',
         private readonly string $countryCodeFieldName = 'countryCode',
         ?string $placeholder = null,
         ?AutoCompleteValue $autoComplete = null
@@ -35,11 +35,6 @@ class ZipCodeField extends TextField
             textContent: 'Die eingegebene PLZ ist ungültig.'
         ) : $individualInvalidError;
         $this->addRule(formRule: new ZipCodeRule(defaultErrorMessage: $invalidError));
-    }
-
-    public function getCountryCode(): string
-    {
-        return $this->countryCode;
     }
 
     public function validate(array $inputData, bool $overwriteValue = true): bool

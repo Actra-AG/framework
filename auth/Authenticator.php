@@ -13,7 +13,7 @@ use LogicException;
 abstract class Authenticator
 {
     private static ?Authenticator $instance = null;
-    private AuthResult $authResult = AuthResult::UNDEFINED;
+    protected(set) AuthResult $authResult = AuthResult::UNDEFINED;
 
     protected function __construct(private readonly int $maxAllowedWrongPasswordAttempts)
     {
@@ -78,7 +78,7 @@ abstract class Authenticator
 
             return false;
         }
-        if ($authUser->getWrongPasswordAttempts() >= $this->maxAllowedWrongPasswordAttempts) {
+        if ($authUser->wrongPasswordAttempts >= $this->maxAllowedWrongPasswordAttempts) {
             $this->authResult = AuthResult::ERROR_OUT_TRIED;
             $this->logAuthResult(
                 userID: $userID,
@@ -110,7 +110,7 @@ abstract class Authenticator
 
                 return false;
             }
-            if (!$authUser->getPassword()->isValid(rawPassword: $passwordToCheck)) {
+            if (!$authUser->password->isValid(rawPassword: $passwordToCheck)) {
                 $authUser->increaseWrongPasswordAttempts();
                 $this->authResult = AuthResult::ERROR_WRONG_PASSWORD;
                 $this->logAuthResult(
@@ -148,16 +148,6 @@ abstract class Authenticator
     ): void;
 
     abstract protected function checkLoginCredentials(AuthUser $authUser): bool;
-
-    public function getAuthResult(): AuthResult
-    {
-        return $this->authResult;
-    }
-
-    protected function setAuthResult(AuthResult $authResult): void
-    {
-        $this->authResult = $authResult;
-    }
 
     protected function authWebTokenLogin(AuthWebToken $authWebToken): bool
     {

@@ -45,10 +45,10 @@ readonly class MailerHeader
         string $name,
         string $value
     ): string {
-        return (new MailerHeader(
+        return new MailerHeader(
             name: $name,
             value: $value
-        ))->get();
+        )->get();
     }
 
     public function get(): string

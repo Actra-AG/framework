@@ -27,12 +27,30 @@ class DbResultTable extends SmartTable
     protected const string sessionDataType = 'table';
     protected const string filter = '[filter]';
     protected const string pagination = '[pagination]';
+    private(set) ?int $totalAmount = null {
+        get {
+            if (!is_null(value: $this->totalAmount)) {
+                return $this->totalAmount;
+            }
+            $this->fillBySelectQuery();
+            if (
+                (
+                    $this->getCurrentPaginationPage() === 1
+                    && $this->filledAmount < $this->itemsPerPage
+                )
+                || $this->limitToOnePage
+            ) {
+                return $this->totalAmount = $this->filledAmount;
+            }
+
+            return $this->totalAmount = $this->dbQuery->getTotalAmount(db: $this->db);
+        }
+    }
+    private(set) array $additionalLinkParameters = [];
     private bool $filledDataBySelectQuery = false;
     private ?AbstractTableColumn $defaultSortColumn = null;
     private TablePaginationRenderer $tablePaginationRenderer;
     private ?int $filledAmount = null;
-    private ?int $totalAmount = null;
-    private array $additionalLinkParameters = [];
 
     public function __construct(
         string $identifier, // Can be the name of main table, but must be unique per site
@@ -43,9 +61,8 @@ class DbResultTable extends SmartTable
         ?SortableTableHeadRenderer $sortableTableHeadRenderer = null,
         private readonly int $itemsPerPage = 25,
         // Max rows in table before pagination starts, if result is not limited to one page
-        private bool $limitToOnePage = false // Set to true to disable pagination
-    )
-    {
+        public bool $limitToOnePage = false
+    ) {
         if (is_null(value: $sortableTableHeadRenderer)) {
             $sortableTableHeadRenderer = new SortableTableHeadRenderer();
         }
@@ -54,10 +71,8 @@ class DbResultTable extends SmartTable
             tableHeadRenderer: $sortableTableHeadRenderer,
             tableItemCollection: new TableItemCollection()
         );
-        $this->setNoDataHtml(noDataHtml: DbResultTable::filter . $this->getNoDataHtml());
-        $this->setFullHtml(
-            fullHtml: DbResultTable::filter . SmartTable::totalAmount . DbResultTable::pagination . '<div class="table-global-wrap">' . SmartTable::table . '</div>' . DbResultTable::pagination
-        );
+        $this->noDataHtml = DbResultTable::filter . $this->noDataHtml;
+        $this->fullHtml = DbResultTable::filter . SmartTable::totalAmount . DbResultTable::pagination . '<div class="table-global-wrap">' . SmartTable::table . '</div>' . DbResultTable::pagination;
         $this->tablePaginationRenderer = is_null(value: $tablePaginationRenderer) ? new TablePaginationRenderer(
         ) : $tablePaginationRenderer;
     }
@@ -122,7 +137,7 @@ class DbResultTable extends SmartTable
     private function initSorting(): void
     {
         $availableSortOptions = [];
-        foreach ($this->getColumns() as $abstractTableColumn) {
+        foreach ($this->columns as $abstractTableColumn) {
             if ($abstractTableColumn->isSortable) {
                 $availableSortOptions[] = $abstractTableColumn->identifier;
             }
@@ -159,8 +174,8 @@ class DbResultTable extends SmartTable
 
         if (empty($this->getCurrentSortColumn()) || !is_null(
                 value: HttpRequest::getInputString(
-                keyName: DbResultTable::PARAM_RESET
-            )
+                    keyName: DbResultTable::PARAM_RESET
+                )
             )) {
             $defaultSortColumn = $this->defaultSortColumn;
             if (is_null(value: $defaultSortColumn)) {
@@ -168,7 +183,7 @@ class DbResultTable extends SmartTable
                     dataType: DbResultTable::sessionDataType,
                     identifier: $this->identifier,
                     index: 'sort_column',
-                    value: current(array: $this->getColumns())->identifier
+                    value: current(array: $this->columns)->identifier
                 );
                 DbResultTable::saveToSession(
                     dataType: DbResultTable::sessionDataType,
@@ -224,10 +239,10 @@ class DbResultTable extends SmartTable
         $inputPageArr = explode(
             separator: '|',
             string: trim(
-            string: (string)HttpRequest::getInputString(
-            keyName: DbResultTable::PARAM_PAGE
-        )
-        )
+                string: (string)HttpRequest::getInputString(
+                    keyName: DbResultTable::PARAM_PAGE
+                )
+            )
         );
         $inputPage = (int)$inputPageArr[0];
         $inputTable = trim(string: array_key_exists(key: 1, array: $inputPageArr) ? $inputPageArr[1] : '');
@@ -272,34 +287,8 @@ class DbResultTable extends SmartTable
         );
     }
 
-    public function getTotalAmount(): int
-    {
-        if (!is_null(value: $this->totalAmount)) {
-            return $this->totalAmount;
-        }
-
-        $this->fillBySelectQuery();
-
-        if (($this->getCurrentPaginationPage(
-                ) === 1 && $this->filledAmount < $this->itemsPerPage) || $this->limitToOnePage) {
-            return $this->totalAmount = $this->filledAmount;
-        }
-
-        return $this->totalAmount = $this->dbQuery->getTotalAmount(db: $this->db);
-    }
-
     public function addAdditionalLinkParameter(string $key, string $value): void
     {
         $this->additionalLinkParameters[urlencode(string: $key)] = urlencode(string: $value);
-    }
-
-    public function getAdditionalLinkParameters(): array
-    {
-        return $this->additionalLinkParameters;
-    }
-
-    public function setLimitToOnePage(bool $limitToOnePage): void
-    {
-        $this->limitToOnePage = $limitToOnePage;
     }
 }

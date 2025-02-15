@@ -37,8 +37,8 @@ readonly class HtmlSnippet
         }
         $core = Core::get();
 
-        return (new TemplateEngine(
-            tplCacheInterface: new DirectoryTemplateCache(
+        return new TemplateEngine(
+            templateCacheInterface: new DirectoryTemplateCache(
                 cachePath: $core->cacheDirectory,
                 templateBaseDirectory: str_replace(
                     search: $htmlSnippetFilePath,
@@ -47,7 +47,7 @@ readonly class HtmlSnippet
                 )
             ),
             tplNsPrefix: 'tst'
-        ))->getResultAsHtml(
+        )->getResultAsHtml(
             tplFile: $htmlSnippetFilePath,
             dataPool: $this->replacements->getArrayObject()
         );

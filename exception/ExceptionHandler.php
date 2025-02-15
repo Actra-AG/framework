@@ -65,18 +65,16 @@ class ExceptionHandler
             $placeholders = [
                 'title' => 'Page not found',
             ];
+        } elseif ($throwable instanceof UnauthorizedException) {
+            $httpStatusCode = HttpStatusCode::HTTP_UNAUTHORIZED;
+            $placeholders = [
+                'title' => 'Unauthorized',
+            ];
         } else {
-            if ($throwable instanceof UnauthorizedException) {
-                $httpStatusCode = HttpStatusCode::HTTP_UNAUTHORIZED;
-                $placeholders = [
-                    'title' => 'Unauthorized',
-                ];
-            } else {
-                $httpStatusCode = HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR;
-                $placeholders = [
-                    'title' => 'Internal Server Error',
-                ];
-            }
+            $httpStatusCode = HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR;
+            $placeholders = [
+                'title' => 'Internal Server Error',
+            ];
         }
 
         $placeholders['errorType'] = get_class(object: $throwable);
@@ -95,9 +93,9 @@ class ExceptionHandler
         ) : '';
         $placeholders['vardump_sess'] = isset($_SESSION) ? htmlentities(
             string: var_export(
-            value: $_SESSION,
-            return: true
-        )
+                value: $_SESSION,
+                return: true
+            )
         ) : '';
 
         $this->sendHttpResponseAndExit(
@@ -124,7 +122,7 @@ class ExceptionHandler
                     errorMessage: $errorMessage,
                     errorCode: $errorCode,
                     additionalInfo: (object)$placeholders
-                )->getContent(),
+                )->content,
                 contentType: $contentType
             );
             $httpResponse->sendAndExit();
@@ -135,7 +133,7 @@ class ExceptionHandler
                 contentString: HttpErrorResponseContent::createTextResponseContent(
                     errorMessage: $errorMessage,
                     errorCode: $errorCode
-                )->getContent(),
+                )->content,
                 contentType: $contentType
             );
             $httpResponse->sendAndExit();

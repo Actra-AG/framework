@@ -62,7 +62,7 @@ readonly class HtmlReplacement
         }
         if ($this->content instanceof HtmlTextCollection) {
             $array = [];
-            foreach ($this->content->getItems() as $htmlText) {
+            foreach ($this->content->items as $htmlText) {
                 $array[] = $htmlText->render();
             }
 
@@ -70,8 +70,8 @@ readonly class HtmlReplacement
         }
         if ($this->content instanceof HtmlDataObjectCollection) {
             $array = [];
-            foreach ($this->content->getItems() as $htmlDataObject) {
-                $array[] = $htmlDataObject->getData();
+            foreach ($this->content->items as $htmlDataObject) {
+                $array[] = $htmlDataObject->data;
             }
 
             return $array;

@@ -85,19 +85,19 @@ class Core
         require_once $frameworkDirectory . 'autoloader' . DIRECTORY_SEPARATOR . 'AutoloaderPathModel.php';
         $autoloader->addPath(
             autoloaderPathModel: new AutoloaderPathModel(
-            name: 'fw-logic',
-            path: $this->documentRoot,
-            mode: AutoloaderPathModel::MODE_NAMESPACE,
-            fileSuffixList: ['.class.php', '.php', '.interface.php'],
-            phpFilePathRemove: $frameworkFilePathRemove
-        )
+                name: 'fw-logic',
+                path: $this->documentRoot,
+                mode: AutoloaderPathModel::MODE_NAMESPACE,
+                fileSuffixList: ['.class.php', '.php', '.interface.php'],
+                phpFilePathRemove: $frameworkFilePathRemove
+            )
         );
         ErrorHandler::register();
         if (!HttpRequest::isSSL()) {
             HttpResponse::redirectAndExit(
                 relativeOrAbsoluteUri: HttpRequest::getURL(
-                protocol: HttpRequest::PROTOCOL_HTTPS
-            )
+                    protocol: HttpRequest::PROTOCOL_HTTPS
+                )
             );
         }
     }
@@ -137,14 +137,13 @@ class Core
             throw new NotFoundException();
         }
         $content = $contentHandler->getContent();
-        $httpStatusCode = $contentHandler->getHttpStatusCode();
+        $httpStatusCode = $contentHandler->httpStatusCode;
         $contentType = $contentHandler->getContentType();
         if ($contentType->isHtml()) {
             return Core::$httpResponse = HttpResponse::createHtmlResponse(
                 httpStatusCode: $httpStatusCode,
                 htmlContent: $content,
-                cspPolicySettingsModel: $contentHandler->isSuppressCspHeader(
-                ) ? null : $environmentSettingsModel->cspPolicySettingsModel,
+                cspPolicySettingsModel: $contentHandler->suppressCspHeader ? null : $environmentSettingsModel->cspPolicySettingsModel,
                 nonce: CspNonce::get()
             );
         }

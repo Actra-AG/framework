@@ -66,7 +66,7 @@ class SimpleXMLExtended extends SimpleXMLElement
         }
     }
 
-    public function addArray(array|stdClass $array, SimpleXMLElement $xml = null, bool $include_null = true): bool
+    public function addArray(array|stdClass $array, ?SimpleXMLElement $xml = null, bool $include_null = true): bool
     {
         if ($xml === null) {
             $xml = $this;

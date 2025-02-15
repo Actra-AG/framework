@@ -14,34 +14,32 @@ use UnexpectedValueException;
 
 class RegexRule extends FormRule
 {
-	protected string $pattern;
+    public function __construct(
+        protected string $pattern,
+        HtmlText $errorMessage
+    ) {
+        parent::__construct($errorMessage);
+    }
 
-	public function __construct(string $pattern, HtmlText $errorMessage)
-	{
-		parent::__construct($errorMessage);
+    public function validate(FormField $formField): bool
+    {
+        if ($formField->isValueEmpty()) {
+            return true;
+        }
 
-		$this->pattern = $pattern;
-	}
+        $fieldValue = $formField->getRawValue();
 
-	public function validate(FormField $formField): bool
-	{
-		if ($formField->isValueEmpty()) {
-			return true;
-		}
-
-		$fieldValue = $formField->getRawValue();
-
-		if (is_scalar($fieldValue)) {
-			return $this->checkAgainstPattern($fieldValue);
-		} else if (is_array($fieldValue) || $fieldValue instanceof ArrayObject) {
+        if (is_scalar($fieldValue)) {
+            return $this->checkAgainstPattern($fieldValue);
+        } elseif (is_array($fieldValue) || $fieldValue instanceof ArrayObject) {
             return array_all($fieldValue, fn($value) => $this->checkAgainstPattern($value));
         } else {
-			throw new UnexpectedValueException('The field value is neither scalar nor an array');
-		}
-	}
+            throw new UnexpectedValueException('The field value is neither scalar nor an array');
+        }
+    }
 
-	protected function checkAgainstPattern($value): bool
-	{
-		return (preg_match($this->pattern, $value) === 1);
-	}
+    protected function checkAgainstPattern($value): bool
+    {
+        return (preg_match($this->pattern, $value) === 1);
+    }
 }

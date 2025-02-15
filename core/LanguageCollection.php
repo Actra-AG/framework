@@ -9,7 +9,7 @@ namespace framework\core;
 class LanguageCollection
 {
     /** @var Language[] */
-    private array $languages = [];
+    private(set) array $languages = [];
 
     public function __construct(array $languages = [])
     {
@@ -23,14 +23,6 @@ class LanguageCollection
         $this->languages[] = $language;
     }
 
-    /**
-     * @return Language[]
-     */
-    public function getLanguages(): array
-    {
-        return $this->languages;
-    }
-
     public function hasLanguage(string $languageCode): bool
     {
         return !is_null(value: $this->getLanguageByCode(languageCode: $languageCode));
@@ -38,13 +30,7 @@ class LanguageCollection
 
     public function getLanguageByCode(string $languageCode): ?Language
     {
-        foreach ($this->languages as $language) {
-            if ($language->code === $languageCode) {
-                return $language;
-            }
-        }
-
-        return null;
+        return array_find($this->languages, fn($language) => $language->code === $languageCode);
     }
 
     public function getFirstLanguage(): Language

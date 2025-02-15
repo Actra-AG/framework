@@ -15,9 +15,9 @@ abstract class AuthUser
     public function __construct(
         public readonly int $ID,
         public readonly bool $isActive,
-        private int $wrongPasswordAttempts,
+        private(set) int $wrongPasswordAttempts,
         private readonly AccessRightCollection $accessRightCollection,
-        private Password $password
+        private(set) Password $password
     ) {
         if (!is_null(value: AuthUser::$instance)) {
             throw new LogicException(message: 'There can only be one AuthUser instance.');
@@ -39,11 +39,6 @@ abstract class AuthUser
         return $this->accessRightCollection->hasOneOfAccessRights(accessRightCollection: $accessRightCollection);
     }
 
-    public function getWrongPasswordAttempts(): int
-    {
-        return $this->wrongPasswordAttempts;
-    }
-
     public function increaseWrongPasswordAttempts(): void
     {
         $this->dbIncreaseWrongPasswordAttempts();
@@ -60,11 +55,6 @@ abstract class AuthUser
     }
 
     abstract protected function dbConfirmSuccessfulLogin(): int;
-
-    public function getPassword(): Password
-    {
-        return $this->password;
-    }
 
     protected function changePassword(Password $newPassword): void
     {

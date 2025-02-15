@@ -14,11 +14,8 @@ use framework\html\HtmlText;
 
 class CheckboxItemRenderer extends FormRenderer
 {
-    private CheckboxOptionsField $checkboxOptionsField;
-
-    public function __construct(CheckboxOptionsField $checkboxOptionsField)
+    public function __construct(private readonly CheckboxOptionsField $checkboxOptionsField)
     {
-        $this->checkboxOptionsField = $checkboxOptionsField;
     }
 
     public function prepare(): void
@@ -42,13 +39,13 @@ class CheckboxItemRenderer extends FormRenderer
 
         // Create inner "span-label":
         $spanLabelTag = new HtmlTag('span', false, [new HtmlTagAttribute('class', 'label-text', true)]);
-        $spanLabelTag->addText($checkboxOptionsField->getLabel());
+        $spanLabelTag->addText($checkboxOptionsField->label);
 
         $labelTag->addText(HtmlText::encoded(' ' . $spanLabelTag->render()));
         $formItemCheckboxDiv->addTag($labelTag);
         $htmlElementDiv->addTag($formItemCheckboxDiv);
 
-        if (!is_null($checkboxOptionsField->getFieldInfo())) {
+        if (!is_null($checkboxOptionsField->fieldInfo)) {
             FormRenderer::addFieldInfoToParentHtmlTag($checkboxOptionsField, $htmlElementDiv);
         }
 
@@ -59,12 +56,12 @@ class CheckboxItemRenderer extends FormRenderer
 
     private function getInputTag(): HtmlTag
     {
-        $options = $this->checkboxOptionsField->getFormOptions()->getData();
-        $optionValue = key($options);
+        $options = $this->checkboxOptionsField->formOptions->data;
+        $optionValue = key(array: $options);
         $attributes = [
             new HtmlTagAttribute('type', 'checkbox', true),
-            new HtmlTagAttribute('name', $this->checkboxOptionsField->getName(), true),
-            new HtmlTagAttribute('id', $this->checkboxOptionsField->getId(), true),
+            new HtmlTagAttribute('name', $this->checkboxOptionsField->name, true),
+            new HtmlTagAttribute('id', $this->checkboxOptionsField->id, true),
             new HtmlTagAttribute('value', $optionValue, true),
         ];
 
@@ -78,11 +75,11 @@ class CheckboxItemRenderer extends FormRenderer
 
         if ($this->checkboxOptionsField->hasErrors(withChildElements: true)) {
             $attributes[] = new HtmlTagAttribute('aria-invalid', 'true', true);
-            $ariaDescribedBy[] = $this->checkboxOptionsField->getName() . '-error';
+            $ariaDescribedBy[] = $this->checkboxOptionsField->name . '-error';
         }
 
-        if (!is_null($this->checkboxOptionsField->getFieldInfo())) {
-            $ariaDescribedBy[] = $this->checkboxOptionsField->getName() . '-info';
+        if (!is_null($this->checkboxOptionsField->fieldInfo)) {
+            $ariaDescribedBy[] = $this->checkboxOptionsField->name . '-info';
         }
 
         if (count($ariaDescribedBy) > 0) {

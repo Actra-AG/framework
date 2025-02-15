@@ -14,13 +14,13 @@ use framework\html\HtmlText;
 
 abstract class OptionsField extends FormField
 {
+    public ?HtmlText $listDescription;
     private array $listTagClasses = [];
-    private ?HtmlText $listDescription = null;
 
     public function __construct(
         string $name,
         HtmlText $label,
-        private FormOptions $formOptions,
+        public FormOptions $formOptions,
         mixed $initialValue,
         public readonly ?AutoCompleteValue $autoComplete
     ) {
@@ -34,30 +34,10 @@ abstract class OptionsField extends FormField
         // It can only happen by data manipulation, which we don't want to be notified about (by exception).
         $this->addRule(
             formRule: new ValidateAgainstOptions(
-            errorMessage: HtmlText::encoded(textContent: 'Selected invalid value in field ' . $name),
-            validFormOptions: $this->formOptions
-        )
+                errorMessage: HtmlText::encoded(textContent: 'Selected invalid value in field ' . $name),
+                validFormOptions: $this->formOptions
+            )
         );
-    }
-
-    public function getListDescription(): ?HtmlText
-    {
-        return $this->listDescription;
-    }
-
-    public function setListDescription(?HtmlText $listDescription): void
-    {
-        $this->listDescription = $listDescription;
-    }
-
-    public function getFormOptions(): FormOptions
-    {
-        return $this->formOptions;
-    }
-
-    public function setFormOptions(FormOptions $formOptions): void
-    {
-        $this->formOptions = $formOptions;
     }
 
     public function addListTagClass(string $className): void

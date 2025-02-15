@@ -11,13 +11,13 @@ use framework\table\table\SmartTable;
 
 class TableHeadRenderer
 {
-    private bool $addColumnScopeAttribute = true;
+    protected bool $addColumnScopeAttribute = true;
 
     public function render(SmartTable $smartTable): string
     {
         $columns = [];
 
-        foreach ($smartTable->getColumns() as $abstractTableColumn) {
+        foreach ($smartTable->columns as $abstractTableColumn) {
             $columns[] = $this->renderColumnHead($abstractTableColumn);
         }
 
@@ -30,7 +30,7 @@ class TableHeadRenderer
 
     protected function renderColumnHead(AbstractTableColumn $abstractTableColumn): string
     {
-        $columnCssClasses = $abstractTableColumn->getColumnCssClasses();
+        $columnCssClasses = $abstractTableColumn->columnCssClasses;
         $attributesArr = ['th'];
         if ($this->addColumnScopeAttribute) {
             $attributesArr[] = 'scope="col"';
@@ -40,15 +40,5 @@ class TableHeadRenderer
         }
 
         return '<' . implode(separator: ' ', array: $attributesArr) . '>' . $abstractTableColumn->label . '</th>';
-    }
-
-    protected function isAddColumnScopeAttribute(): bool
-    {
-        return $this->addColumnScopeAttribute;
-    }
-
-    protected function setAddColumnScopeAttribute(bool $addColumnScopeAttribute): void
-    {
-        $this->addColumnScopeAttribute = $addColumnScopeAttribute;
     }
 }

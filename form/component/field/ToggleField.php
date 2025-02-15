@@ -21,8 +21,8 @@ use LogicException;
 
 class ToggleField extends OptionsField
 {
-    private array $childrenByMainOption = [];
-    private string $defaultChildFieldRenderer = DefinitionListRenderer::class;
+    public string $defaultChildFieldRenderer = DefinitionListRenderer::class;
+    private(set) array $childrenByMainOption = [];
 
     public function __construct(
         string $name,
@@ -63,11 +63,6 @@ class ToggleField extends OptionsField
         return $value;
     }
 
-    public function setDefaultChildFieldRenderer(string $rendererName): void
-    {
-        $this->defaultChildFieldRenderer = $rendererName;
-    }
-
     public function addChildField(string $mainOption, FormField $childField): void
     {
         $this->addChildComponent($mainOption, $childField);
@@ -75,12 +70,12 @@ class ToggleField extends OptionsField
 
     public function addChildComponent(string $mainOption, FormComponent $childComponent): void
     {
-        if (!$this->getFormOptions()->exists($mainOption)) {
-            throw new LogicException('The mainOption ' . $mainOption . ' does not exist!');
+        if (!$this->formOptions->exists($mainOption)) {
+            throw new LogicException(message: 'The mainOption ' . $mainOption . ' does not exist!');
         }
         $childComponent->setParentFormComponent($this);
 
-        $this->childrenByMainOption[$mainOption][$childComponent->getName()] = $childComponent;
+        $this->childrenByMainOption[$mainOption][$childComponent->name] = $childComponent;
     }
 
     public function getChildField(string $mainOption, string $fieldName): FormField
@@ -112,11 +107,6 @@ class ToggleField extends OptionsField
         return $childComponent;
     }
 
-    public function getChildrenByMainOption(): array
-    {
-        return $this->childrenByMainOption;
-    }
-
     public function getHtmlTag(): HtmlTag
     {
         $ulTagClasses = ['form-toggle-list'];
@@ -129,8 +119,8 @@ class ToggleField extends OptionsField
             [new HtmlTagAttribute('class', implode(separator: ' ', array: $ulTagClasses), true)]
         );
 
-        foreach ($this->getFormOptions()->getData() as $key => $htmlText) {
-            $combinedSpecifier = $this->getName() . '_' . $key;
+        foreach ($this->formOptions->data as $key => $htmlText) {
+            $combinedSpecifier = $this->name . '_' . $key;
 
             // ... create from inner to outer tag ...
 
@@ -138,7 +128,7 @@ class ToggleField extends OptionsField
             $inputAttributes = [
                 new HtmlTagAttribute('type', $this->multiple ? 'checkbox' : 'radio', true),
                 new HtmlTagAttribute('toggle-id', $combinedSpecifier, true),
-                new HtmlTagAttribute('name', $this->multiple ? $this->getName() . '[]' : $this->getName(), true),
+                new HtmlTagAttribute('name', $this->multiple ? $this->name . '[]' : $this->name, true),
                 new HtmlTagAttribute('value', $key, true),
             ];
 
@@ -150,10 +140,8 @@ class ToggleField extends OptionsField
                 if (in_array($key, $this->getRawValue())) {
                     $inputAttributes[] = new HtmlTagAttribute('checked', null, true);
                 }
-            } else {
-                if ((string)$key === (string)$this->getRawValue()) {
-                    $inputAttributes[] = new HtmlTagAttribute('checked', null, true);
-                }
+            } elseif ((string)$key === (string)$this->getRawValue()) {
+                $inputAttributes[] = new HtmlTagAttribute('checked', null, true);
             }
             // Create the Toggle-<input>
             $input = new HtmlTag('input', true, $inputAttributes);
@@ -220,14 +208,14 @@ class ToggleField extends OptionsField
 
         // A legend is desired left beside the ToggleField-Area:
         $legendAttributes = [];
-        if (!$this->isRenderLabel()) {
+        if (!$this->renderLabel) {
             $legendAttributes[] = new HtmlTagAttribute('class', 'visuallyhidden', true);
         }
 
         $legendTag = new HtmlTag('legend', false, $legendAttributes);
-        $legendTag->addText($this->getLabel());
+        $legendTag->addText($this->label);
 
-        if ($this->isRequired() && $this->isRenderRequiredAbbr()) {
+        if ($this->isRequired() && $this->renderRequiredAbbr) {
             $abbrTag = new HtmlTag('span', false, [
                 new HtmlTagAttribute('class', 'required', true),
             ]);
@@ -235,7 +223,7 @@ class ToggleField extends OptionsField
             $legendTag->addTag($abbrTag);
         }
 
-        $labelInfoText = $this->getLabelInfoText();
+        $labelInfoText = $this->labelInfoText;
         if (!is_null($labelInfoText)) {
             $labelInfoTag = new HtmlTag('i', false, [
                 new HtmlTagAttribute('class', 'legend-info', true),
@@ -247,12 +235,12 @@ class ToggleField extends OptionsField
         $fieldsetTag = LegendAndListRenderer::createFieldsetTag(optionsField: $this);
         $fieldsetTag->addTag($legendTag);
 
-        $listDescription = $this->getListDescription();
+        $listDescription = $this->listDescription;
         if (!is_null(value: $listDescription)) {
             $fieldsetTag->addText(
                 htmlText: HtmlText::encoded(
-                textContent: '<div class="fieldset-info">' . $listDescription->render() . '</div>'
-            )
+                    textContent: '<div class="fieldset-info">' . $listDescription->render() . '</div>'
+                )
             );
         }
 
@@ -280,10 +268,8 @@ class ToggleField extends OptionsField
                 if (!in_array($mainOption, $valueAfterValidation)) {
                     continue;
                 }
-            } else {
-                if ($mainOption != $valueAfterValidation) {
-                    continue;
-                }
+            } elseif ($mainOption != $valueAfterValidation) {
+                continue;
             }
 
             /** @var FormField|FormComponent $formField */

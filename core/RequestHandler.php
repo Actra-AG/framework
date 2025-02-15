@@ -23,9 +23,9 @@ class RequestHandler
     public readonly string $fileTitle;
     public readonly array $pathVars;
     public readonly string $fileExtension;
-    private string $fileName;
-    private ?string $fileGroup = null;
-    private array $routeVariables = [];
+    private(set) string $fileName;
+    private(set) ?string $fileGroup = null;
+    private(set) array $routeVariables = [];
 
     private function __construct(RouteCollection $allRoutes)
     {
@@ -113,7 +113,7 @@ class RequestHandler
     ): RouteCollection {
         $defaultRoutes = new RouteCollection();
         $usedLanguages = new LanguageCollection();
-        foreach ($allRoutes->getRoutes() as $route) {
+        foreach ($allRoutes->routes as $route) {
             if (!$route->isDefaultForLanguage) {
                 continue;
             }
@@ -147,7 +147,7 @@ class RequestHandler
         }
 
         $requestedPath = HttpRequest::getPath();
-        foreach ($allRoutes->getRoutes() as $route) {
+        foreach ($allRoutes->routes as $route) {
             $routePath = $route->path;
             if ($routePath === $requestedDirectories) {
                 return $route;
@@ -172,12 +172,10 @@ class RequestHandler
                 $val = array_key_exists(key: $nr, array: $matches2) ? $matches2[$nr] : '';
                 if ($variableName === 'fileName') {
                     $this->fileName = $val;
+                } elseif ($variableName === 'fileGroup') {
+                    $this->fileGroup = $val;
                 } else {
-                    if ($variableName === 'fileGroup') {
-                        $this->fileGroup = $val;
-                    } else {
-                        $this->routeVariables[$variableName] = $val;
-                    }
+                    $this->routeVariables[$variableName] = $val;
                 }
             }
 
@@ -188,7 +186,7 @@ class RequestHandler
             if (AbstractSessionHandler::enabled()) {
                 $preferredLanguageCode = AbstractSessionHandler::getSessionHandler()->getPreferredLanguageCode();
                 if (!is_null(value: $preferredLanguageCode)) {
-                    foreach ($defaultRoutesByLanguage->getRoutes() as $route) {
+                    foreach ($defaultRoutesByLanguage->routes as $route) {
                         if ($route->language->code === $preferredLanguageCode) {
                             HttpResponse::redirectAndExit(relativeOrAbsoluteUri: $route->path);
                         }
@@ -211,20 +209,5 @@ class RequestHandler
     public static function register(RouteCollection $routeCollection): void
     {
         new RequestHandler(allRoutes: $routeCollection);
-    }
-
-    public function getFileName(): string
-    {
-        return $this->fileName;
-    }
-
-    public function getFileGroup(): ?string
-    {
-        return $this->fileGroup;
-    }
-
-    public function getRouteVariables(): array
-    {
-        return $this->routeVariables;
     }
 }

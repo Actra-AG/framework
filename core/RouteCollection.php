@@ -11,7 +11,7 @@ class RouteCollection
     /**
      * @var Route[]
      */
-    private array $routes;
+    private(set) array $routes;
 
     public function __construct(array $routes = [])
     {
@@ -25,14 +25,6 @@ class RouteCollection
         $this->routes[] = $route;
     }
 
-    /**
-     * @return Route[]
-     */
-    public function getRoutes(): array
-    {
-        return $this->routes;
-    }
-
     public function hasRoutes(): bool
     {
         return (count(value: $this->routes) > 0);
@@ -40,13 +32,7 @@ class RouteCollection
 
     public function getRouteForLanguage(string $languageCode): ?Route
     {
-        foreach ($this->routes as $route) {
-            if ($route->language->code === $languageCode) {
-                return $route;
-            }
-        }
-
-        return null;
+        return array_find($this->routes, fn($route) => $route->language->code === $languageCode);
     }
 
     public function getFirstRoute(): Route

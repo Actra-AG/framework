@@ -72,6 +72,19 @@ abstract class HtmlNode
         $this->childNodes[$pos] = $replacementNode;
     }
 
+    private function findNodePosition(HtmlNode $findNode): ?int
+    {
+        $countChildren = count($this->childNodes);
+
+        for ($i = 0; $i < $countChildren; $i++) {
+            if ($this->childNodes[$i] === $findNode) {
+                return $i;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Inserts a node before another one
      *
@@ -89,19 +102,6 @@ abstract class HtmlNode
         array_splice($this->childNodes, $pos, 0, $nodesToInsert);
 
         $this->childNodes = array_values($this->childNodes);
-    }
-
-    private function findNodePosition(HtmlNode $findNode): ?int
-    {
-        $countChildren = count($this->childNodes);
-
-        for ($i = 0; $i < $countChildren; $i++) {
-            if ($this->childNodes[$i] === $findNode) {
-                return $i;
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -192,32 +192,6 @@ abstract class HtmlNode
         }
 
         return $childNotes;
-    }
-
-    /**
-     * Sets a child node list for this node
-     *
-     * @param HtmlNode[] $childNodes
-     */
-    public function setChildNodes(array $childNodes): void
-    {
-        $this->childNodes = $childNodes;
-    }
-
-    /**
-     * @return HtmlNode|null
-     */
-    public function getParentNode(): ?HtmlNode
-    {
-        return $this->parentNode;
-    }
-
-    /**
-     * @param HtmlNode|null $parentNode
-     */
-    public function setParentNode(?HtmlNode $parentNode): void
-    {
-        $this->parentNode = $parentNode;
     }
 
     /**

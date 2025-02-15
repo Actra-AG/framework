@@ -19,24 +19,24 @@ use UnexpectedValueException;
 
 abstract class FormField extends FormComponent
 {
+    public ?HtmlText $fieldInfo = null;
+    public ?HtmlText $labelInfoText = null;
+    public ?HtmlText $additionalColumnContent = null;
+    public Form $topFormComponent;
+    public bool $renderRequiredAbbr = true;
+    public string $id;
+    private(set) HtmlText $label;
+    private(set) bool $renderLabel = true;
+    public bool $autoFocus = false;
     /** @var FormFieldListener[] */
     protected array $listeners = [];
-    protected ?HtmlText $fieldInfo = null;
-    protected ?HtmlText $labelInfoText = null;
-    protected ?HtmlText $additionalColumnContent = null;
-    protected Form $topFormComponent;
-    protected bool $renderRequiredAbbr = true;
-    private string $id;
-    private HtmlText $label;
-    private mixed $value;
-    private mixed $originalValue = null;
 
     // Renderer options:
+    private mixed $value;
+    private mixed $originalValue = null;
     /** @var FormRule[] */
     private array $rules = [];
-    private bool $renderLabel = true;
     private bool $acceptArrayAsValue = false;
-    private bool $autoFocus = false;
 
     /**
      * @param string $name The internal name for this formField which is also used by the renderer (name="")
@@ -86,66 +86,6 @@ abstract class FormField extends FormComponent
         return $this->acceptArrayAsValue;
     }
 
-    public function isAutoFocus(): bool
-    {
-        return $this->autoFocus;
-    }
-
-    public function setAutoFocus(): void
-    {
-        $this->autoFocus = true;
-    }
-
-    public function setTopFormComponent(Form $topFormComponent): void
-    {
-        $this->topFormComponent = $topFormComponent;
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getFieldInfo(): ?HtmlText
-    {
-        return $this->fieldInfo;
-    }
-
-    public function setFieldInfo(?HtmlText $fieldInfo): void
-    {
-        $this->fieldInfo = $fieldInfo;
-    }
-
-    public function getAdditionalColumnContent(): ?HtmlText
-    {
-        return $this->additionalColumnContent;
-    }
-
-    public function setAdditionalColumnContent(?HtmlText $additionalColumnContent): void
-    {
-        $this->additionalColumnContent = $additionalColumnContent;
-    }
-
-    public function getLabel(): HtmlText
-    {
-        return $this->label;
-    }
-
-    public function getLabelInfoText(): ?HtmlText
-    {
-        return $this->labelInfoText;
-    }
-
-    public function setLabelInfoText(?HtmlText $labelInfoText): void
-    {
-        $this->labelInfoText = $labelInfoText;
-    }
-
     public function renderValue(): string
     {
         return HtmlEncoder::encode(value: $this->getRawValue());
@@ -168,20 +108,14 @@ abstract class FormField extends FormComponent
 
         if (is_scalar($this->value)) {
             return (strlen(string: trim(string: $this->value)) <= 0);
+        } elseif (is_array($this->value)) {
+            return (count(array_filter($this->value)) <= 0);
+        } elseif ($this->value instanceof ArrayObject) {
+            return (count(array_filter((array)$this->value)) <= 0);
+        } elseif ($this->value instanceof DateTime) {
+            return false;
         } else {
-            if (is_array($this->value)) {
-                return (count(array_filter($this->value)) <= 0);
-            } else {
-                if ($this->value instanceof ArrayObject) {
-                    return (count(array_filter((array)$this->value)) <= 0);
-                } else {
-                    if ($this->value instanceof DateTime) {
-                        return false;
-                    } else {
-                        throw new UnexpectedValueException('Could not check value against emptiness');
-                    }
-                }
-            }
+            throw new UnexpectedValueException('Could not check value against emptiness');
         }
     }
 
@@ -246,13 +180,7 @@ abstract class FormField extends FormComponent
 
     protected function hasRule(string $ruleClassName): bool
     {
-        foreach ($this->rules as $rule) {
-            if (get_class(object: $rule) === $ruleClassName) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->rules, fn($rule) => get_class(object: $rule) === $ruleClassName);
     }
 
     public function addListener(FormFieldListener $formFieldListener): void
@@ -273,7 +201,7 @@ abstract class FormField extends FormComponent
         if ($overwriteValue) {
             $defaultValue = $this->isArrayAsValueAllowed() ? [] : null;
             $this->setValue(
-                array_key_exists($this->getName(), $inputData) ? $inputData[$this->getName()] : $defaultValue
+                array_key_exists($this->name, $inputData) ? $inputData[$this->name] : $defaultValue
             );
         }
 
@@ -316,21 +244,6 @@ abstract class FormField extends FormComponent
     public function setRenderLabelFalse(): void
     {
         $this->renderLabel = false;
-    }
-
-    public function isRenderLabel(): bool
-    {
-        return $this->renderLabel;
-    }
-
-    public function isRenderRequiredAbbr(): bool
-    {
-        return $this->renderRequiredAbbr;
-    }
-
-    public function setRenderRequiredAbbr(bool $renderRequiredAbbr): void
-    {
-        $this->renderRequiredAbbr = $renderRequiredAbbr;
     }
 
     /**

@@ -34,7 +34,7 @@ class ElseifTag extends TemplateTag implements TagNode
     {
         $tplEngine->checkRequiredAttributes($elementNode, ['cond']);
 
-        $condAttr = $elementNode->getAttribute('cond')->getValue();
+        $condAttr = $elementNode->getAttribute('cond')->value;
 
         $phpCode = '<?php ';
 

@@ -21,14 +21,14 @@ class LegendAndListRenderer extends FormRenderer
     public function prepare(): void
     {
         $optionsField = $this->optionsField;
-        $labelInfoText = $optionsField->getLabelInfoText();
-        $labelText = $optionsField->getLabel();
+        $labelInfoText = $optionsField->labelInfoText;
+        $labelText = $optionsField->label;
         if (!is_null(value: $labelInfoText)) {
             // Add a space to separate it from following labelInfo-Tag
             $labelText = HtmlText::encoded(textContent: ' ' . $labelText->render());
         }
         $legendAttributes = [];
-        if (!$optionsField->isRenderLabel()) {
+        if (!$optionsField->renderLabel) {
             $legendAttributes[] = new HtmlTagAttribute(
                 name: 'class',
                 value: 'visuallyhidden',
@@ -44,7 +44,7 @@ class LegendAndListRenderer extends FormRenderer
             $labelInfoTag->addText(htmlText: $labelInfoText);
             $legendTag->addTag(htmlTag: $labelInfoTag);
         }
-        if ($optionsField->isRequired() && $optionsField->isRenderRequiredAbbr()) {
+        if ($optionsField->isRequired() && $optionsField->renderRequiredAbbr) {
             $spanTag = new HtmlTag(name: 'span', selfClosing: false, htmlTagAttributes: [
                 new HtmlTagAttribute(name: 'class', value: 'required', valueIsEncodedForRendering: true),
             ]);
@@ -53,19 +53,19 @@ class LegendAndListRenderer extends FormRenderer
         }
         $fieldsetTag = LegendAndListRenderer::createFieldsetTag(optionsField: $optionsField);
         $fieldsetTag->addTag(htmlTag: $legendTag);
-        $listDescription = $optionsField->getListDescription();
+        $listDescription = $optionsField->listDescription;
         if (!is_null(value: $listDescription)) {
             $fieldsetTag->addText(
                 htmlText: HtmlText::encoded(
-                textContent: '<div class="fieldset-info">' . $listDescription->render() . '</div>'
-            )
+                    textContent: '<div class="fieldset-info">' . $listDescription->render() . '</div>'
+                )
             );
         }
         $defaultFormFieldRenderer = $optionsField->getDefaultRenderer();
         $defaultFormFieldRenderer->prepare();
         $fieldsetTag->addTag(htmlTag: $defaultFormFieldRenderer->getHtmlTag());
         FormRenderer::addErrorsToParentHtmlTag(formComponentWithErrors: $optionsField, parentHtmlTag: $fieldsetTag);
-        if (!is_null(value: $optionsField->getFieldInfo())) {
+        if (!is_null(value: $optionsField->fieldInfo)) {
             FormRenderer::addFieldInfoToParentHtmlTag(
                 formFieldWithFieldInfo: $optionsField,
                 parentHtmlTag: $fieldsetTag

@@ -218,61 +218,55 @@ class SearchHelper
                                 spaceSeparatedFieldNames: $spaceSeparatedFieldNames
                             );
                     }
-                } else {
-                    if ($word === 'or') {
-                        $i++;
-                        if ($i == 1) {
-                            $buffer = $this->createSubquery(
-                                word: $wordArray[$i],
-                                mode: '',
-                                splitFields: $splitFields,
-                                spaceSeparatedFieldNames: $spaceSeparatedFieldNames
-                            );
-                        } else {
-                            $buffer = ' OR ' . $this->createSubquery(
-                                    word: $wordArray[$i],
-                                    mode: '',
-                                    splitFields: $splitFields,
-                                    spaceSeparatedFieldNames: $spaceSeparatedFieldNames
-                                );
-                        }
-                    } else {
-                        if ($word === 'and') {
-                            $i++;
-                            if ($i == 1) {
-                                $buffer = $this->createSubquery(
-                                    word: $wordArray[$i],
-                                    mode: '',
-                                    splitFields: $splitFields,
-                                    spaceSeparatedFieldNames: $spaceSeparatedFieldNames
-                                );
-                            } else {
-                                $buffer = ' AND ' . $this->createSubquery(
-                                        word: $wordArray[$i],
-                                        mode: '',
-                                        splitFields: $splitFields,
-                                        spaceSeparatedFieldNames: $spaceSeparatedFieldNames
-                                    );
-                            }
-                        }
-                    }
-                }
-            } else {
-                if ($i == 0) { # 0 instead of 1 here because there was no conditional word to skip and no $i++;
-                    $buffer = $this->createSubquery(
-                        word: $wordArray[$i],
-                        mode: '',
-                        splitFields: $splitFields,
-                        spaceSeparatedFieldNames: $spaceSeparatedFieldNames
-                    );
-                } else {
-                    $buffer = ' OR ' . $this->createSubquery(
+                } elseif ($word === 'or') {
+                    $i++;
+                    if ($i == 1) {
+                        $buffer = $this->createSubquery(
                             word: $wordArray[$i],
                             mode: '',
                             splitFields: $splitFields,
                             spaceSeparatedFieldNames: $spaceSeparatedFieldNames
                         );
+                    } else {
+                        $buffer = ' OR ' . $this->createSubquery(
+                                word: $wordArray[$i],
+                                mode: '',
+                                splitFields: $splitFields,
+                                spaceSeparatedFieldNames: $spaceSeparatedFieldNames
+                            );
+                    }
+                } elseif ($word === 'and') {
+                    $i++;
+                    if ($i == 1) {
+                        $buffer = $this->createSubquery(
+                            word: $wordArray[$i],
+                            mode: '',
+                            splitFields: $splitFields,
+                            spaceSeparatedFieldNames: $spaceSeparatedFieldNames
+                        );
+                    } else {
+                        $buffer = ' AND ' . $this->createSubquery(
+                                word: $wordArray[$i],
+                                mode: '',
+                                splitFields: $splitFields,
+                                spaceSeparatedFieldNames: $spaceSeparatedFieldNames
+                            );
+                    }
                 }
+            } elseif ($i == 0) { # 0 instead of 1 here because there was no conditional word to skip and no $i++;
+                $buffer = $this->createSubquery(
+                    word: $wordArray[$i],
+                    mode: '',
+                    splitFields: $splitFields,
+                    spaceSeparatedFieldNames: $spaceSeparatedFieldNames
+                );
+            } else {
+                $buffer = ' OR ' . $this->createSubquery(
+                        word: $wordArray[$i],
+                        mode: '',
+                        splitFields: $splitFields,
+                        spaceSeparatedFieldNames: $spaceSeparatedFieldNames
+                    );
             }
             $output = $output . $buffer;
         }
@@ -317,12 +311,10 @@ class SearchHelper
                 if ($quote_level === 2) {
                     $quote_level = 0;
                 }
+            } elseif ($line[$a] === ' ' && $quote_level === 0) {
+                $buffer = $buffer . "~~~~"; #Hackish magic key
             } else {
-                if ($line[$a] === ' ' && $quote_level === 0) {
-                    $buffer = $buffer . "~~~~"; #Hackish magic key
-                } else {
-                    $buffer = $buffer . $line[$a];
-                }
+                $buffer = $buffer . $line[$a];
             }
         }
         $buffer = str_replace(search: "\\", replace: '', subject: $buffer);

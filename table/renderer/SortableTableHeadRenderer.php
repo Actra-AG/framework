@@ -14,58 +14,15 @@ use LogicException;
 
 class SortableTableHeadRenderer extends TableHeadRenderer
 {
+    public string $sortableColumnClass = 'sort';
+    public string $sortableColumnClassActiveAsc = 'sort sort-asc';
+    public string $sortableColumnClassActiveDesc = 'sort sort-desc';
+    public string $sortLinkClassActiveAsc = '';
+    public string $sortLinkClassActiveDesc = '';
+    public string $sortableColumnLabelAddition = '';
+    public string $sortableColumnLabelAdditionActiveAsc = '';
+    public string $sortableColumnLabelAdditionActiveDesc = '';
     private DbResultTable $dbResultTable;
-
-    private string $sortableColumnClass = 'sort';
-    private string $sortableColumnClassActiveAsc = 'sort sort-asc';
-    private string $sortableColumnClassActiveDesc = 'sort sort-desc';
-
-    private string $sortLinkClassActiveAsc = '';
-    private string $sortLinkClassActiveDesc = '';
-
-    private string $sortableColumnLabelAddition = '';
-    private string $sortableColumnLabelAdditionActiveAsc = '';
-    private string $sortableColumnLabelAdditionActiveDesc = '';
-
-    public function setSortableColumnClass(string $sortableColumnClass): void
-    {
-        $this->sortableColumnClass = $sortableColumnClass;
-    }
-
-    public function setSortableColumnClassActiveAsc(string $sortableColumnClassActiveAsc): void
-    {
-        $this->sortableColumnClassActiveAsc = $sortableColumnClassActiveAsc;
-    }
-
-    public function setSortableColumnClassActiveDesc(string $sortableColumnClassActiveDesc): void
-    {
-        $this->sortableColumnClassActiveDesc = $sortableColumnClassActiveDesc;
-    }
-
-    public function setSortLinkClassActiveAsc(string $sortLinkClassActiveAsc): void
-    {
-        $this->sortLinkClassActiveAsc = $sortLinkClassActiveAsc;
-    }
-
-    public function setSortLinkClassActiveDesc(string $sortLinkClassActiveDesc): void
-    {
-        $this->sortLinkClassActiveDesc = $sortLinkClassActiveDesc;
-    }
-
-    public function setSortableColumnLabelAddition(string $sortableColumnLabelAddition): void
-    {
-        $this->sortableColumnLabelAddition = $sortableColumnLabelAddition;
-    }
-
-    public function setSortableColumnLabelAdditionActiveAsc(string $sortableColumnLabelAdditionActiveAsc): void
-    {
-        $this->sortableColumnLabelAdditionActiveAsc = $sortableColumnLabelAdditionActiveAsc;
-    }
-
-    public function setSortableColumnLabelAdditionActiveDesc(string $sortableColumnLabelAdditionActiveDesc): void
-    {
-        $this->sortableColumnLabelAdditionActiveDesc = $sortableColumnLabelAdditionActiveDesc;
-    }
 
     public function render(SmartTable $smartTable): string
     {
@@ -81,7 +38,7 @@ class SortableTableHeadRenderer extends TableHeadRenderer
     protected function renderColumnHead(AbstractTableColumn $abstractTableColumn): string
     {
         $columnLabel = $abstractTableColumn->label;
-        $columnCssClasses = $abstractTableColumn->getColumnCssClasses();
+        $columnCssClasses = $abstractTableColumn->columnCssClasses;
 
         if (!$abstractTableColumn->isSortable) {
             $labelHtml = $columnLabel;
@@ -101,7 +58,7 @@ class SortableTableHeadRenderer extends TableHeadRenderer
                         $abstractTableColumn->identifier,
                         $columnSortDirection,
                     ]),
-                ], $dbResultTable->getAdditionalLinkParameters()) as $key => $val
+                ], $dbResultTable->additionalLinkParameters) as $key => $val
             ) {
                 $getAttributes[] = $key . '=' . $val;
             }
@@ -135,7 +92,7 @@ class SortableTableHeadRenderer extends TableHeadRenderer
         }
 
         $attributesArr = ['th'];
-        if ($this->isAddColumnScopeAttribute()) {
+        if ($this->addColumnScopeAttribute) {
             $attributesArr[] = 'scope="col"';
         }
         if (count(value: $columnCssClasses) > 0) {

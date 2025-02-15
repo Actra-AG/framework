@@ -10,33 +10,21 @@ class DbQueryLogItem
 {
     private float $start;
     private ?float $end = null;
-    private string $sqlQuery;
-    private array $params;
 
-    public function __construct(string $sqlQuery, array $params)
-    {
-        $this->start = microtime(true);
-        $this->sqlQuery = $sqlQuery;
-        $this->params = $params;
+    public function __construct(
+        private(set) readonly string $sqlQuery,
+        private(set) readonly array $params
+    ) {
+        $this->start = microtime(as_float: true);
     }
 
     public function confirmFinishedExecution(): void
     {
-        $this->end = microtime(true);
+        $this->end = microtime(as_float: true);
     }
 
     public function getExecutionTime(): float
     {
         return $this->end - $this->start;
-    }
-
-    public function getSqlQuery(): string
-    {
-        return $this->sqlQuery;
-    }
-
-    public function getParams(): array
-    {
-        return $this->params;
     }
 }

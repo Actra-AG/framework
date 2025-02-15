@@ -39,13 +39,10 @@ class AccessRightCollection
 
     public function hasOneOfAccessRights(AccessRightCollection $accessRightCollection): bool
     {
-        foreach ($accessRightCollection->listAccessRights() as $accessRight) {
-            if ($this->hasAccessRight(accessRight: $accessRight)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any(
+            $accessRightCollection->listAccessRights(),
+            fn($accessRight) => $this->hasAccessRight(accessRight: $accessRight)
+        );
     }
 
     /**

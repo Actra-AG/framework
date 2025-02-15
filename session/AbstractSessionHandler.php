@@ -23,12 +23,31 @@ abstract class AbstractSessionHandler extends SessionHandler
     private const string LAST_ACTIVITY_INDICATOR = 'lastActivity';
     private const string PREFERRED_LANGUAGE_INDICATOR = 'preferredLanguage';
     private static null|false|AbstractSessionHandler $abstractSessionHandler = null;
+    private(set) ?string $name = null {
+        get {
+            if (is_null(value: $this->name)) {
+                $this->name = session_name();
+            }
+
+            return $this->name;
+        }
+    }
+    private(set) ?string $fingerprint = null {
+        get {
+            if (is_null(value: $this->fingerprint)) {
+                $this->fingerprint = hash(
+                    algo: 'sha256',
+                    data: $this->getID() . $this->clientUserAgent
+                );
+            }
+
+            return $this->fingerprint;
+        }
+    }
     private int $currentTime;
     private ?string $ID = null;
-    private ?string $name = null;
     private string $clientRemoteAddress;
     private string $clientUserAgent;
-    private ?string $fingerprint = null;
 
     protected function __construct(private readonly SessionSettingsModel $sessionSettingsModel)
     {
@@ -62,21 +81,15 @@ abstract class AbstractSessionHandler extends SessionHandler
         }
         if (!$this->isSessionCreated()) {
             $this->initDefaultSessionData(destroyCurrentSessionData: false);
-        } else {
-            if ($this->getTrustedRemoteAddress() !== $this->clientRemoteAddress || $this->getTrustedUserAgent(
-                ) !== $this->clientUserAgent) {
-                $this->initDefaultSessionData(destroyCurrentSessionData: true);
-            } else {
-                if ($this->isSessionExpired()) {
-                    // Real session lifetime and regeneration after maxLifeTime
-                    // See: http://stackoverflow.com/questions/520237/how-do-i-expire-a-php-session-after-30-minutes/1270960#1270960
-                    $this->initDefaultSessionData(destroyCurrentSessionData: true);
-                } else {
-                    if ($this->isSessionOlderThan30Minutes()) {
-                        $this->regenerateID();
-                    }
-                }
-            }
+        } elseif ($this->getTrustedRemoteAddress() !== $this->clientRemoteAddress || $this->getTrustedUserAgent(
+            ) !== $this->clientUserAgent) {
+            $this->initDefaultSessionData(destroyCurrentSessionData: true);
+        } elseif ($this->isSessionExpired()) {
+            // Real session lifetime and regeneration after maxLifeTime
+            // See: http://stackoverflow.com/questions/520237/how-do-i-expire-a-php-session-after-30-minutes/1270960#1270960
+            $this->initDefaultSessionData(destroyCurrentSessionData: true);
+        } elseif ($this->isSessionOlderThan30Minutes()) {
+            $this->regenerateID();
         }
 
         $this->setLastAction();
@@ -273,27 +286,6 @@ abstract class AbstractSessionHandler extends SessionHandler
     public static function getSessionHandler(): AbstractSessionHandler
     {
         return AbstractSessionHandler::$abstractSessionHandler;
-    }
-
-    public function getName(): string
-    {
-        if (is_null(value: $this->name)) {
-            $this->name = session_name();
-        }
-
-        return $this->name;
-    }
-
-    public function getFingerprint(): string
-    {
-        if (is_null(value: $this->fingerprint)) {
-            $this->fingerprint = hash(
-                algo: 'sha256',
-                data: $this->getID() . $this->clientUserAgent
-            );
-        }
-
-        return $this->fingerprint;
     }
 
     public function getID(): string

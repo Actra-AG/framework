@@ -10,50 +10,32 @@ use Exception;
 
 abstract class TemplateCacheStrategy
 {
-	protected bool $saveOnDestruct = false;
-	protected string $cachePath;
+    public function __construct(
+        protected(set) string $cachePath,
+        public bool $saveOnDestruct = true
+    ) {
+        if (file_exists(filename: $cachePath) === false) {
+            throw new Exception(message: 'Cache path does not exist: ' . $cachePath);
+        }
+    }
 
-	public function __construct(string $cachePath)
-	{
-		if (file_exists($cachePath) === false) {
-			throw new Exception('Cache path does not exist: ' . $cachePath);
-		}
-
-		$this->cachePath = $cachePath;
-
-		$this->saveOnDestruct = true;
-	}
-
-	/**
-	 * @param string $tplFile
-	 *
-	 * @return TemplateCacheEntry|null
-	 */
+    /**
+     * @param string $tplFile
+     *
+     * @return TemplateCacheEntry|null
+     */
     abstract public function getCachedTplFile(string $tplFile): ?TemplateCacheEntry;
 
-	/**
-	 * @param string                  $tplFile
-	 * @param TemplateCacheEntry|null $currentCacheEntry
-	 * @param string                  $compiledTemplateContent
-	 *
-	 * @return TemplateCacheEntry Path to the cached template
-	 */
+    /**
+     * @param string $tplFile
+     * @param TemplateCacheEntry|null $currentCacheEntry
+     * @param string $compiledTemplateContent
+     *
+     * @return TemplateCacheEntry Path to the cached template
+     */
     abstract public function addCachedTplFile(
         string $tplFile,
         ?TemplateCacheEntry $currentCacheEntry,
         string $compiledTemplateContent
     ): TemplateCacheEntry;
-
-	public function getCachePath(): string
-	{
-		return $this->cachePath;
-	}
-
-	/**
-     * @param bool $saveOnDestruct
-	 */
-	public function setSaveOnDestruct(bool $saveOnDestruct): void
-	{
-		$this->saveOnDestruct = $saveOnDestruct;
-	}
 }

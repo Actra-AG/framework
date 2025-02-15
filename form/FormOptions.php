@@ -11,7 +11,7 @@ use framework\html\HtmlText;
 class FormOptions
 {
     /** @var HtmlText[] */
-    private array $data = [];
+    private(set) array $data = [];
 
     public function __construct()
     {
@@ -27,11 +27,4 @@ class FormOptions
         return array_key_exists(key: $key, array: $this->data);
     }
 
-    /**
-     * @return HtmlText[]
-     */
-    public function getData(): array
-    {
-        return $this->data;
-    }
 }

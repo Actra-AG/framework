@@ -27,7 +27,7 @@ class PhoneNumberRule extends FormRule
         try {
             $phoneNumber = PhoneNumber::createFromString(
                 input: $formField->getRawValue(),
-                defaultCountryCode: $formField->getCountryCode()
+                defaultCountryCode: $formField->countryCode
             );
         } catch (PhoneParseException) {
             return false;

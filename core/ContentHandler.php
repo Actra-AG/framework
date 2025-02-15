@@ -15,10 +15,10 @@ class ContentHandler
 {
     private static ?ContentHandler $registeredInstance = null;
 
-    private HttpStatusCode $httpStatusCode = HttpStatusCode::HTTP_OK;
+    public HttpStatusCode $httpStatusCode = HttpStatusCode::HTTP_OK;
+    private(set) bool $suppressCspHeader = false;
     private string $content = '';
     private ContentType $contentType;
-    private bool $suppressCspHeader = false;
 
     private function __construct()
     {
@@ -79,8 +79,8 @@ class ContentHandler
             $request->route->viewGroup,
             'php',
         ];
-        if (!is_null(value: $request->getFileGroup())) {
-            $phpClassNameParts[] = $request->getFileGroup();
+        if (!is_null(value: $request->fileGroup)) {
+            $phpClassNameParts[] = $request->fileGroup;
         }
         $phpClassNameParts[] = $request->fileTitle;
         if (!file_exists(
@@ -130,16 +130,6 @@ class ContentHandler
         $this->contentType = $contentType;
     }
 
-    public function getHttpStatusCode(): HttpStatusCode
-    {
-        return $this->httpStatusCode;
-    }
-
-    public function setHttpStatusCode(HttpStatusCode $httpStatusCode): void
-    {
-        $this->httpStatusCode = $httpStatusCode;
-    }
-
     public function getContent(): string
     {
         return $this->content;
@@ -156,10 +146,5 @@ class ContentHandler
     public function suppressCspHeader(): void
     {
         $this->suppressCspHeader = true;
-    }
-
-    public function isSuppressCspHeader(): bool
-    {
-        return $this->suppressCspHeader;
     }
 }

@@ -36,10 +36,10 @@ class DbQuery
             explode(
                 separator: ' ',
                 string: preg_replace(
-                pattern: '!\s+!',
-                replacement: ' ',
-                subject: trim(string: str_replace(search: ['(', ')'], replace: [' ( ', ' ) '], subject: $query))
-            )
+                    pattern: '!\s+!',
+                    replacement: ' ',
+                    subject: trim(string: str_replace(search: ['(', ')'], replace: [' ( ', ' ) '], subject: $query))
+                )
             ) as $queryPart
         ) {
             if (str_starts_with(haystack: $queryPart, needle: '(') && !str_ends_with(
@@ -64,13 +64,11 @@ class DbQuery
                     $subQueryParts[$currentSubQueryLevel][] = $queryPart;
                     continue;
                 }
-            } else {
-                if (str_ends_with(haystack: $queryPart, needle: ')') && !str_starts_with(
-                        haystack: $queryPart,
-                        needle: '('
-                    )) {
-                    throw new LogicException(message: ') is not allowed if not part of a sub query.');
-                }
+            } elseif (str_ends_with(haystack: $queryPart, needle: ')') && !str_starts_with(
+                    haystack: $queryPart,
+                    needle: '('
+                )) {
+                throw new LogicException(message: ') is not allowed if not part of a sub query.');
             }
             $lowercaseQueryPart = strtolower(string: trim(string: $queryPart));
             if ($lowercaseQueryPart === 'select') {
@@ -106,16 +104,12 @@ class DbQuery
             }
             if ($isInSelect) {
                 $dbQuery->selectParts[] = $queryPart;
+            } elseif ($isInFrom) {
+                $dbQuery->fromParts[] = $queryPart;
+            } elseif ($isInWhere) {
+                $dbQuery->whereParts[] = $queryPart;
             } else {
-                if ($isInFrom) {
-                    $dbQuery->fromParts[] = $queryPart;
-                } else {
-                    if ($isInWhere) {
-                        $dbQuery->whereParts[] = $queryPart;
-                    } else {
-                        throw new LogicException(message: 'You are not within "SELECT", "FROM" or "WHERE"');
-                    }
-                }
+                throw new LogicException(message: 'You are not within "SELECT", "FROM" or "WHERE"');
             }
         }
 
@@ -188,12 +182,12 @@ class DbQuery
         }
         $amountOfSelectParameters = count(
                 value: explode(
-                separator: '?',
-                string: implode(
-                separator: ' ',
-                array: $this->selectParts
-            )
-            )
+                    separator: '?',
+                    string: implode(
+                        separator: ' ',
+                        array: $this->selectParts
+                    )
+                )
             ) - 1;
         $parameters = [];
         $i = 0;

@@ -48,7 +48,7 @@ class LoadSubTplTag extends TemplateTag implements TagNode
 
     public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
     {
-        $dataKey = $elementNode->getAttribute(name: 'tplfile')->getValue();
+        $dataKey = $elementNode->getAttribute(name: 'tplfile')->value;
         $tplFile = (preg_match(
                 pattern: '/^{(.+)}$/',
                 subject: $dataKey,

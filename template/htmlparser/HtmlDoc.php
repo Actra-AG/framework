@@ -11,13 +11,13 @@ use framework\html\HtmlTagAttribute;
 
 class HtmlDoc
 {
+    private(set) DocumentNode $nodeTree;
+    private(set) int $currentLine = 1;
     private ?string $htmlContent;
     private ?int $contentPos = null;
-    private DocumentNode $nodeTree;
     private ?HtmlNode $pendingNode;
     private ?string $namespace;
     private array $selfClosingTags;
-    private int $currentLine = 1; // Start at line 1 not 0, we are no nerds ;-)
     private string $tagPattern;
 
     public function __construct(?string $htmlContent = null, ?string $namespace = null)
@@ -92,73 +92,69 @@ class HtmlDoc
             // Comment-node
             $newNode = new CommentNode();
             $newNode->content = $res[0][0];
+        } elseif (stripos($res[0][0], '<![CDATA[') === 0) {
+            // CDATA-node
+            $newNode = new CDataSectionNode();
+            $newNode->content = $res[0][0];
+        } elseif (stripos($res[0][0], '<!DOCTYPE') === 0) {
+            $newNode = new DocumentTypeNode();
+            $newNode->content = $res[0][0];
         } else {
-            if (stripos($res[0][0], '<![CDATA[') === 0) {
-                // CDATA-node
-                $newNode = new CDataSectionNode();
-                $newNode->content = $res[0][0];
+            $newNode = new ElementNode();
+
+            // </...> (close only)
+            if (array_key_exists(key: 1, array: $res) && (int)$res[1][1] !== -1) {
+                if ($this->pendingNode instanceof ElementNode) {
+                    $this->pendingNode->close();
+                }
+                $this->pendingNode = ($oldPendingNode !== null) ? $oldPendingNode->parentNode : null;
+
+                if ($this->pendingNode === null) {
+                    $node = new TextNode();
+                    $node->content = '</' . $res[2][0] . '>';
+
+                    $this->nodeTree->addChildNode($node);
+                }
+
+                $this->findNextNode();
+
+                return;
+            }
+
+            // Normal HTML-Tag-node
+            $tagNParts = explode(':', $res[2][0]);
+
+            if (count($tagNParts) > 1) {
+                $newNode->namespace = $tagNParts[0];
+                $newNode->tagName = $tagNParts[1];
             } else {
-                if (stripos($res[0][0], '<!DOCTYPE') === 0) {
-                    $newNode = new DocumentTypeNode();
-                    $newNode->content = $res[0][0];
-                } else {
-                    $newNode = new ElementNode();
+                $newNode->tagName = $tagNParts[0];
+            }
 
-                    // </...> (close only)
-                    if (array_key_exists(key: 1, array: $res) && (int)$res[1][1] !== -1) {
-                        if ($this->pendingNode instanceof ElementNode) {
-                            $this->pendingNode->close();
-                        }
-                        $this->pendingNode = ($oldPendingNode !== null) ? $oldPendingNode->parentNode : null;
+            // <img ... /> (open and close)
+            if ((array_key_exists(4, $res) && $res[4][0] === '/') || (array_key_exists(
+                        3,
+                        $res
+                    ) && $res[3][0] === '/') || in_array($res[2][0], $this->selfClosingTags)) {
+                $newNode->tagType = ElementNode::TAG_SELF_CLOSING;
+            } else {
+                // (open only)
+                $this->pendingNode = $newNode;
+                $newNode->tagType = ElementNode::TAG_OPEN;
+            }
 
-                        if ($this->pendingNode === null) {
-                            $node = new TextNode();
-                            $node->content = '</' . $res[2][0] . '>';
+            // Attributes
+            if (array_key_exists(3, $res) && $res[3][0] !== '/') {
+                preg_match_all('/(.+?)="(.*?)"/', $res[3][0], $resAttrs, PREG_SET_ORDER);
 
-                            $this->nodeTree->addChildNode($node);
-                        }
-
-                        $this->findNextNode();
-
-                        return;
-                    }
-
-                    // Normal HTML-Tag-node
-                    $tagNParts = explode(':', $res[2][0]);
-
-                    if (count($tagNParts) > 1) {
-                        $newNode->namespace = $tagNParts[0];
-                        $newNode->tagName = $tagNParts[1];
-                    } else {
-                        $newNode->tagName = $tagNParts[0];
-                    }
-
-                    // <img ... /> (open and close)
-                    if ((array_key_exists(4, $res) && $res[4][0] === '/') || (array_key_exists(
-                                3,
-                                $res
-                            ) && $res[3][0] === '/') || in_array($res[2][0], $this->selfClosingTags)) {
-                        $newNode->tagType = ElementNode::TAG_SELF_CLOSING;
-                    } else {
-                        // (open only)
-                        $this->pendingNode = $newNode;
-                        $newNode->tagType = ElementNode::TAG_OPEN;
-                    }
-
-                    // Attributes
-                    if (array_key_exists(3, $res) && $res[3][0] !== '/') {
-                        preg_match_all('/(.+?)="(.*?)"/', $res[3][0], $resAttrs, PREG_SET_ORDER);
-
-                        foreach ($resAttrs as $attr) {
-                            $newNode->addAttribute(
-                                new HtmlTagAttribute(
-                                    Sanitizer::trimmedString($attr[1]),
-                                    Sanitizer::trimmedString($attr[2]),
-                                    true
-                                )
-                            );
-                        }
-                    }
+                foreach ($resAttrs as $attr) {
+                    $newNode->addAttribute(
+                        new HtmlTagAttribute(
+                            Sanitizer::trimmedString($attr[1]),
+                            Sanitizer::trimmedString($attr[2]),
+                            true
+                        )
+                    );
                 }
             }
         }
@@ -250,7 +246,7 @@ class HtmlDoc
             $tagStr = (($node->namespace !== null) ? $node->namespace . ':' : '') . $node->tagName;
 
             $attrs = [];
-            foreach ($node->getAttributes() as $htmlTagAttribute) {
+            foreach ($node->attributes as $htmlTagAttribute) {
                 $attrs[] = $htmlTagAttribute->render();
             }
             $attrStr = (count($attrs) > 0) ? ' ' . implode(separator: ' ', array: $attrs) : '';
@@ -267,8 +263,8 @@ class HtmlDoc
 
     public function replaceNode(HtmlNode $nodeSearch, HtmlNode $nodeReplace): void
     {
-        $parentSearchNode = $nodeSearch->getParentNode();
-        $nodeList = ($parentSearchNode === null) ? $this->nodeTree : $nodeSearch->getParentNode()->childNodes;
+        $parentSearchNode = $nodeSearch->parentNode;
+        $nodeList = ($parentSearchNode === null) ? $this->nodeTree : $nodeSearch->parentNode->childNodes;
 
         $countChildren = count($nodeList);
 
@@ -284,13 +280,8 @@ class HtmlDoc
         if ($parentSearchNode === null) {
             $this->nodeTree = $nodeList;
         } else {
-            $parentSearchNode->setChildNodes($nodeList);
+            $parentSearchNode->childNodes = $nodeList;
         }
-    }
-
-    public function getNodeTree(): DocumentNode
-    {
-        return $this->nodeTree;
     }
 
     public function addSelfClosingTag(string $tagName): void
@@ -298,8 +289,4 @@ class HtmlDoc
         $this->selfClosingTags[] = $tagName;
     }
 
-    public function getCurrentLine(): int
-    {
-        return $this->currentLine;
-    }
 }

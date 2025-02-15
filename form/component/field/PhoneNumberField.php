@@ -19,7 +19,7 @@ use framework\phone\PhoneRenderer;
 
 class PhoneNumberField extends InputField
 {
-    private string $countryCode;
+    private(set) string $countryCode;
 
     public function __construct(
         string $name,
@@ -46,11 +46,6 @@ class PhoneNumberField extends InputField
             $this->addRule(formRule: new RequiredRule(defaultErrorMessage: $requiredErrorMessage));
         }
         $this->addRule(formRule: new PhoneNumberRule(defaultErrorMessage: $invalidErrorMessage));
-    }
-
-    public function getCountryCode(): string
-    {
-        return $this->countryCode;
     }
 
     public function validate(array $inputData, bool $overwriteValue = true): bool

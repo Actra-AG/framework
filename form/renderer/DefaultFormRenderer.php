@@ -24,16 +24,16 @@ class DefaultFormRenderer extends FormRenderer
         $attributes = [
             new HtmlTagAttribute(
                 name: 'method',
-                value: ($form->isMethodPost() ? 'post' : 'get'),
+                value: ($form->methodPost ? 'post' : 'get'),
                 valueIsEncodedForRendering: true
             ),
             new HtmlTagAttribute(
                 name: 'action',
-                value: '?' . $form->getSentIndicator(),
+                value: '?' . $form->sentIndicator,
                 valueIsEncodedForRendering: true
             ),
         ];
-        $cssClasses = $form->getCssClasses();
+        $cssClasses = $form->cssClasses;
         if (count(value: $cssClasses) > 0) {
             $attributes[] = new HtmlTagAttribute(
                 name: 'class',
@@ -50,7 +50,7 @@ class DefaultFormRenderer extends FormRenderer
         }
         $htmlTag = new HtmlTag(name: 'form', selfClosing: false, htmlTagAttributes: $attributes);
         $this->renderErrors(htmlTag: $htmlTag);
-        foreach ($form->getChildComponents() as $childComponent) {
+        foreach ($form->childComponents as $childComponent) {
             $componentRenderer = $childComponent->getRenderer();
             if (is_null(value: $componentRenderer)) {
                 if ($childComponent instanceof FormField) {
@@ -82,10 +82,10 @@ class DefaultFormRenderer extends FormRenderer
         if ($amountOfErrors === 1) {
             $htmlTag->addTag(
                 htmlTag: $pTag = new HtmlTag(
-                name: 'p',
-                selfClosing: false,
-                htmlTagAttributes: $mainAttributes
-            )
+                    name: 'p',
+                    selfClosing: false,
+                    htmlTagAttributes: $mainAttributes
+                )
             );
             $pTag->addTag(htmlTag: $bTag = new HtmlTag(name: 'b', selfClosing: false));
             $bTag->addText(htmlText: current(array: $errorsAsHtmlTextObjects));
@@ -94,10 +94,10 @@ class DefaultFormRenderer extends FormRenderer
         }
         $htmlTag->addTag(
             htmlTag: $divTag = new HtmlTag(
-            name: 'div',
-            selfClosing: false,
-            htmlTagAttributes: $mainAttributes
-        )
+                name: 'div',
+                selfClosing: false,
+                htmlTagAttributes: $mainAttributes
+            )
         );
         $divTag->addTag(htmlTag: $ulTag = new HtmlTag(name: 'ul', selfClosing: false));
         foreach ($errorsAsHtmlTextObjects as $htmlText) {

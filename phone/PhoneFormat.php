@@ -11,8 +11,8 @@ namespace framework\phone;
 
 class PhoneFormat
 {
-    private ?string $pattern;
-    private ?string $format;
+    private(set) ?string $pattern;
+    private(set) ?string $format;
     private array $leadingDigitsPattern = [];
 
     public function __construct(array $input)
@@ -22,16 +22,6 @@ class PhoneFormat
         foreach ($input['leadingDigitsPatterns'] as $leadingDigitsPattern) {
             $this->leadingDigitsPattern[] = $leadingDigitsPattern;
         }
-    }
-
-    public function getPattern(): ?string
-    {
-        return $this->pattern;
-    }
-
-    public function getFormat(): ?string
-    {
-        return $this->format;
     }
 
     public function leadingDigitsPatternSize(): int

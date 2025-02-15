@@ -13,9 +13,9 @@ use LogicException;
 
 class OptionsFilterField extends AbstractTableFilterField
 {
+    private(set) string $selectedValue = '';
     /** @var FilterOption[] */
     private readonly array $filterOptions;
-    private string $selectedValue = '';
 
     public function __construct(
         TableFilter $parentFilter,
@@ -69,11 +69,6 @@ class OptionsFilterField extends AbstractTableFilterField
     public function getWhereCondition(): DbQueryData
     {
         return $this->filterOptions[$this->selectedValue]->whereCondition;
-    }
-
-    public function getSelectedValue(): string
-    {
-        return $this->selectedValue;
     }
 
     protected function renderField(): string

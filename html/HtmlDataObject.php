@@ -10,7 +10,7 @@ use stdClass;
 
 class HtmlDataObject
 {
-    private stdClass $data;
+    private(set) stdClass $data;
 
     public function __construct()
     {
@@ -30,12 +30,7 @@ class HtmlDataObject
 
     public function addDataObject(string $propertyName, ?HtmlDataObject $htmlDataObject): void
     {
-        $this->data->{$propertyName} = is_null($htmlDataObject) ? null : $htmlDataObject->getData();
-    }
-
-    public function getData(): stdClass
-    {
-        return $this->data;
+        $this->data->{$propertyName} = is_null($htmlDataObject) ? null : $htmlDataObject->data;
     }
 
     /**
@@ -52,7 +47,7 @@ class HtmlDataObject
 
         $array = [];
         foreach ($htmlDataObjectsArray as $htmlDataObject) {
-            $array[] = $htmlDataObject->getData();
+            $array[] = $htmlDataObject->data;
         }
 
         $this->data->{$propertyName} = $array;

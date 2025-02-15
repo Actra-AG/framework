@@ -27,13 +27,13 @@ class TextAreaRenderer extends FormRenderer
         $textAreaField = $this->textAreaField;
 
         $attributes = [
-            new HtmlTagAttribute('name', $textAreaField->getName(), true),
-            new HtmlTagAttribute('id', $textAreaField->getId(), true),
-            new HtmlTagAttribute('rows', $textAreaField->getRows(), true),
-            new HtmlTagAttribute('cols', $textAreaField->getCols(), true),
+            new HtmlTagAttribute('name', $textAreaField->name, true),
+            new HtmlTagAttribute('id', $textAreaField->id, true),
+            new HtmlTagAttribute('rows', $textAreaField->rows, true),
+            new HtmlTagAttribute('cols', $textAreaField->cols, true),
         ];
 
-        $cssClassesForRenderer = $textAreaField->getCssClassesForRenderer();
+        $cssClassesForRenderer = $textAreaField->cssClassesForRenderer;
         if (count($cssClassesForRenderer) > 0) {
             $attributes[] = new HtmlTagAttribute('class', implode(separator: ' ', array: $cssClassesForRenderer), true);
         }

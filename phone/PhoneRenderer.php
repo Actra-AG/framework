@@ -84,7 +84,7 @@ class PhoneRenderer
             }
             if ($size == 0 || $leadingDigitsPatternMatcher->lookingAt()) {
                 $m = new PhoneMatcher(
-                    pattern: $numFormat->getPattern(),
+                    pattern: $numFormat->pattern,
                     subject: $nationalNumber
                 );
                 if ($m->matches() > 0) {
@@ -100,10 +100,10 @@ class PhoneRenderer
         string $nationalSignificantNumber,
         PhoneFormat $formattingPattern
     ): string {
-        return (new PhoneMatcher(
-            pattern: $formattingPattern->getPattern(),
+        return new PhoneMatcher(
+            pattern: $formattingPattern->pattern,
             subject: $nationalSignificantNumber
-        ))->replaceAll(replacement: $formattingPattern->getFormat());
+        )->replaceAll(replacement: $formattingPattern->format);
     }
 
     private static function maybeAppendFormattedExtension(
@@ -113,7 +113,7 @@ class PhoneRenderer
     ): void {
         if (mb_strlen(string: $phoneNumber->extension) > 0) {
             if ($phoneMetaData->hasPreferredExtnPrefix()) {
-                $formattedNumber .= $phoneMetaData->getPreferredExtnPrefix() . $phoneNumber->extension;
+                $formattedNumber .= $phoneMetaData->preferredExtnPrefix . $phoneNumber->extension;
             } else {
                 $formattedNumber .= PhoneConstants::DEFAULT_EXTN_PREFIX . $phoneNumber->extension;
             }

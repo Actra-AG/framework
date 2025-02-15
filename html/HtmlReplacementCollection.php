@@ -23,8 +23,8 @@ class HtmlReplacementCollection
         $this->addHtmlText(
             identifier: $identifier,
             htmlText: is_null(value: $content) ? null : HtmlText::encoded(
-            textContent: $content
-        )
+                textContent: $content
+            )
         );
     }
 
@@ -43,8 +43,8 @@ class HtmlReplacementCollection
         $this->addHtmlText(
             identifier: $identifier,
             htmlText: is_null(value: $content) ? null : HtmlText::unencoded(
-            textContent: $content
-        )
+                textContent: $content
+            )
         );
     }
 
@@ -63,8 +63,8 @@ class HtmlReplacementCollection
         $this->set(
             identifier: $identifier,
             htmlReplacement: is_null(
-            value: $htmlDataObject
-        ) ? null : HtmlReplacement::object(object: $htmlDataObject->getData())
+                value: $htmlDataObject
+            ) ? null : HtmlReplacement::object(object: $htmlDataObject->data)
         );
     }
 
@@ -73,8 +73,8 @@ class HtmlReplacementCollection
         $this->set(
             identifier: $identifier,
             htmlReplacement: HtmlReplacement::textCollection(
-            collection: $htmlTextCollection
-        )
+                collection: $htmlTextCollection
+            )
         );
     }
 
@@ -85,8 +85,8 @@ class HtmlReplacementCollection
         $this->set(
             identifier: $identifier,
             htmlReplacement: HtmlReplacement::htmlDataObjectCollection(
-            collection: $htmlDataObjectCollection
-        )
+                collection: $htmlDataObjectCollection
+            )
         );
     }
 

@@ -51,7 +51,7 @@ class ZipCodeRule extends FormRule
         if (strlen(string: $zip) > 16) {
             return false;
         }
-        $countryCode = $formField->getCountryCode();
+        $countryCode = $formField->countryCode;
         if (array_key_exists(key: $countryCode, array: ZipCodeRule::ZIP_CODE_REGULAR_EXPRESSION)) {
             return (preg_match(
                     pattern: '/' . ZipCodeRule::ZIP_CODE_REGULAR_EXPRESSION[$countryCode] . '/i',

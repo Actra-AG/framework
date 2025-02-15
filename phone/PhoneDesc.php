@@ -11,9 +11,9 @@ namespace framework\phone;
 
 class PhoneDesc
 {
-    private string $nationalNumberPattern = '';
-    private array $possibleLength;
-    private array $possibleLengthLocalOnly;
+    private(set) string $nationalNumberPattern = '';
+    private(set) array $possibleLength;
+    private(set) array $possibleLengthLocalOnly;
 
     public function __construct(array $input)
     {
@@ -24,20 +24,5 @@ class PhoneDesc
         }
         $this->possibleLength = $input['PossibleLength'];
         $this->possibleLengthLocalOnly = $input['PossibleLengthLocalOnly'];
-    }
-
-    public function getPossibleLength(): array
-    {
-        return $this->possibleLength;
-    }
-
-    public function getPossibleLengthLocalOnly(): array
-    {
-        return $this->possibleLengthLocalOnly;
-    }
-
-    public function getNationalNumberPattern(): string
-    {
-        return $this->nationalNumberPattern;
     }
 }

@@ -25,17 +25,17 @@ class SmartTable
     public const string amount = '[AMOUNT]';
     /** @var SmartTable[] */
     private static array $instances = [];
-    private string $noDataHtml = '<p class="no-entry">Es wurden keine Einträge gefunden.</p>';
-    private string $totalAmountHtml = '<p class="search-result">' . SmartTable::totalAmountMessagePlaceholder . '</p>';
-    private string $fullHtml = SmartTable::totalAmount . '<div class="table-global-wrap">' . SmartTable::table . '</div>';
-    private string $tableHtml = '<thead>' . SmartTable::tableHeader . '</thead><tbody>' . SmartTable::tableBody . '</tbody>';
-    private string $oddRowHtml = '<tr>' . SmartTable::cells . '</tr>';
-    private string $evenRowHtml = '<tr>' . SmartTable::cells . '</tr>';
-    private string $totalAmountMessage_oneResult = 'Es wurde <strong>1</strong> Resultat gefunden.';
-    private string $totalAmountMessage_numResults = 'Es wurden <strong>' . SmartTable::amount . '</strong> Resultate gefunden.';
-    private array $cssClasses = [];
+    public string $noDataHtml = '<p class="no-entry">Es wurden keine Einträge gefunden.</p>';
+    public string $totalAmountHtml = '<p class="search-result">' . SmartTable::totalAmountMessagePlaceholder . '</p>';
+    public string $fullHtml = SmartTable::totalAmount . '<div class="table-global-wrap">' . SmartTable::table . '</div>';
+    public string $tableHtml = '<thead>' . SmartTable::tableHeader . '</thead><tbody>' . SmartTable::tableBody . '</tbody>';
+    public string $oddRowHtml = '<tr>' . SmartTable::cells . '</tr>';
+    public string $evenRowHtml = '<tr>' . SmartTable::cells . '</tr>';
+    public string $totalAmountMessage_oneResult = 'Es wurde <strong>1</strong> Resultat gefunden.';
+    public string $totalAmountMessage_numResults = 'Es wurden <strong>' . SmartTable::amount . '</strong> Resultate gefunden.';
     /** @var AbstractTableColumn[] */
-    private array $columns = [];
+    private(set) array $columns = [];
+    private array $cssClasses = [];
 
     public function __construct(
         public readonly string $identifier,
@@ -46,56 +46,6 @@ class SmartTable
             throw new LogicException(message: 'There is already a table with the same identifier ' . $identifier);
         }
         SmartTable::$instances[$this->identifier] = $this;
-    }
-
-    public function getFullHtml(): string
-    {
-        return $this->fullHtml;
-    }
-
-    public function setFullHtml(string $fullHtml): void
-    {
-        $this->fullHtml = $fullHtml;
-    }
-
-    public function setTableHtml(string $tableHtml): void
-    {
-        $this->tableHtml = $tableHtml;
-    }
-
-    public function getNoDataHtml(): string
-    {
-        return $this->noDataHtml;
-    }
-
-    public function setNoDataHtml(string $noDataHtml): void
-    {
-        $this->noDataHtml = $noDataHtml;
-    }
-
-    public function setTotalAmountHtml(string $totalAmountHtml): void
-    {
-        $this->totalAmountHtml = $totalAmountHtml;
-    }
-
-    public function setOddRowHtml(string $oddRowHtml): void
-    {
-        $this->oddRowHtml = $oddRowHtml;
-    }
-
-    public function setEvenRowHtml(string $evenRowHtml): void
-    {
-        $this->evenRowHtml = $evenRowHtml;
-    }
-
-    public function setTotalAmountMessageOneResult(string $totalAmountMessage_oneResult): void
-    {
-        $this->totalAmountMessage_oneResult = $totalAmountMessage_oneResult;
-    }
-
-    public function setTotalAmountMessageNumResults(string $totalAmountMessage_numResults): void
-    {
-        $this->totalAmountMessage_numResults = $totalAmountMessage_numResults;
     }
 
     public function addCssClass(string $className): void
@@ -114,11 +64,6 @@ class SmartTable
 
         $abstractTableColumn->setTableIdentifier(tableIdentifier: $this->identifier);
         $this->columns[$columnIdentifier] = $abstractTableColumn;
-    }
-
-    public function getColumns(): array
-    {
-        return $this->columns;
     }
 
     public function addDataItem(TableItemModel $tableItemModel): void

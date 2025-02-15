@@ -13,10 +13,10 @@ use Throwable;
 
 class SMTPMailer extends AbstractMailer
 {
+    private(set) string $lastReply = '';
+    private(set) array $log = [];
     /** @var resource $stream */
     private $stream;
-    private string $lastReply = '';
-    private array $log = [];
 
     public function __construct(
         private readonly string $hostName,
@@ -452,15 +452,5 @@ class SMTPMailer extends AbstractMailer
     public function __destruct()
     {
         $this->close();
-    }
-
-    public function getLog(): array
-    {
-        return $this->log;
-    }
-
-    public function getLastReply(): string
-    {
-        return $this->lastReply;
     }
 }

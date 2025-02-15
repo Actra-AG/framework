@@ -70,8 +70,8 @@ class OptionsTag extends TemplateTag implements TagNode
     {
         $tplEngine->checkRequiredAttributes($elementNode, ['options']);
 
-        $selectionSelector = "'{$elementNode->getAttribute('selected')->getValue()}'";
-        $optionsSelector = "'{$elementNode->getAttribute('options')->getValue()}'";
+        $selectionSelector = "'{$elementNode->getAttribute('selected')->value}'";
+        $optionsSelector = "'{$elementNode->getAttribute('options')->value}'";
 
         $textContent = '<?php echo ' . __CLASS__ . '::render($this, ' . $optionsSelector . ', ' . $selectionSelector . '); ?>';
 

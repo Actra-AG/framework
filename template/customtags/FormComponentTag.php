@@ -45,7 +45,7 @@ class FormComponentTag extends TemplateTag implements TagNode
         $newNode = new TextNode();
         $newNode->content = '<?= ' . FormComponentTag::class . '::render(\'' . $elementNode->getAttribute(
                 'form'
-            )->getValue() . '\', \'' . $elementNode->getAttribute('name')->getValue() . '\', $this); ?>';
+            )->value . '\', \'' . $elementNode->getAttribute('name')->value . '\', $this); ?>';
 
         $elementNode->parentNode->insertBefore($newNode, $elementNode);
         $elementNode->parentNode->removeNode($elementNode);

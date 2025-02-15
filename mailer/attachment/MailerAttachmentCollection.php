@@ -32,23 +32,11 @@ class MailerAttachmentCollection
 
     public function hasInlineImages(): bool
     {
-        foreach ($this->items as $mailerAttachment) {
-            if ($mailerAttachment->dispositionInline) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->items, fn($mailerAttachment) => $mailerAttachment->dispositionInline);
     }
 
     public function hasAttachments(): bool
     {
-        foreach ($this->items as $mailerAttachment) {
-            if (!$mailerAttachment->dispositionInline) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->items, fn($mailerAttachment) => !$mailerAttachment->dispositionInline);
     }
 }

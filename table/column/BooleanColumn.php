@@ -10,18 +10,8 @@ use framework\table\TableItemModel;
 
 class BooleanColumn extends AbstractTableColumn
 {
-    private string $trueLabel = 'Ja';
-    private string $falseLabel = 'Nein';
-
-    public function setTrueLabel(string $trueLabel): void
-    {
-        $this->trueLabel = $trueLabel;
-    }
-
-    public function setFalseLabel(string $falseLabel): void
-    {
-        $this->falseLabel = $falseLabel;
-    }
+    public string $trueLabel = 'Ja';
+    public string $falseLabel = 'Nein';
 
     protected function renderCellValue(TableItemModel $tableItemModel): string
     {

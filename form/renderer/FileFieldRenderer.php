@@ -15,20 +15,10 @@ use framework\html\HtmlText;
 
 class FileFieldRenderer extends FormRenderer
 {
-    private FileField $fileField;
-    private bool $enhanceMultipleField = true;
+    public bool $enhanceMultipleField = true;
 
-    /**
-     * @param FileField $fileField
-     */
-    public function __construct(FileField $fileField)
+    public function __construct(private readonly FileField $fileField)
     {
-        $this->fileField = $fileField;
-    }
-
-    public function setEnhanceMultipleField(bool $enhanceMultipleField): void
-    {
-        $this->enhanceMultipleField = $enhanceMultipleField;
     }
 
     public function prepare(): void
@@ -37,7 +27,7 @@ class FileFieldRenderer extends FormRenderer
 
         $alreadyUploadedFiles = $fileField->getFiles();
 
-        $stillAllowedToUploadCount = $fileField->getMaxFileUploadCount() - count($alreadyUploadedFiles);
+        $stillAllowedToUploadCount = $fileField->maxFileUploadCount - count($alreadyUploadedFiles);
         if ($stillAllowedToUploadCount < 0) {
             $stillAllowedToUploadCount = 0;
         }
@@ -55,9 +45,10 @@ class FileFieldRenderer extends FormRenderer
             $htmlContent = '';
             foreach ($alreadyUploadedFiles as $hash => $fileDataModel) {
                 $htmlContent .= '<li><b>' . HtmlEncoder::encode(
-                        value: $fileDataModel->getName()
-                    ) . '</b> <button type="submit" name="' . $this->fileField->getName(
-                    ) . '_removeAttachment" value="' . HtmlEncoder::encode(value: $hash) . '">löschen</button>';
+                        value: $fileDataModel->name
+                    ) . '</b> <button type="submit" name="' . $this->fileField->name . '_removeAttachment" value="' . HtmlEncoder::encode(
+                        value: $hash
+                    ) . '">löschen</button>';
             }
             $fileListBox->addText(HtmlText::encoded($htmlContent));
             $wrapper->addTag($fileListBox);
@@ -65,8 +56,8 @@ class FileFieldRenderer extends FormRenderer
 
         $inputTag = new HtmlTag('input', true);
         $inputTag->addHtmlTagAttribute(new HtmlTagAttribute('type', 'file', true));
-        $inputTag->addHtmlTagAttribute(new HtmlTagAttribute('name', $fileField->getName() . '[]', true));
-        $inputTag->addHtmlTagAttribute(new HtmlTagAttribute('id', $fileField->getId(), true));
+        $inputTag->addHtmlTagAttribute(new HtmlTagAttribute('name', $fileField->name . '[]', true));
+        $inputTag->addHtmlTagAttribute(new HtmlTagAttribute('id', $fileField->id, true));
         if ($stillAllowedToUploadCount > 1) {
             $inputTag->addHtmlTagAttribute(new HtmlTagAttribute('multiple', null, true));
         }
@@ -76,8 +67,8 @@ class FileFieldRenderer extends FormRenderer
         // Add the fileStore-Pointer-ID for the SESSION as hidden field
         $wrapper->addTag(new HtmlTag('input', true, [
             new HtmlTagAttribute('type', 'hidden', true),
-            new HtmlTagAttribute('name', $this->fileField->getName() . '_UID', true),
-            new HtmlTagAttribute('value', $fileField->getUniqueSessFileStorePointer(), true),
+            new HtmlTagAttribute('name', $this->fileField->name . '_UID', true),
+            new HtmlTagAttribute('value', $fileField->uniqueSessFileStorePointer, true),
         ]));
 
         $this->setHtmlTag($wrapper);

@@ -34,24 +34,22 @@ class For2Tag extends TemplateTag implements TagNode
     {
         $tplEngine->checkRequiredAttributes($elementNode, ['var', 'as']);
 
-        $dataKeyAttr = $elementNode->getAttribute('var')->getValue();
-        $asVarAttr = $elementNode->getAttribute('as')->getValue();
+        $dataKeyAttr = $elementNode->getAttribute('var')->value;
+        $asVarAttr = $elementNode->getAttribute('as')->value;
 
-        $keyVarAttr = $elementNode->getAttribute('key')->getValue();
-        $counterAttr = $elementNode->getAttribute('counter')->getValue();
+        $keyVarAttr = $elementNode->getAttribute('key')->value;
+        $counterAttr = $elementNode->getAttribute('counter')->value;
 
-        $oddEvenAttr = $elementNode->getAttribute('odd-even')->getValue();
-        $firstLastAttr = $elementNode->getAttribute('first-last')->getValue();
+        $oddEvenAttr = $elementNode->getAttribute('odd-even')->value;
+        $firstLastAttr = $elementNode->getAttribute('first-last')->value;
 
-        $stepIncrement = $elementNode->getAttribute('step')->getValue();
-        $grabCount = $elementNode->getAttribute('grab')->getValue();
+        $stepIncrement = $elementNode->getAttribute('step')->value;
+        $grabCount = $elementNode->getAttribute('grab')->value;
 
         if ($stepIncrement === null && $grabCount !== null) {
             $stepIncrement = $grabCount;
-        } else {
-            if ($stepIncrement === null) {
-                $stepIncrement = 1;
-            }
+        } elseif ($stepIncrement === null) {
+            $stepIncrement = 1;
         }
 
         if ($stepIncrement == 0) {

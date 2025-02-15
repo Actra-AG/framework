@@ -15,16 +15,16 @@ class PhoneMetaData
     private static array $regionToMetaDataMap = [];
     /** @var PhoneMetaData[] */
     private static array $countryCodeToNonGeographicalMetadataMap = [];
-    private string $internationalPrefix;
-    private int $countryCode;
-    private ?PhoneDesc $generalDesc = null;
-    private ?string $nationalPrefixForParsing = null;
-    private ?string $nationalPrefixTransformRule = null;
+    private(set) string $internationalPrefix;
+    private(set) int $countryCode;
+    private(set) ?PhoneDesc $generalDesc = null;
+    private(set) ?string $nationalPrefixForParsing = null;
+    private(set) ?string $nationalPrefixTransformRule = null;
+    private(set) ?string $preferredExtnPrefix = null;
     /** @var PhoneFormat[] */
     private array $intlNumberFormat = [];
     /** @var PhoneFormat[] */
     private array $numberFormat = [];
-    private ?string $preferredExtnPrefix = null;
 
     private function __construct(string $fileName)
     {
@@ -99,31 +99,6 @@ class PhoneMetaData
         return PhoneMetaData::$regionToMetaDataMap[$regionCode];
     }
 
-    public function getInternationalPrefix(): string
-    {
-        return $this->internationalPrefix;
-    }
-
-    public function getCountryCode(): int
-    {
-        return $this->countryCode;
-    }
-
-    public function getGeneralDesc(): ?PhoneDesc
-    {
-        return $this->generalDesc;
-    }
-
-    public function getNationalPrefixForParsing(): ?string
-    {
-        return $this->nationalPrefixForParsing;
-    }
-
-    public function getNationalPrefixTransformRule(): ?string
-    {
-        return $this->nationalPrefixTransformRule;
-    }
-
     public function intlNumberFormats(): array
     {
         return $this->intlNumberFormat;
@@ -137,10 +112,5 @@ class PhoneMetaData
     public function hasPreferredExtnPrefix(): bool
     {
         return !is_null($this->preferredExtnPrefix);
-    }
-
-    public function getPreferredExtnPrefix(): string
-    {
-        return $this->preferredExtnPrefix;
     }
 }

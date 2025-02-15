@@ -10,12 +10,7 @@ use framework\table\TableItemModel;
 
 class DefaultColumn extends AbstractTableColumn
 {
-    private bool $renderNewLines = true;
-
-    public function setRenderNewLines(bool $renderNewLines): void
-    {
-        $this->renderNewLines = $renderNewLines;
-    }
+    public bool $renderNewLines = true;
 
     protected function renderCellValue(TableItemModel $tableItemModel): string
     {

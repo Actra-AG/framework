@@ -22,12 +22,12 @@ class CustomTagsHelper
     ): void {
         $templateEngine->checkRequiredAttributes($elementNode, ['options', 'checked']);
 
-        $checkedSelector = $elementNode->getAttribute('checked')->getValue();
-        $optionsSelector = $elementNode->getAttribute('options')->getValue();
+        $checkedSelector = $elementNode->getAttribute('checked')->value;
+        $optionsSelector = $elementNode->getAttribute('options')->value;
         if ($multiple) {
-            $fldName = $elementNode->getAttribute('name')->getValue() . '[]';
+            $fldName = $elementNode->getAttribute('name')->value . '[]';
         } else {
-            $fldName = $elementNode->getAttribute('name')->getValue();
+            $fldName = $elementNode->getAttribute('name')->value;
         }
 
         $textContent = '<?php print ' . __CLASS__ . '::render($this, \'' . $fldName . '\', \'' . $optionsSelector . '\', \'' . $checkedSelector . '\'); ?>';
@@ -76,9 +76,9 @@ class CustomTagsHelper
 
     public static function replaceRadioOrCheckboxFieldNode(ElementNode $elementNode, bool $isRadio): void
     {
-        $sels = $elementNode->getAttribute(name: 'selection')->getValue();
+        $sels = $elementNode->getAttribute(name: 'selection')->value;
         $selsStr = '$this->getDataFromSelector(\'' . $sels . '\')';
-        $value = $elementNode->getAttribute(name: 'value')->getValue();
+        $value = $elementNode->getAttribute(name: 'value')->value;
         $elementNode->removeAttribute(name: 'selection');
 
         $elementNode->namespace = null;
@@ -88,10 +88,10 @@ class CustomTagsHelper
         }
         $elementNode->addAttribute(
             htmlTagAttribute: new HtmlTagAttribute(
-            name: 'type',
-            value: $isRadio ? 'radio' : 'checkbox',
-            valueIsEncodedForRendering: true
-        )
+                name: 'type',
+                value: $isRadio ? 'radio' : 'checkbox',
+                valueIsEncodedForRendering: true
+            )
         );
     }
 }

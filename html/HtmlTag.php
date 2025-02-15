@@ -82,7 +82,7 @@ class HtmlTag extends HtmlElement
      */
     public function render(): string
     {
-        $tagName = $this->getName(); // MUST be HTML-safe!
+        $tagName = $this->name; // MUST be HTML-safe!
         $html = '<' . $tagName;
         foreach ($this->htmlTagAttributes as $htmlTagAttribute) {
             $html .= ' ' . $htmlTagAttribute->render();

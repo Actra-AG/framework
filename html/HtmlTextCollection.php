@@ -9,7 +9,7 @@ namespace framework\html;
 class HtmlTextCollection
 {
     /** @var HtmlText[] */
-    private array $items = [];
+    private(set) array $items = [];
 
     /**
      * @param HtmlText[] $items
@@ -24,13 +24,5 @@ class HtmlTextCollection
     public function add(HtmlText $htmlText): void
     {
         $this->items[] = $htmlText;
-    }
-
-    /**
-     * @return HtmlText[]
-     */
-    public function getItems(): array
-    {
-        return $this->items;
     }
 }

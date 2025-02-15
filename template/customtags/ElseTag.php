@@ -32,7 +32,7 @@ class ElseTag extends TemplateTag implements TagNode
 
     public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
     {
-        $lastTplTag = $tplEngine->getLastTplTag();
+        $lastTplTag = $tplEngine->lastTplTag;
 
         if ($lastTplTag === null) {
             throw new Exception('There is no custom tag that can be followed by an ElseTag');

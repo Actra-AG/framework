@@ -9,18 +9,10 @@ namespace framework\html;
 class HtmlDataObjectCollection
 {
     /** @var HtmlDataObject[] */
-    private array $items = [];
+    private(set) array $items = [];
 
     public function add(HtmlDataObject $htmlDataObject): void
     {
         $this->items[] = $htmlDataObject;
-    }
-
-    /**
-     * @return HtmlDataObject[]
-     */
-    public function getItems(): array
-    {
-        return $this->items;
     }
 }

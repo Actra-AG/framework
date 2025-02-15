@@ -62,7 +62,7 @@ abstract class MicrosoftAuthenticator extends Authenticator
             );
         } catch (Throwable $throwable) {
             $this->logException(throwable: $throwable, ssoNonce: $ssoNonce, inputIdTokenString: $microsoftIdToken);
-            $this->setAuthResult(authResult: AuthResult::FAILED_SSO_LOGIN);
+            $this->authResult = AuthResult::FAILED_SSO_LOGIN;
 
             return false;
         }
@@ -78,7 +78,7 @@ abstract class MicrosoftAuthenticator extends Authenticator
             data: (implode(
                     separator: PHP_EOL,
                     array: [
-                        (new DateTimeImmutable())->format(format: 'Y-m-d H:i:s') . ' ' . $throwable->getMessage(),
+                        new DateTimeImmutable()->format(format: 'Y-m-d H:i:s') . ' ' . $throwable->getMessage(),
                         'sso-nonce: ' . $ssoNonce,
                         $inputIdTokenString,
                         '------------------------------------------------------------------',

@@ -11,7 +11,7 @@ use framework\table\TableItemModel;
 
 abstract class AbstractTableColumn
 {
-    private array $columnCssClasses = [];
+    private(set) array $columnCssClasses = [];
     private array $cellCssClasses = [];
     private ?string $tableIdentifier = null;
 
@@ -42,11 +42,6 @@ abstract class AbstractTableColumn
     public function setTableIdentifier(string $tableIdentifier): void
     {
         $this->tableIdentifier = $tableIdentifier;
-    }
-
-    public function getColumnCssClasses(): array
-    {
-        return $this->columnCssClasses;
     }
 
     public function addCellCssClass(string $className): void

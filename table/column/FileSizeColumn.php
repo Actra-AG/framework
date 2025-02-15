@@ -11,12 +11,7 @@ use framework\table\TableItemModel;
 
 class FileSizeColumn extends AbstractTableColumn
 {
-    private int $decimals = 2;
-
-    public function setDecimals(int $decimals): void
-    {
-        $this->decimals = $decimals;
-    }
+    public int $decimals = 2;
 
     protected function renderCellValue(TableItemModel $tableItemModel): string
     {

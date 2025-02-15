@@ -12,8 +12,8 @@ use LogicException;
 class LocaleHandler
 {
     private static ?LocaleHandler $registeredInstance = null;
+    private(set) array $loadedLangFiles = [];
     private array $languageBlocks = [];
-    private array $loadedLangFiles = [];
 
     private function __construct()
     {
@@ -92,10 +92,5 @@ class LocaleHandler
     public function getAllText(): array
     {
         return $this->languageBlocks;
-    }
-
-    public function getLoadedLangFiles(): array
-    {
-        return $this->loadedLangFiles;
     }
 }

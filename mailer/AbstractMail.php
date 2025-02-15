@@ -31,13 +31,13 @@ abstract class AbstractMail
     public readonly MailerAddress $sender;
     public readonly MailerAddress $fromAddress;
     public readonly MailerAddressCollection $mailerAddressCollection;
+    public int $wordWrap = 0;
     private bool $isSent = false;
     private ?MailerAddress $confirmReadingToAddress = null;
     private string $body;
     private string $alternativeBody = '';
     private bool $isHtmlBody = false;
     private MailerAttachmentCollection $mailerAttachmentCollection;
-    private int $wordWrap = 0;
     private MailerHeaderCollection $customHeaders;
     private readonly string $subject;
 
@@ -80,9 +80,9 @@ abstract class AbstractMail
     {
         $this->mailerAddressCollection->addItem(
             mailerAddress: MailerAddress::createToAddress(
-            inputEmail: $inputEmail,
-            inputName: $inputName
-        )
+                inputEmail: $inputEmail,
+                inputName: $inputName
+            )
         );
     }
 
@@ -90,9 +90,9 @@ abstract class AbstractMail
     {
         $this->mailerAddressCollection->addItem(
             mailerAddress: MailerAddress::createReplyToAddress(
-            inputEmail: $inputEmail,
-            inputName: $inputName
-        )
+                inputEmail: $inputEmail,
+                inputName: $inputName
+            )
         );
     }
 
@@ -100,9 +100,9 @@ abstract class AbstractMail
     {
         $this->mailerAddressCollection->addItem(
             mailerAddress: MailerAddress::createCcAddress(
-            inputEmail: $inputEmail,
-            inputName: $inputName
-        )
+                inputEmail: $inputEmail,
+                inputName: $inputName
+            )
         );
     }
 
@@ -110,9 +110,9 @@ abstract class AbstractMail
     {
         $this->mailerAddressCollection->addItem(
             mailerAddress: MailerAddress::createBccAddress(
-            inputEmail: $inputEmail,
-            inputName: $inputName
-        )
+                inputEmail: $inputEmail,
+                inputName: $inputName
+            )
         );
     }
 
@@ -129,11 +129,6 @@ abstract class AbstractMail
         $this->mailerAttachmentCollection->addItem(mailerAttachment: $mailerAttachment);
     }
 
-    public function setWordWrap(int $wordWrap): void
-    {
-        $this->wordWrap = $wordWrap;
-    }
-
     public function addCustomHeader(
         string $name,
         string $value,
@@ -141,11 +136,11 @@ abstract class AbstractMail
     ): void {
         $this->customHeaders->addItem(
             mailerHeader: MailerHeader::createEncodedHeaderText(
-            name: $name,
-            value: $value,
-            maxLineLength: $maxLineLength,
-            defaultCharSet: $this->charSet
-        )
+                name: $name,
+                value: $value,
+                maxLineLength: $maxLineLength,
+                defaultCharSet: $this->charSet
+            )
         );
     }
 
@@ -204,12 +199,10 @@ abstract class AbstractMail
 
         if ($alternativeExists) {
             $contentType = MailerConstants::CONTENT_TYPE_MULTIPART_ALTERNATIVE;
+        } elseif ($this->isHtmlBody) {
+            $contentType = MailerConstants::CONTENT_TYPE_TEXT_HTML;
         } else {
-            if ($this->isHtmlBody) {
-                $contentType = MailerConstants::CONTENT_TYPE_TEXT_HTML;
-            } else {
-                $contentType = MailerConstants::CONTENT_TYPE_PLAINTEXT;
-            }
+            $contentType = MailerConstants::CONTENT_TYPE_PLAINTEXT;
         }
 
         $encoding = $this->encoding;
@@ -274,10 +267,10 @@ abstract class AbstractMail
             replace: '',
             subject: base64_encode(
                 string: hash(
-                algo: 'sha256',
-                data: $bytes,
-                binary: true
-            )
+                    algo: 'sha256',
+                    data: $bytes,
+                    binary: true
+                )
             ));
     }
 

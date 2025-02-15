@@ -39,8 +39,8 @@ class LangTag extends TemplateTag implements TagNode, TagInline
     public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
     {
         $replValue = LangTag::replace(
-            $elementNode->getAttribute('key')->getValue(),
-            $elementNode->getAttribute('vars')->getValue()
+            $elementNode->getAttribute('key')->value,
+            $elementNode->getAttribute('vars')->value
         );
 
         $replNode = new TextNode();

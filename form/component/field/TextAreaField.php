@@ -15,10 +15,10 @@ use framework\html\HtmlText;
 
 class TextAreaField extends FormField
 {
-    private int $rows;
-    private int $cols;
+    private(set) int $rows;
+    private(set) int $cols;
+    private(set) array $cssClassesForRenderer = [];
     private ?string $placeholder = null;
-    private array $cssClassesForRenderer = [];
 
     public function __construct(
         string $name,
@@ -41,21 +41,6 @@ class TextAreaField extends FormField
     public function addCssClassForRenderer(string $className): void
     {
         $this->cssClassesForRenderer[] = $className;
-    }
-
-    public function getCssClassesForRenderer(): array
-    {
-        return $this->cssClassesForRenderer;
-    }
-
-    public function getRows(): int
-    {
-        return $this->rows;
-    }
-
-    public function getCols(): int
-    {
-        return $this->cols;
     }
 
     public function getPlaceholder(): ?string

@@ -30,7 +30,7 @@ class FileField extends FormField
     public const string ERRMSG_FILE_TOO_BIG = 'Die Datei war zu gross: ';
     public const string ERRMSG_FILE_TECHERROR = 'Es ist ein technischer Fehler beim Hochladen der Datei aufgetreten: ';
 
-    private string $uniqueSessFileStorePointer;
+    private(set) string $uniqueSessFileStorePointer;
     private HtmlText $tooManyFilesErrMsg;
     private HtmlText $alreadyExistsErrorMessage;
     private ?string $deleteFileHash = null;
@@ -48,7 +48,7 @@ class FileField extends FormField
         string $name,
         HtmlText $label,
         ?HtmlText $requiredError = null,
-        private int $maxFileUploadCount = 1,
+        private(set) int $maxFileUploadCount = 1,
         ?HtmlText $tooManyFilesErrMsg = null,
         ?HtmlText $alreadyExistsErrorMessage = null
     ) {
@@ -57,9 +57,9 @@ class FileField extends FormField
         }
         $this->uniqueSessFileStorePointer = $this->sanitizeUniqueID(
             uid: uniqid(
-            prefix: $name . '__',
-            more_entropy: true
-        )
+                prefix: $name . '__',
+                more_entropy: true
+            )
         );
         $this->tooManyFilesErrMsg = is_null(value: $tooManyFilesErrMsg) ? HtmlText::encoded(
             textContent: 'Nur [max] Datei(en) möglich.'
@@ -107,11 +107,11 @@ class FileField extends FormField
             // Remove all temporary files older than 2 days
             $this->removeOldFiles();
             // The following two checks must be done before parent::validate() to have the required data available
-            if (array_key_exists(key: $this->getName() . '_UID', array: $inputData) && is_scalar(
-                    value: $inputData[$this->getName() . '_UID']
+            if (array_key_exists(key: $this->name . '_UID', array: $inputData) && is_scalar(
+                    value: $inputData[$this->name . '_UID']
                 )) {
-                $receivedUid = Sanitizer::trimmedString(input: $inputData[$this->getName() . '_UID']);
-                // If that value is tampered by a "black hat hacker", he should just grab securely into an "empty bowl".
+                $receivedUid = Sanitizer::trimmedString(input: $inputData[$this->name . '_UID']);
+                // If that value is tampered by a "black-hat hacker", he should just grab securely into an "empty bowl".
                 // Therefore, we look for only allowed characters given in sanitizeUniqueID():
                 $cleanedUid = $this->sanitizeUniqueID(uid: $receivedUid);
                 if ($receivedUid === $cleanedUid) {
@@ -119,12 +119,12 @@ class FileField extends FormField
                     $this->uniqueSessFileStorePointer = $cleanedUid;
                 }
             }
-            if (array_key_exists(key: $this->getName() . '_removeAttachment', array: $inputData) && is_scalar(
-                    value: $inputData[$this->getName() . '_removeAttachment']
+            if (array_key_exists(key: $this->name . '_removeAttachment', array: $inputData) && is_scalar(
+                    value: $inputData[$this->name . '_removeAttachment']
                 )) {
                 // Referenced usage at FileFieldRenderer::prepare()
                 $this->deleteFileHash = Sanitizer::trimmedString(
-                    input: $inputData[$this->getName() . '_removeAttachment']
+                    input: $inputData[$this->name . '_removeAttachment']
                 );
             }
         }
@@ -189,8 +189,8 @@ class FileField extends FormField
         $fileArray = $this->getAlreadyUploadedFiles();
         // Remove an already uploaded file, if requested
         if (!is_null(value: $this->deleteFileHash) && array_key_exists(key: $this->deleteFileHash, array: $fileArray)) {
-            if (file_exists(filename: $fileArray[$this->deleteFileHash]->getTmpName())) {
-                unlink(filename: $fileArray[$this->deleteFileHash]->getTmpName());
+            if (file_exists(filename: $fileArray[$this->deleteFileHash]->tmp_name)) {
+                unlink(filename: $fileArray[$this->deleteFileHash]->tmp_name);
             }
             unset($fileArray[$this->deleteFileHash]);
         }
@@ -199,7 +199,7 @@ class FileField extends FormField
             $fileArray = $this->addFilesFromDataArray(originalFileArray: $fileArray, addFileArray: $value);
         }
         // Store new fileArray to session and current field value
-        parent::setValue(value: $_SESSION[$this->getUniqueSessFileStorePointer()] = $fileArray);
+        parent::setValue(value: $_SESSION[$this->uniqueSessFileStorePointer] = $fileArray);
     }
 
     /**
@@ -209,24 +209,19 @@ class FileField extends FormField
      */
     private function getAlreadyUploadedFiles(): array
     {
-        $usfsp = $this->getUniqueSessFileStorePointer();
+        $usfsp = $this->uniqueSessFileStorePointer;
         if (!array_key_exists(key: $usfsp, array: $_SESSION)) {
             return $_SESSION[$usfsp] = [];
         }
 
         /** @var FileDataModel $fileDataModel */
         foreach ($_SESSION[$usfsp] as $hash => $fileDataModel) {
-            if (!file_exists(filename: $fileDataModel->getTmpName())) {
+            if (!file_exists(filename: $fileDataModel->tmp_name)) {
                 unset($_SESSION[$usfsp][$hash]);
             }
         }
 
         return $_SESSION[$usfsp];
-    }
-
-    public function getUniqueSessFileStorePointer(): string
-    {
-        return $this->uniqueSessFileStorePointer;
     }
 
     /**
@@ -253,10 +248,10 @@ class FileField extends FormField
         if ((count(value: $originalFileArray) + count(value: $convertedMultiFileArray)) > $this->maxFileUploadCount) {
             $this->addError(
                 errorMessage: str_replace(
-                search: '[max]',
-                replace: $this->maxFileUploadCount,
-                subject: $this->tooManyFilesErrMsg->render()
-            ),
+                    search: '[max]',
+                    replace: $this->maxFileUploadCount,
+                    subject: $this->tooManyFilesErrMsg->render()
+                ),
                 isEncodedForRendering: true
             );
 
@@ -264,14 +259,14 @@ class FileField extends FormField
         }
         $existingFileNames = [];
         foreach ($originalFileArray as $fileDataModel) {
-            $existingFileNames[] = $fileDataModel->getName();
+            $existingFileNames[] = $fileDataModel->name;
         }
         $newFileArray = $originalFileArray;
         foreach ($convertedMultiFileArray as $fileDataModel) {
-            $encodedFileName = HtmlEncoder::encode(value: $fileDataModel->getName());
+            $encodedFileName = HtmlEncoder::encode(value: $fileDataModel->name);
             // If upload was okay:
-            if ($fileDataModel->getError() === UPLOAD_ERR_OK) {
-                if (in_array(needle: $fileDataModel->getName(), haystack: $existingFileNames)) {
+            if ($fileDataModel->error === UPLOAD_ERR_OK) {
+                if (in_array(needle: $fileDataModel->name, haystack: $existingFileNames)) {
                     $this->addError(
                         errorMessage: str_replace(
                             search: '[fileName]',
@@ -284,7 +279,7 @@ class FileField extends FormField
                 }
 
                 // Special case from LIVE/PROD:
-                if ($fileDataModel->getSize() === 0) {
+                if ($fileDataModel->size === 0) {
                     $this->addError(
                         errorMessage: FileField::ERRMSG_FILE_EMPTY . $encodedFileName,
                         isEncodedForRendering: true
@@ -293,13 +288,13 @@ class FileField extends FormField
                 }
                 $fileDataModel = $this->saveNewFile(fileDataModel: $fileDataModel);
                 // Usage of sha1 is safe here
-                $hash = sha1(string: $fileDataModel->getTmpName());
+                $hash = sha1(string: $fileDataModel->tmp_name);
                 $newFileArray[$hash] = $fileDataModel;
-                $existingFileNames[] = $fileDataModel->getName();
+                $existingFileNames[] = $fileDataModel->name;
                 continue;
             }
             // Anything other are errors
-            switch ($fileDataModel->getError()) {
+            switch ($fileDataModel->error) {
                 case UPLOAD_ERR_INI_SIZE:
                 case UPLOAD_ERR_FORM_SIZE:
                     $this->addError(
@@ -363,15 +358,15 @@ class FileField extends FormField
         // If tmp file already exists we just add a counter and increment it until we get a "free" file name
         $counter = 0;
         $dstFilePath = $baseFilePath = $this->getUniqueFilesDirectory() . DIRECTORY_SEPARATOR . basename(
-                path: $fileDataModel->getTmpName()
+                path: $fileDataModel->tmp_name
             );
         while (file_exists(filename: $dstFilePath)) {
             $counter++;
             $dstFilePath = $baseFilePath . $counter;
         }
         // "move" (copy-del) it to fileStore (creating a new file pointer, therefore it does not get deleted from fileStore after script execution)
-        move_uploaded_file(from: $fileDataModel->getTmpName(), to: $dstFilePath);
-        $fileDataModel->setTmpName(tmp_name: $dstFilePath);
+        move_uploaded_file(from: $fileDataModel->tmp_name, to: $dstFilePath);
+        $fileDataModel->tmp_name = $dstFilePath;
 
         return $fileDataModel;
     }
@@ -384,18 +379,12 @@ class FileField extends FormField
      */
     private function getUniqueFilesDirectory(): string
     {
-        $uniqueFilesDirectory = $this->getTempRootDirectory(
-            ) . DIRECTORY_SEPARATOR . $this->getUniqueSessFileStorePointer();
+        $uniqueFilesDirectory = $this->getTempRootDirectory() . DIRECTORY_SEPARATOR . $this->uniqueSessFileStorePointer;
         if (!is_dir(filename: $uniqueFilesDirectory)) {
             mkdir(directory: $uniqueFilesDirectory);
         }
 
         return $uniqueFilesDirectory;
-    }
-
-    public function getMaxFileUploadCount(): int
-    {
-        return $this->maxFileUploadCount;
     }
 
     /**

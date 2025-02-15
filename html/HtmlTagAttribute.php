@@ -8,7 +8,7 @@ namespace framework\html;
 
 class HtmlTagAttribute extends HtmlElement
 {
-    private ?string $value; // The value for this attribute. null = no value (e.g. if name is required, selected or checked)
+    public ?string $value;
     private bool $valueIsEncodedForRendering;
 
     public function __construct(string $name, ?string $value, bool $valueIsEncodedForRendering)
@@ -26,21 +26,12 @@ class HtmlTagAttribute extends HtmlElement
     public function render(): string
     {
         if (is_null($this->value)) {
-            return $this->getName();
+            return $this->name;
         }
 
         $renderValue = $this->valueIsEncodedForRendering ? $this->value : HtmlEncoder::encode(value: $this->value);
 
-        return $this->getName() . '="' . $renderValue . '"';
+        return $this->name . '="' . $renderValue . '"';
     }
 
-    public function getValue(): ?string
-    {
-        return $this->value;
-    }
-
-    public function setValue(?string $value): void
-    {
-        $this->value = $value;
-    }
 }

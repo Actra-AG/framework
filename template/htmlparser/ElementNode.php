@@ -18,7 +18,7 @@ class ElementNode extends HtmlNode
     public ?string $tagName = null;
     public ?string $namespace = null;
     /** @var HtmlTagAttribute[] */
-    private array $attributes = [];
+    private(set) array $attributes = [];
     public ?string $tagExtension = null;
     public bool $closed = false;
 
@@ -30,14 +30,6 @@ class ElementNode extends HtmlNode
     public function close(): void
     {
         $this->closed = true;
-    }
-
-    /**
-     * @return HtmlTagAttribute[]
-     */
-    public function getAttributes(): array
-    {
-        return $this->attributes;
     }
 
     public function getAttribute(string $name): HtmlTagAttribute
@@ -56,7 +48,7 @@ class ElementNode extends HtmlNode
 
     public function addAttribute(HtmlTagAttribute $htmlTagAttribute): void
     {
-        $this->attributes[$htmlTagAttribute->getName()] = $htmlTagAttribute;
+        $this->attributes[$htmlTagAttribute->name] = $htmlTagAttribute;
     }
 
     public function doesAttributeExist(string $name): bool

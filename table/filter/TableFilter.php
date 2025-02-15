@@ -21,9 +21,9 @@ class TableFilter
     /** @var TableFilter[] */
     private static array $instances = [];
 
-    private bool $filtersApplied = false;
+    private(set) bool $filtersApplied = false;
     /** @var AbstractTableFilterField[] $allFilterFields */
-    private array $allFilterFields = [];
+    private(set) array $allFilterFields = [];
     /** @var AbstractTableFilterField[] $primaryFields */
     private array $primaryFields = [];
     /** @var AbstractTableFilterField[] $secondaryFields */
@@ -112,11 +112,6 @@ class TableFilter
         );
     }
 
-    public function isFiltersApplied(): bool
-    {
-        return $this->filtersApplied;
-    }
-
     public function addPrimaryField(AbstractTableFilterField $abstractTableFilterField): void
     {
         $abstractTableFilterField->init();
@@ -172,11 +167,11 @@ class TableFilter
 
         $individualHtmlSnippetPath = $this->individualHtmlSnippetPath;
 
-        return (new HtmlSnippet(
+        return new HtmlSnippet(
             htmlSnippetFilePath: is_null(value: $individualHtmlSnippetPath) ? Core::get(
                 )->frameworkDirectory . 'table' . DIRECTORY_SEPARATOR . 'filter' . DIRECTORY_SEPARATOR . 'tableFilter.html' : $individualHtmlSnippetPath,
             replacements: $replacements,
-        ))->render();
+        )->render();
     }
 
     protected function getFromSession(string $index): ?string
@@ -196,13 +191,5 @@ class TableFilter
             index: $index,
             value: $value
         );
-    }
-
-    /**
-     * @return AbstractTableFilterField[]
-     */
-    protected function getAllFilterFields(): array
-    {
-        return $this->allFilterFields;
     }
 }

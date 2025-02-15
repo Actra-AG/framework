@@ -12,11 +12,11 @@ use LogicException;
 abstract class FormCollection extends FormComponent
 {
     /** @var FormComponent[] : Array with all child components, which can also be collections */
-    private array $childComponents = [];
+    private(set) array $childComponents = [];
 
     final public function addChildComponent(FormComponent $formComponent): void
     {
-        $childComponentName = $formComponent->getName();
+        $childComponentName = $formComponent->name;
         if (isset($this->childComponents[$childComponentName])) {
             throw new LogicException(
                 'There is already an existing child component with the same name: ' . $childComponentName
@@ -27,22 +27,11 @@ abstract class FormCollection extends FormComponent
         $this->childComponents[$childComponentName] = $formComponent;
     }
 
-    /**
-     * Returns all child components as array
-     *
-     * @return FormComponent[]
-     */
-    public function getChildComponents(): array
-    {
-        return $this->childComponents;
-    }
-
     public function getChildComponent(string $childComponentName): FormComponent
     {
         if (!$this->hasChildComponent($childComponentName)) {
             throw new LogicException(
-                'FormCollection ' . $this->getName(
-                ) . ' does not contain requested ChildComponent ' . $childComponentName
+                'FormCollection ' . $this->name . ' does not contain requested ChildComponent ' . $childComponentName
             );
         }
 
@@ -58,8 +47,7 @@ abstract class FormCollection extends FormComponent
     {
         if (!$this->hasChildComponent($childComponentName)) {
             throw new LogicException(
-                'FormCollection ' . $this->getName(
-                ) . ' does not contain requested ChildComponent ' . $childComponentName
+                'FormCollection ' . $this->name . ' does not contain requested ChildComponent ' . $childComponentName
             );
         }
         unset($this->childComponents[$childComponentName]);

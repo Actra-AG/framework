@@ -12,13 +12,8 @@ use framework\table\TableItemModel;
 
 class DateColumn extends AbstractTableColumn
 {
-    private string $format = 'd.m.Y H:i:s';
+    public string $format = 'd.m.Y H:i:s';
     private ?HtmlText $emptyValueText = null;
-
-    public function setFormat(string $format): void
-    {
-        $this->format = $format;
-    }
 
     public function setEmptyValueText(HtmlText $htmlText): void
     {
@@ -33,6 +28,6 @@ class DateColumn extends AbstractTableColumn
             return is_null(value: $this->emptyValueText) ? '' : $this->emptyValueText->render();
         }
 
-        return (new DateTimeImmutable(datetime: $value))->format(format: $this->format);
+        return new DateTimeImmutable(datetime: $value)->format(format: $this->format);
     }
 }

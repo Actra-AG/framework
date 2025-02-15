@@ -121,10 +121,8 @@ class MicrosoftIdToken extends AuthWebToken
                 if (openssl_x509_verify(certificate: $certificates[$i], public_key: $certificates[$i]) !== 1) {
                     throw new UnauthorizedException(message: 'Invalid Root Certificate');
                 }
-            } else {
-                if (openssl_x509_verify(certificate: $certificates[$i], public_key: $certificates[$i + 1]) !== 1) {
-                    throw new UnauthorizedException(message: 'Invalid Certificate');
-                }
+            } elseif (openssl_x509_verify(certificate: $certificates[$i], public_key: $certificates[$i + 1]) !== 1) {
+                throw new UnauthorizedException(message: 'Invalid Certificate');
             }
         }
 

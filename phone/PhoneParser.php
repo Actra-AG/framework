@@ -111,7 +111,7 @@ class PhoneParser
             // The national number is just the normalized version of the number we were given to parse.
             $normalizedNationalNumber .= $this->normalize(number: $nationalNumber);
             if (!is_null(value: $defaultCountryCode)) {
-                $countryCode = $regionMetaData->getCountryCode();
+                $countryCode = $regionMetaData->countryCode;
             }
         }
         if (mb_strlen(string: $normalizedNationalNumber) < PhoneConstants::MIN_LENGTH_FOR_NSN) {
@@ -335,7 +335,7 @@ class PhoneParser
         // Set the default prefix to be something that will never match.
         $possibleCountryIddPrefix = 'NonMatch';
         if (!is_null(value: $defaultRegionMetaData)) {
-            $possibleCountryIddPrefix = $defaultRegionMetaData->getInternationalPrefix();
+            $possibleCountryIddPrefix = $defaultRegionMetaData->internationalPrefix;
         }
         $countryCodeSource = $this->maybeStripInternationalPrefixAndNormalize(
             number: $fullNumber,
@@ -369,7 +369,7 @@ class PhoneParser
         }
         // Check to see if the number starts with the country calling code for the default region.
         // If so, we remove the country calling code, and do some checks on the validity of the number before and after.
-        $defaultCountryCode = $defaultRegionMetaData->getCountryCode();
+        $defaultCountryCode = $defaultRegionMetaData->countryCode;
         $defaultCountryCodeString = (string)$defaultCountryCode;
         $normalizedNumber = $fullNumber;
         if (str_starts_with(haystack: $normalizedNumber, needle: $defaultCountryCodeString)) {
@@ -379,7 +379,7 @@ class PhoneParser
                     string: $defaultCountryCodeString
                 )
             );
-            $generalDesc = $defaultRegionMetaData->getGeneralDesc();
+            $generalDesc = $defaultRegionMetaData->generalDesc;
             $carrierCode = null;
             $this->maybeStripNationalPrefixAndCarrierCode(
                 number: $potentialNationalNumber,
@@ -473,10 +473,8 @@ class PhoneParser
         foreach ($numberAsArray as $character) {
             if (array_key_exists(key: $character, array: $numericCharacters)) {
                 $normalizedDigits .= $numericCharacters[$character];
-            } else {
-                if (is_numeric(value: $character)) {
-                    $normalizedDigits .= $character;
-                }
+            } elseif (is_numeric(value: $character)) {
+                $normalizedDigits .= $character;
             }
         }
 
@@ -531,7 +529,7 @@ class PhoneParser
         ?string &$carrierCode
     ): void {
         $numberLength = mb_strlen(string: $number);
-        $possibleNationalPrefix = $phoneMetaData->getNationalPrefixForParsing();
+        $possibleNationalPrefix = $phoneMetaData->nationalPrefixForParsing;
         if ($numberLength === 0 || is_null(value: $possibleNationalPrefix) || mb_strlen(
                 string: $possibleNationalPrefix
             ) === 0) {
@@ -545,14 +543,14 @@ class PhoneParser
             return;
         }
 
-        $generalDesc = $phoneMetaData->getGeneralDesc();
+        $generalDesc = $phoneMetaData->generalDesc;
         // Check if the original number is viable.
         $isViableOriginalNumber = $this->matchNationalNumber(number: $number, numberDesc: $generalDesc);
         // $prefixMatcher->group($numOfGroups) === null implies nothing was captured by the capturing
         // groups in $possibleNationalPrefix; therefore, no transformation is necessary, and we just
         // remove the national prefix
         $numOfGroups = $prefixMatcher->groupCount();
-        $transformRule = $phoneMetaData->getNationalPrefixTransformRule();
+        $transformRule = $phoneMetaData->nationalPrefixTransformRule;
         if (is_null(value: $transformRule)
             || mb_strlen(string: $transformRule) === 0
             || is_null($prefixMatcher->group(group: $numOfGroups - 1))
@@ -604,11 +602,11 @@ class PhoneParser
 
     private function matchNationalNumber(string $number, PhoneDesc $numberDesc): bool
     {
-        $nationalNumberPattern = $numberDesc->getNationalNumberPattern();
+        $nationalNumberPattern = $numberDesc->nationalNumberPattern;
         if (strlen(string: $nationalNumberPattern) === 0) {
             return false;
         }
 
-        return (new PhoneMatcher(pattern: $nationalNumberPattern, subject: $number))->matches();
+        return new PhoneMatcher(pattern: $nationalNumberPattern, subject: $number)->matches();
     }
 }

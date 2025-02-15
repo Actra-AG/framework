@@ -31,7 +31,7 @@ class DateTag extends TemplateTag implements TagNode
 
     public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
     {
-        $format = $elementNode->getAttribute('format')->getValue();
+        $format = $elementNode->getAttribute('format')->value;
         $replNode = new TextNode();
         $replNode->content = '<?php echo date(\'' . $format . '\'); ?>';
 

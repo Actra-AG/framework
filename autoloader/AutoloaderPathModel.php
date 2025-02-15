@@ -11,27 +11,14 @@ class AutoloaderPathModel
     public const string MODE_UNDERSCORE = 'underscore';
     public const string MODE_NAMESPACE = 'namespace';
 
-	private string $path;
-	private string $mode;
-
-	public function __construct(
-		public readonly string $name,
-		string                 $path,
-		string                 $mode,
-		public readonly array  $fileSuffixList,
-		public readonly string $phpFilePathRemove = ''
-	) {
-		$this->path = str_replace(search: '/', replace: DIRECTORY_SEPARATOR, subject: $path);
-		$this->mode = str_replace(search: '/', replace: DIRECTORY_SEPARATOR, subject: $mode);
-	}
-
-	public function getPath(): string
-	{
-		return $this->path;
-	}
-
-	public function getMode(): string
-	{
-		return $this->mode;
-	}
+    public function __construct(
+        public readonly string $name,
+        private(set) string $path,
+        private(set) string $mode,
+        public readonly array $fileSuffixList,
+        public readonly string $phpFilePathRemove = ''
+    ) {
+        $this->path = str_replace(search: '/', replace: DIRECTORY_SEPARATOR, subject: $path);
+        $this->mode = str_replace(search: '/', replace: DIRECTORY_SEPARATOR, subject: $mode);
+    }
 }

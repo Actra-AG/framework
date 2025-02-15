@@ -29,7 +29,7 @@ abstract class DefaultOptionsRenderer extends FormRenderer
     public function prepare(): void
     {
         $optionsField = $this->optionsField;
-        $options = $optionsField->getFormOptions()->getData();
+        $options = $optionsField->formOptions->data;
         if (count($options) === 0) {
             throw new LogicException('There must be at least one option!');
         }
@@ -47,11 +47,11 @@ abstract class DefaultOptionsRenderer extends FormRenderer
         $ulTag = new HtmlTag('ul', false, $htmlTagAttributes);
 
         foreach ($options as $key => $htmlText) {
-            $name = ($this->acceptMultipleValues) ? $optionsField->getName() . '[]' : $optionsField->getName();
+            $name = ($this->acceptMultipleValues) ? $optionsField->name . '[]' : $optionsField->name;
             $attributes = [
                 new HtmlTagAttribute('type', $this->inputFieldType, true),
                 new HtmlTagAttribute('name', $name, true),
-                new HtmlTagAttribute('id', $optionsField->getId() . '_' . $key, true),
+                new HtmlTagAttribute('id', $optionsField->id . '_' . $key, true),
                 new HtmlTagAttribute('value', $key, true),
             ];
 
@@ -61,10 +61,8 @@ abstract class DefaultOptionsRenderer extends FormRenderer
                 if (is_array($rawValue) && in_array($key, $rawValue)) {
                     $attributes[] = new HtmlTagAttribute('checked', null, true);
                 }
-            } else {
-                if ($rawValue == $key) {
-                    $attributes[] = new HtmlTagAttribute('checked', null, true);
-                }
+            } elseif ($rawValue == $key) {
+                $attributes[] = new HtmlTagAttribute('checked', null, true);
             }
 
             $inputTag = new HtmlTag('input', true, $attributes);

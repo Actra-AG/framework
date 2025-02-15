@@ -22,7 +22,7 @@ class HiddenFieldRenderer extends FormRenderer
         $hiddenField = $this->hiddenField;
         $this->setHtmlTag(htmlTag: new HtmlTag(name: 'input', selfClosing: true, htmlTagAttributes: [
             new HtmlTagAttribute(name: 'type', value: $hiddenField->inputType->value, valueIsEncodedForRendering: true),
-            new HtmlTagAttribute(name: 'name', value: $hiddenField->getName(), valueIsEncodedForRendering: true),
+            new HtmlTagAttribute(name: 'name', value: $hiddenField->name, valueIsEncodedForRendering: true),
             new HtmlTagAttribute(name: 'value', value: $hiddenField->renderValue(), valueIsEncodedForRendering: true),
         ]));
     }

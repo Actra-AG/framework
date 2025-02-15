@@ -22,28 +22,21 @@ use LogicException;
 class Form extends FormCollection
 {
     private static array $formNameList = [];
-    private bool $acceptUpload;
-    private ?HtmlText $globalErrorMessage;
-    private bool $methodPost;
-    private string $sentIndicator;
-    private array $cssClasses = [];
+    private(set) string $sentIndicator;
+    private(set) array $cssClasses = [];
     private bool $renderRequiredAbbr = true;
 
     public function __construct(
         string $name,
-        bool $acceptUpload = false,
-        ?HtmlText $globalErrorMessage = null,
-        bool $methodPost = true,
+        private(set) readonly bool $acceptUpload = false,
+        private(set) readonly ?HtmlText $globalErrorMessage = null,
+        private(set) readonly bool $methodPost = true,
         ?string $individualSentIndicator = null
     ) {
-        if (in_array($name, Form::$formNameList)) {
-            throw new LogicException('A Form with the name "' . $name . '" has already been defined.');
+        if (in_array(needle: $name, haystack: Form::$formNameList)) {
+            throw new LogicException(message: 'A Form with the name "' . $name . '" has already been defined.');
         }
         Form::$formNameList[] = $name;
-
-        $this->acceptUpload = $acceptUpload;
-        $this->globalErrorMessage = $globalErrorMessage;
-        $this->methodPost = $methodPost;
         $this->sentIndicator = is_null($individualSentIndicator) ? $name : $individualSentIndicator;
 
         parent::__construct($name);
@@ -54,9 +47,9 @@ class Form extends FormCollection
     public function addField(FormField $formField): void
     {
         if (!$this->renderRequiredAbbr) {
-            $formField->setRenderRequiredAbbr(false);
+            $formField->renderRequiredAbbr = false;
         }
-        $formField->setTopFormComponent($this);
+        $formField->topFormComponent = $this;
         $this->addChildComponent($formField);
     }
 
@@ -109,7 +102,7 @@ class Form extends FormCollection
 
         $inputData = ($this->methodPost ? $_POST : $_GET) + $_FILES;
 
-        foreach ($this->getChildComponents() as $formComponent) {
+        foreach ($this->childComponents as $formComponent) {
             if (!$formComponent instanceof FormField) {
                 continue;
             }
@@ -182,7 +175,7 @@ class Form extends FormCollection
     {
         $allFields = [];
 
-        foreach ($this->getChildComponents() as $formComponent) {
+        foreach ($this->childComponents as $formComponent) {
             if (!$formComponent instanceof FormField) {
                 continue;
             }
@@ -195,21 +188,6 @@ class Form extends FormCollection
     public function dontRenderRequiredAbbr(): void
     {
         $this->renderRequiredAbbr = false;
-    }
-
-    public function isMethodPost(): bool
-    {
-        return $this->methodPost;
-    }
-
-    public function getSentIndicator(): string
-    {
-        return $this->sentIndicator;
-    }
-
-    public function getCssClasses(): array
-    {
-        return $this->cssClasses;
     }
 
     public function acceptUpload(): bool

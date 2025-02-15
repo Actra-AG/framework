@@ -32,7 +32,7 @@ class TextTag extends TemplateTag implements TagNode, TagInline
 
     public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
     {
-        $replValue = $this->replace($elementNode->getAttribute('value')->getValue());
+        $replValue = $this->replace($elementNode->getAttribute('value')->value);
 
         $replNode = new TextNode();
         $replNode->content = $replValue;

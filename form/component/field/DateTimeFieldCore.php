@@ -21,7 +21,7 @@ abstract class DateTimeFieldCore extends InputField
         InputTypeValue $inputType,
         string $name,
         HtmlText $label,
-        private string $renderValueFormat,
+        private readonly string $renderValueFormat,
         ?string $value = null,
         ?HtmlText $requiredError = null,
         ?string $placeholder = null,
@@ -51,7 +51,7 @@ abstract class DateTimeFieldCore extends InputField
             return HtmlEncoder::encode(value: Sanitizer::trimmedString(input: $originalValue));
         }
         try {
-            return (new DateTimeImmutable(datetime: $originalValue))->format(format: $this->renderValueFormat);
+            return new DateTimeImmutable(datetime: $originalValue)->format(format: $this->renderValueFormat);
         } catch (Throwable) {
             // Should not be reached. Anyway ... invalid value; show original input
             return HtmlEncoder::encode(value: Sanitizer::trimmedString(input: $originalValue));

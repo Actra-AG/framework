@@ -35,19 +35,19 @@ class ForTag extends TemplateTag implements TagNode
     {
         $tplEngine->checkRequiredAttributes($elementNode, ['value', 'var']);
 
-        $dataKeyAttr = $elementNode->getAttribute('value')->getValue();
-        $asVarAttr = $elementNode->getAttribute('var')->getValue();
+        $dataKeyAttr = $elementNode->getAttribute('value')->value;
+        $asVarAttr = $elementNode->getAttribute('var')->value;
         $stepAttr = $elementNode->getAttribute('groups');
 
         $dataKey = $dataKeyAttr;
         $asVar = $asVarAttr;
-        $step = ($stepAttr->getValue() === null) ? 1 : intval($stepAttr->getValue());
+        $step = ($stepAttr->value === null) ? 1 : intval($stepAttr->value);
 
         $firstClassAttr = $elementNode->getAttribute('classfirst');
-        $firstClass = $firstClassAttr->getValue();
+        $firstClass = $firstClassAttr->value;
 
         $lastClassAttr = $elementNode->getAttribute('classlast');
-        $lastClass = $lastClassAttr->getValue();
+        $lastClass = $lastClassAttr->value;
         $forUID = str_replace('.', '', uniqid('', true));
 
         $this->str_replace_node($elementNode->childNodes);
@@ -106,12 +106,12 @@ class ForTag extends TemplateTag implements TagNode
         $forDOM = new HtmlDoc($nodeInnerHtml, null);
         $forDOM->parse();
 
-        foreach ($forDOM->getNodeTree()->childNodes as $forNode) {
+        foreach ($forDOM->nodeTree->childNodes as $forNode) {
             if (($forNode instanceof ElementNode) === false) {
                 continue;
             }
             $classAttr = $forNode->getAttribute('class');
-            $classVal = $classAttr->getValue();
+            $classVal = $classAttr->value;
 
             if ($classVal === null) {
                 $firstClassStr = ($firstClass !== null) ? ' class="' . $firstClass . '"' : null;

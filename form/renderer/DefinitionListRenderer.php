@@ -27,15 +27,15 @@ class DefinitionListRenderer extends FormRenderer
     {
         $formField = $this->formField;
 
-        $labelAttributes = [new HtmlTagAttribute('for', $formField->getName(), true)];
-        if (!$this->formField->isRenderLabel()) {
+        $labelAttributes = [new HtmlTagAttribute('for', $formField->name, true)];
+        if (!$this->formField->renderLabel) {
             $labelAttributes[] = new HtmlTagAttribute('class', 'visuallyhidden', true);
         }
 
         $labelTag = new HtmlTag('label', false, $labelAttributes);
-        $labelTag->addText($formField->getLabel());
+        $labelTag->addText($formField->label);
 
-        if ($formField->isRequired() && $formField->isRenderRequiredAbbr()) {
+        if ($formField->isRequired() && $formField->renderRequiredAbbr) {
             $abbrTag = new HtmlTag('span', false, [
                 new HtmlTagAttribute('class', 'required', true),
             ]);
@@ -43,7 +43,7 @@ class DefinitionListRenderer extends FormRenderer
             $labelTag->addTag($abbrTag);
         }
 
-        $labelInfoText = $formField->getLabelInfoText();
+        $labelInfoText = $formField->labelInfoText;
         if (!is_null($labelInfoText)) {
             $labelInfoTag = new HtmlTag('i', false, [
                 new HtmlTagAttribute('class', 'label-info', true),
@@ -52,7 +52,7 @@ class DefinitionListRenderer extends FormRenderer
             $labelTag->addTag($labelInfoTag);
         }
 
-        if (!$this->formField->isRenderLabel()) {
+        if (!$this->formField->renderLabel) {
             // A <div> (instead of <dd>) will be created to contain the child with the "visualInvisible" <label>
             $divTag = new HtmlTag('div', false);
             $divTag->addTag($labelTag);
@@ -66,7 +66,7 @@ class DefinitionListRenderer extends FormRenderer
             $divTag->addTag($defaultFormFieldRenderer->getHtmlTag());
 
             FormRenderer::addErrorsToParentHtmlTag($formField, $divTag);
-            if (!is_null($formField->getFieldInfo())) {
+            if (!is_null($formField->fieldInfo)) {
                 FormRenderer::addFieldInfoToParentHtmlTag($formField, $divTag);
             }
             $this->setHtmlTag($divTag);
@@ -79,7 +79,7 @@ class DefinitionListRenderer extends FormRenderer
 
         $dtTag->addTag($labelTag);
 
-        $additionalColumnContent = $formField->getAdditionalColumnContent();
+        $additionalColumnContent = $formField->additionalColumnContent;
 
         $ddClasses = [];
 
@@ -121,7 +121,7 @@ class DefinitionListRenderer extends FormRenderer
 
         FormRenderer::addErrorsToParentHtmlTag($formField, $ddTag);
 
-        if (!is_null($formField->getFieldInfo())) {
+        if (!is_null($formField->fieldInfo)) {
             FormRenderer::addFieldInfoToParentHtmlTag($formField, $ddTag);
         }
 

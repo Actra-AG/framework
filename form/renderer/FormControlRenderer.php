@@ -13,11 +13,8 @@ use framework\html\HtmlTagAttribute;
 
 class FormControlRenderer extends FormRenderer
 {
-    private FormControl $formControl;
-
-    public function __construct(FormControl $formControl)
+    public function __construct(private readonly FormControl $formControl)
     {
-        $this->formControl = $formControl;
     }
 
     public function prepare(): void
@@ -26,19 +23,19 @@ class FormControlRenderer extends FormRenderer
 
         $buttonTag = new HtmlTag('button', false, [
             new HtmlTagAttribute('type', 'submit', true),
-            new HtmlTagAttribute('name', $formControl->getName(), true),
+            new HtmlTagAttribute('name', $formControl->name, true),
         ]);
-        $buttonTag->addText($formControl->getSubmitLabel());
+        $buttonTag->addText(htmlText: $formControl->submitLabel);
 
         $divTag = new HtmlTag('div', false, [new HtmlTagAttribute('class', 'form-control', true)]);
         $divTag->addTag($buttonTag);
 
-        if (!is_null($formControl->getCancelLink())) {
+        if (!is_null($formControl->cancelLink)) {
             $aTag = new HtmlTag('a', false, [
-                new HtmlTagAttribute('href', $formControl->getCancelLink(), true),
+                new HtmlTagAttribute('href', $formControl->cancelLink, true),
                 new HtmlTagAttribute('class', 'link-cancel', true),
             ]);
-            $aTag->addText($formControl->getCancelLabel());
+            $aTag->addText($formControl->cancelLabel);
             $divTag->addTag($aTag);
         }
 

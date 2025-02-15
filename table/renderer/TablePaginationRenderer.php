@@ -23,12 +23,12 @@ readonly class TablePaginationRenderer
     ): string {
         return Pagination::render(
             listIdentifier: $dbResultTable->identifier,
-            totalAmount: $dbResultTable->getTotalAmount(),
+            totalAmount: $dbResultTable->totalAmount,
             currentPage: $dbResultTable->getCurrentPaginationPage(),
             entriesPerPage: $entriesPerPage,
             beforeAfter: $beforeAfter,
             startEnd: $startEnd,
-            additionalLinkParameters: $dbResultTable->getAdditionalLinkParameters(),
+            additionalLinkParameters: $dbResultTable->additionalLinkParameters,
             individualHtmlSnippetPath: $this->individualHtmlSnippetPath
         );
     }

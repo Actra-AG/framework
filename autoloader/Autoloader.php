@@ -98,8 +98,8 @@ class Autoloader
         }
 
         foreach ($this->paths as $autoloaderPathModel) {
-            $path = $autoloaderPathModel->getPath();
-            $mode = $autoloaderPathModel->getMode();
+            $path = $autoloaderPathModel->path;
+            $mode = $autoloaderPathModel->mode;
 
             if ($mode === AutoloaderPathModel::MODE_NAMESPACE) {
                 $delimiter = '\\';

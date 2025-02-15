@@ -94,11 +94,11 @@ class Pagination
             )
         );
 
-        return (new HtmlSnippet(
+        return new HtmlSnippet(
             htmlSnippetFilePath: is_null(value: $individualHtmlSnippetPath) ? Core::get(
                 )->frameworkDirectory . 'pagination' . DIRECTORY_SEPARATOR . 'pagination.html' : $individualHtmlSnippetPath,
             replacements: $replacements
-        ))->render();
+        )->render();
     }
 
     private static function getLinkTarget(

@@ -31,10 +31,10 @@ class OptionTag extends TemplateTag implements TagNode
 
     public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
     {
-        $sels = $elementNode->getAttribute('selection')->getValue();
-        $valueAttr = $elementNode->getAttribute('value')->getValue();
+        $sels = $elementNode->getAttribute('selection')->value;
+        $valueAttr = $elementNode->getAttribute('value')->value;
         $value = is_numeric($valueAttr) ? $valueAttr : "'" . $valueAttr . "'";
-        $type = $elementNode->getAttribute('type')->getValue();
+        $type = $elementNode->getAttribute('type')->value;
         $elementNode->removeAttribute('selection');
 
         $elementNode->namespace = null;
