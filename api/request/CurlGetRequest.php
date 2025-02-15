@@ -13,16 +13,16 @@ use framework\api\AbstractCurlRequest;
  */
 class CurlGetRequest extends AbstractCurlRequest
 {
-	private function __construct(string $requestTargetUrl)
-	{
-		parent::__construct(
-			requestTargetUrl: $requestTargetUrl,
-			requestTypeSpecificCurlOptions: [CURLOPT_HTTPGET => true]
-		);
-	}
+    private function __construct(string $requestTargetUrl)
+    {
+        parent::__construct(
+            requestTargetUrl: $requestTargetUrl,
+            requestTypeSpecificCurlOptions: [CURLOPT_HTTPGET => true]
+        );
+    }
 
-	public static function prepare(string $requestTargetUrl): CurlGetRequest
-	{
-		return new CurlGetRequest(requestTargetUrl: $requestTargetUrl);
-	}
+    public static function prepare(string $requestTargetUrl): CurlGetRequest
+    {
+        return new CurlGetRequest(requestTargetUrl: $requestTargetUrl);
+    }
 }

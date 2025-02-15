@@ -8,8 +8,8 @@ namespace framework\template\htmlparser;
 
 class CDataSectionNode extends HtmlNode
 {
-	public function __construct()
-	{
-		parent::__construct(nodeType: HtmlNode::CDATA_SECTION_NODE);
-	}
+    public function __construct()
+    {
+        parent::__construct(nodeType: HtmlNode::CDATA_SECTION_NODE);
+    }
 }

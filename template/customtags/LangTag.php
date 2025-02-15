@@ -16,57 +16,60 @@ use framework\template\template\TemplateTag;
 
 class LangTag extends TemplateTag implements TagNode, TagInline
 {
-	public static function getName(): string
-	{
-		return 'lang';
-	}
+    public static function getName(): string
+    {
+        return 'lang';
+    }
 
-	public static function isElseCompatible(): bool
-	{
-		return false;
-	}
+    public static function isElseCompatible(): bool
+    {
+        return false;
+    }
 
-	public static function isSelfClosing(): bool
-	{
-		return true;
-	}
+    public static function isSelfClosing(): bool
+    {
+        return true;
+    }
 
-	public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
-	{
-		$replValue = LangTag::replace($elementNode->getAttribute('key')->getValue(), $elementNode->getAttribute('vars')->getValue());
+    public static function getText($key, array $phpVars): string
+    {
+        return LocaleHandler::get()->getText(key: $key, replacements: $phpVars);
+    }
 
-		$replNode = new TextNode();
-		$replNode->content = $replValue;
+    public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
+    {
+        $replValue = LangTag::replace(
+            $elementNode->getAttribute('key')->getValue(),
+            $elementNode->getAttribute('vars')->getValue()
+        );
 
-		$elementNode->parentNode->replaceNode($elementNode, $replNode);
-	}
+        $replNode = new TextNode();
+        $replNode->content = $replValue;
 
-	public function replaceInline(TemplateEngine $tplEngine, $tagArr): string
-	{
-		$vars = (array_key_exists('vars', $tagArr)) ? $tagArr['vars'] : null;
+        $elementNode->parentNode->replaceNode($elementNode, $replNode);
+    }
 
-		return LangTag::replace($tagArr['key'], $vars);
-	}
+    public function replace($key, ?string $vars = null): string
+    {
+        $phpVars = ', array()';
+        if (!is_null($vars)) {
+            $varsEx = explode(',', $vars);
+            $varsFull = [];
 
-	public function replace($key, ?string $vars = null): string
-	{
-		$phpVars = ', array()';
-		if (!is_null($vars)) {
-			$varsEx = explode(',', $vars);
-			$varsFull = [];
+            foreach ($varsEx as $v) {
+                $varsFull[] = '\'' . $v . '\' => LangTag::getData(\'' . $v . '\')';
+            }
 
-			foreach ($varsEx as $v) {
-				$varsFull[] = '\'' . $v . '\' => LangTag::getData(\'' . $v . '\')';
-			}
+            $phpVars = ',array(' . implode(separator: ', ', array: $varsFull) . ')';
+        }
 
-			$phpVars = ',array(' . implode(separator: ', ', array: $varsFull) . ')';
-		}
+        return '<?php echo ' . __CLASS__ . '::getText(\'' . $key . '\'' . $phpVars . '); ?>';
+    }
 
-		return '<?php echo ' . __CLASS__ . '::getText(\'' . $key . '\'' . $phpVars . '); ?>';
-	}
+    public function replaceInline(TemplateEngine $tplEngine, $tagArr): string
+    {
+        $vars = (array_key_exists('vars', $tagArr)) ? $tagArr['vars'] : null;
 
-	public static function getText($key, array $phpVars): string
-	{
-		return LocaleHandler::get()->getText(key: $key, replacements: $phpVars);
-	}
+        return LangTag::replace($tagArr['key'], $vars);
+    }
 }

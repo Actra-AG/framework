@@ -13,27 +13,27 @@ use UnexpectedValueException;
 
 class MaxValueRule extends FormRule
 {
-	protected float|int $maxValue;
+    protected float|int $maxValue;
 
-	function __construct(float|int $maxValue, HtmlText $errorMessage)
-	{
-		parent::__construct($errorMessage);
+    public function __construct(float|int $maxValue, HtmlText $errorMessage)
+    {
+        parent::__construct($errorMessage);
 
-		$this->maxValue = $maxValue;
-	}
+        $this->maxValue = $maxValue;
+    }
 
-	public function validate(FormField $formField): bool
-	{
-		if ($formField->isValueEmpty()) {
-			return true;
-		}
+    public function validate(FormField $formField): bool
+    {
+        if ($formField->isValueEmpty()) {
+            return true;
+        }
 
-		$fieldValue = $formField->getRawValue();
+        $fieldValue = $formField->getRawValue();
 
-		if (is_int($fieldValue) || is_float($fieldValue)) {
-			return ($fieldValue <= $this->maxValue);
-		}
+        if (is_int($fieldValue) || is_float($fieldValue)) {
+            return ($fieldValue <= $this->maxValue);
+        }
 
-		throw new UnexpectedValueException('Could not handle field value for rule ' . __CLASS__);
-	}
+        throw new UnexpectedValueException('Could not handle field value for rule ' . __CLASS__);
+    }
 }

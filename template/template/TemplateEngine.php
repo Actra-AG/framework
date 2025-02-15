@@ -148,7 +148,7 @@ class TemplateEngine
 				throw new Exception('The Tag "' . $tagClassName . '" does not exist');
 			}
 
-			$tagInstance = new $tagClassName;
+            $tagInstance = new $tagClassName();
 			if (($tagInstance instanceof TemplateTag) === false) {
 				$this->templateCacheInterface->setSaveOnDestruct(false);
 				throw new Exception('The class "' . $tagClassName . '" does not extend the abstract class "TemplateTag" and is so recognized as an illegal class for a custom tag."');
@@ -187,7 +187,7 @@ class TemplateEngine
 			$tagClassName = $this->customTags[$tagName];
 
 			/** @var TagInline $tagInstance */
-			$tagInstance = new $tagClassName;
+            $tagInstance = new $tagClassName();
 
 			if ($tagInstance instanceof TemplateTag === false) {
 				$this->templateCacheInterface->setSaveOnDestruct(false);
@@ -347,7 +347,7 @@ class TemplateEngine
 	 *
 	 * @param string  $key
 	 * @param mixed   $value
-	 * @param boolean $overwrite
+     * @param bool $overwrite
 	 *
 	 * @throws Exception
 	 */

@@ -8,9 +8,9 @@ namespace framework\db;
 
 readonly class DbQueryData
 {
-	public function __construct(
-		public string $query,
-		public array  $params
-	) {
-	}
+    public function __construct(
+        public string $query,
+        public array $params
+    ) {
+    }
 }

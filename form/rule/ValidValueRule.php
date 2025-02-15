@@ -14,31 +14,31 @@ use UnexpectedValueException;
 
 class ValidValueRule extends FormRule
 {
-	protected array $validValues;
+    protected array $validValues;
 
-	public function __construct(array $validValues, HtmlText $errorMessage)
-	{
-		parent::__construct($errorMessage);
+    public function __construct(array $validValues, HtmlText $errorMessage)
+    {
+        parent::__construct($errorMessage);
 
-		$this->validValues = $validValues;
-	}
+        $this->validValues = $validValues;
+    }
 
-	public function validate(FormField $formField): bool
-	{
-		if ($formField->isValueEmpty()) {
-			return true;
-		}
+    public function validate(FormField $formField): bool
+    {
+        if ($formField->isValueEmpty()) {
+            return true;
+        }
 
-		$fieldValue = $formField->getRawValue();
+        $fieldValue = $formField->getRawValue();
 
-		if (is_scalar($fieldValue)) {
-			return in_array($fieldValue, $this->validValues);
-		}
+        if (is_scalar($fieldValue)) {
+            return in_array($fieldValue, $this->validValues);
+        }
 
-		if (is_array($fieldValue) || $fieldValue instanceof ArrayObject) {
-			return (count(array_diff($fieldValue, $this->validValues)) === 0);
-		}
+        if (is_array($fieldValue) || $fieldValue instanceof ArrayObject) {
+            return (count(array_diff($fieldValue, $this->validValues)) === 0);
+        }
 
-		throw new UnexpectedValueException('Could not handle field value for rule ' . __CLASS__);
-	}
+        throw new UnexpectedValueException('Could not handle field value for rule ' . __CLASS__);
+    }
 }

@@ -14,41 +14,41 @@ use UnexpectedValueException;
 
 class ValidateAgainstOptions extends FormRule
 {
-	private FormOptions $validFormOptions;
+    private FormOptions $validFormOptions;
 
-	function __construct(HtmlText $errorMessage, FormOptions $validFormOptions)
-	{
-		$this->validFormOptions = $validFormOptions;
+    public function __construct(HtmlText $errorMessage, FormOptions $validFormOptions)
+    {
+        $this->validFormOptions = $validFormOptions;
 
-		parent::__construct($errorMessage);
-	}
+        parent::__construct($errorMessage);
+    }
 
-	public function validate(FormField $formField): bool
-	{
-		if ($formField->isValueEmpty()) {
-			return true;
-		}
+    public function validate(FormField $formField): bool
+    {
+        if ($formField->isValueEmpty()) {
+            return true;
+        }
 
-		$fieldValue = $formField->getRawValue();
+        $fieldValue = $formField->getRawValue();
 
-		if (is_scalar($fieldValue)) {
-			return $this->validFormOptions->exists($fieldValue);
-		}
+        if (is_scalar($fieldValue)) {
+            return $this->validFormOptions->exists($fieldValue);
+        }
 
-		if (is_array($fieldValue)) {
-			foreach ($fieldValue as $elementValue) {
-				if (!is_scalar($elementValue)) {
-					return false;
-				}
+        if (is_array($fieldValue)) {
+            foreach ($fieldValue as $elementValue) {
+                if (!is_scalar($elementValue)) {
+                    return false;
+                }
 
-				if (!$this->validFormOptions->exists($elementValue)) {
-					return false;
-				}
-			}
+                if (!$this->validFormOptions->exists($elementValue)) {
+                    return false;
+                }
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		throw new UnexpectedValueException('The field value is neither a scalar data type nor an array');
-	}
+        throw new UnexpectedValueException('The field value is neither a scalar data type nor an array');
+    }
 }

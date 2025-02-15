@@ -8,8 +8,8 @@ namespace framework\autoloader;
 
 class AutoloaderPathModel
 {
-	const string MODE_UNDERSCORE = 'underscore';
-	const string MODE_NAMESPACE = 'namespace';
+    public const string MODE_UNDERSCORE = 'underscore';
+    public const string MODE_NAMESPACE = 'namespace';
 
 	private string $path;
 	private string $mode;

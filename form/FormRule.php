@@ -25,7 +25,7 @@ abstract class FormRule
 	 *
 	 * @return bool
 	 */
-	public abstract function validate(FormField $formField): bool;
+    abstract public function validate(FormField $formField): bool;
 
 	/**
 	 * Overwrite the error message for this rule.

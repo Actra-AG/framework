@@ -14,75 +14,76 @@ use framework\template\template\TemplateTag;
 
 class FormAddRemoveTag extends TemplateTag implements TagNode
 {
-	public static function getName(): string
-	{
-		return 'formAddRemove';
-	}
+    public static function getName(): string
+    {
+        return 'formAddRemove';
+    }
 
-	public static function isElseCompatible(): bool
-	{
-		return false;
-	}
+    public static function isElseCompatible(): bool
+    {
+        return false;
+    }
 
-	public static function isSelfClosing(): bool
-	{
-		return true;
-	}
+    public static function isSelfClosing(): bool
+    {
+        return true;
+    }
 
-	public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
-	{
-		$tplEngine->checkRequiredAttributes($elementNode, ['chosen', 'name']);
+    public static function render($name, $chosenSelector, $poolSelector, TemplateEngine $tplEngine): string
+    {
+        $chosenEntries = $tplEngine->getDataFromSelector($chosenSelector);
+        $poolEntries = [];
 
-		$chosenEntriesSelector = $elementNode->getAttribute('chosen')->getValue();
-		$poolEntriesSelector = $elementNode->doesAttributeExist('pool') ? $elementNode->getAttribute('pool')->getValue() : null;
-		$nameSelector = $elementNode->getAttribute('name')->getValue();
+        if ($poolSelector !== null) {
+            $poolEntries = $tplEngine->getDataFromSelector($poolSelector);
+        }
 
-		$newNode = new TextNode();
-		$newNode->content = '<?= ' . FormAddRemoveTag::class . '::render(\'' . $nameSelector . '\', \'' . $chosenEntriesSelector . '\', \'' . $poolEntriesSelector . '\', $this); ?>';
+        $html = '<div class="add-remove" name="' . $name . '">';
 
-		$elementNode->parentNode->insertBefore($newNode, $elementNode);
-		$elementNode->parentNode->removeNode($elementNode);
-	}
+        $html .= '<ul class="option-list chosen">';
 
-	public static function render($name, $chosenSelector, $poolSelector, TemplateEngine $tplEngine): string
-	{
-		$chosenEntries = $tplEngine->getDataFromSelector($chosenSelector);
-		$poolEntries = [];
+        foreach ($chosenEntries as $id => $title) {
+            $html .= '<li id="' . $name . '-' . $id . '">' . $title . '</li>';
+        }
 
-		if ($poolSelector !== null) {
-			$poolEntries = $tplEngine->getDataFromSelector($poolSelector);
-		}
+        $html .= '</ul>';
 
-		$html = '<div class="add-remove" name="' . $name . '">';
-
-		$html .= '<ul class="option-list chosen">';
-
-		foreach ($chosenEntries as $id => $title) {
-			$html .= '<li id="' . $name . '-' . $id . '">' . $title . '</li>';
-		}
-
-		$html .= '</ul>';
-
-		if (count($poolEntries) > 0) {
-			// left or right
-			$html .= '<div class="between">
+        if (count($poolEntries) > 0) {
+            // left or right
+            $html .= '<div class="between">
 				<a href="#" class="entries-add" title="add selected entries">&larr;</a>
 				<br>
 				<a href="#" class="entries-remove" title="remove selected entries">&rarr;</a>
 			</div>';
 
-			// Pool
-			$html .= '<ul class="option-list pool">';
+            // Pool
+            $html .= '<ul class="option-list pool">';
 
-			foreach ($poolEntries as $id => $title) {
-				$html .= '<li id="' . $name . '-' . $id . '">' . $title . '</li>';
-			}
+            foreach ($poolEntries as $id => $title) {
+                $html .= '<li id="' . $name . '-' . $id . '">' . $title . '</li>';
+            }
 
-			$html .= '</ul>';
-		}
+            $html .= '</ul>';
+        }
 
-		$html .= '</div>';
+        $html .= '</div>';
 
-		return $html;
-	}
+        return $html;
+    }
+
+    public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
+    {
+        $tplEngine->checkRequiredAttributes($elementNode, ['chosen', 'name']);
+
+        $chosenEntriesSelector = $elementNode->getAttribute('chosen')->getValue();
+        $poolEntriesSelector = $elementNode->doesAttributeExist('pool') ? $elementNode->getAttribute('pool')->getValue(
+        ) : null;
+        $nameSelector = $elementNode->getAttribute('name')->getValue();
+
+        $newNode = new TextNode();
+        $newNode->content = '<?= ' . FormAddRemoveTag::class . '::render(\'' . $nameSelector . '\', \'' . $chosenEntriesSelector . '\', \'' . $poolEntriesSelector . '\', $this); ?>';
+
+        $elementNode->parentNode->insertBefore($newNode, $elementNode);
+        $elementNode->parentNode->removeNode($elementNode);
+    }
 }

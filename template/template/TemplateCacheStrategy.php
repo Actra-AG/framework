@@ -29,7 +29,7 @@ abstract class TemplateCacheStrategy
 	 *
 	 * @return TemplateCacheEntry|null
 	 */
-	public abstract function getCachedTplFile(string $tplFile): ?TemplateCacheEntry;
+    abstract public function getCachedTplFile(string $tplFile): ?TemplateCacheEntry;
 
 	/**
 	 * @param string                  $tplFile
@@ -38,7 +38,11 @@ abstract class TemplateCacheStrategy
 	 *
 	 * @return TemplateCacheEntry Path to the cached template
 	 */
-	public abstract function addCachedTplFile(string $tplFile, ?TemplateCacheEntry $currentCacheEntry, string $compiledTemplateContent): TemplateCacheEntry;
+    abstract public function addCachedTplFile(
+        string $tplFile,
+        ?TemplateCacheEntry $currentCacheEntry,
+        string $compiledTemplateContent
+    ): TemplateCacheEntry;
 
 	public function getCachePath(): string
 	{
@@ -46,7 +50,7 @@ abstract class TemplateCacheStrategy
 	}
 
 	/**
-	 * @param boolean $saveOnDestruct
+     * @param bool $saveOnDestruct
 	 */
 	public function setSaveOnDestruct(bool $saveOnDestruct): void
 	{

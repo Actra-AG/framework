@@ -10,64 +10,64 @@ use LogicException;
 
 abstract class AuthUser
 {
-	private static ?AuthUser $instance = null;
+    private static ?AuthUser $instance = null;
 
-	public function __construct(
-		public readonly int                    $ID,
-		public readonly bool                   $isActive,
-		private int                            $wrongPasswordAttempts,
-		private readonly AccessRightCollection $accessRightCollection,
-		private Password                       $password
-	) {
-		if (!is_null(value: AuthUser::$instance)) {
-			throw new LogicException(message: 'There can only be one AuthUser instance.');
-		}
-		AuthUser::$instance = $this;
-	}
+    public function __construct(
+        public readonly int $ID,
+        public readonly bool $isActive,
+        private int $wrongPasswordAttempts,
+        private readonly AccessRightCollection $accessRightCollection,
+        private Password $password
+    ) {
+        if (!is_null(value: AuthUser::$instance)) {
+            throw new LogicException(message: 'There can only be one AuthUser instance.');
+        }
+        AuthUser::$instance = $this;
+    }
 
-	public function hasOneOfRights(AccessRightCollection $accessRightCollection): bool
-	{
-		if (!$this->isActive) {
-			return false;
-		}
+    protected static function resetInstance(): void
+    {
+        AuthUser::$instance = null;
+    }
 
-		return $this->accessRightCollection->hasOneOfAccessRights(accessRightCollection: $accessRightCollection);
-	}
+    public function hasOneOfRights(AccessRightCollection $accessRightCollection): bool
+    {
+        if (!$this->isActive) {
+            return false;
+        }
 
-	protected function changePassword(Password $newPassword): void
-	{
-		$this->password = $newPassword;
-	}
+        return $this->accessRightCollection->hasOneOfAccessRights(accessRightCollection: $accessRightCollection);
+    }
 
-	public function getWrongPasswordAttempts(): int
-	{
-		return $this->wrongPasswordAttempts;
-	}
+    public function getWrongPasswordAttempts(): int
+    {
+        return $this->wrongPasswordAttempts;
+    }
 
-	public function increaseWrongPasswordAttempts(): void
-	{
-		$this->dbIncreaseWrongPasswordAttempts();
-		$this->wrongPasswordAttempts++;
-	}
+    public function increaseWrongPasswordAttempts(): void
+    {
+        $this->dbIncreaseWrongPasswordAttempts();
+        $this->wrongPasswordAttempts++;
+    }
 
-	public function confirmSuccessfulLogin(): int
-	{
-		$this->wrongPasswordAttempts = 0;
+    abstract protected function dbIncreaseWrongPasswordAttempts(): void;
 
-		return $this->dbConfirmSuccessfulLogin();
-	}
+    public function confirmSuccessfulLogin(): int
+    {
+        $this->wrongPasswordAttempts = 0;
 
-	abstract protected function dbIncreaseWrongPasswordAttempts(): void;
+        return $this->dbConfirmSuccessfulLogin();
+    }
 
-	abstract protected function dbConfirmSuccessfulLogin(): int;
+    abstract protected function dbConfirmSuccessfulLogin(): int;
 
-	public function getPassword(): Password
-	{
-		return $this->password;
-	}
+    public function getPassword(): Password
+    {
+        return $this->password;
+    }
 
-	protected static function resetInstance(): void
-	{
-		AuthUser::$instance = null;
-	}
+    protected function changePassword(Password $newPassword): void
+    {
+        $this->password = $newPassword;
+    }
 }

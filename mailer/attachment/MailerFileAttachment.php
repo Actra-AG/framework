@@ -27,37 +27,39 @@ use framework\mailer\MailerFunctions;
 
 readonly class MailerFileAttachment
 {
-	public string $path;
-	public string $fileName;
-	public string $type;
+    public string $path;
+    public string $fileName;
+    public string $type;
 
-	public function __construct(
-		string        $path,
-		string        $fileName = '',
-		public string $encoding = MailerConstants::ENCODING_BASE64,
-		string        $type = '',
-		public bool   $dispositionInline = false
-	) {
-		if (!in_array(needle: $this->encoding, haystack: MailerConstants::ENCODING_LIST)) {
-			throw new MailerException(message: 'Invalid encoding "' . $this->encoding . '". See MailerConstants::ENCODING_LIST[].');
-		}
-		$path = trim(string: $path);
-		if ($path === '') {
-			throw new MailerException(message: 'Empty path.');
-		}
-		if (!MailerFunctions::fileIsAccessible(path: $path)) {
-			throw new MailerException(message: 'Could not access file: ' . $path);
-		}
-		$this->path = $path;
-		$fileName = trim(string: $fileName);
-		if ($fileName === '') {
-			$fileName = MailerFunctions::mb_pathinfo(path: $path, options: PATHINFO_BASENAME);
-		}
-		$this->fileName = $fileName;
-		$type = trim(string: $type);
-		if ($type === '') {
-			$type = MailerFunctions::filenameToType(fileName: $path);
-		}
-		$this->type = $type;
-	}
+    public function __construct(
+        string $path,
+        string $fileName = '',
+        public string $encoding = MailerConstants::ENCODING_BASE64,
+        string $type = '',
+        public bool $dispositionInline = false
+    ) {
+        if (!in_array(needle: $this->encoding, haystack: MailerConstants::ENCODING_LIST)) {
+            throw new MailerException(
+                message: 'Invalid encoding "' . $this->encoding . '". See MailerConstants::ENCODING_LIST[].'
+            );
+        }
+        $path = trim(string: $path);
+        if ($path === '') {
+            throw new MailerException(message: 'Empty path.');
+        }
+        if (!MailerFunctions::fileIsAccessible(path: $path)) {
+            throw new MailerException(message: 'Could not access file: ' . $path);
+        }
+        $this->path = $path;
+        $fileName = trim(string: $fileName);
+        if ($fileName === '') {
+            $fileName = MailerFunctions::mb_pathinfo(path: $path, options: PATHINFO_BASENAME);
+        }
+        $this->fileName = $fileName;
+        $type = trim(string: $type);
+        if ($type === '') {
+            $type = MailerFunctions::filenameToType(fileName: $path);
+        }
+        $this->type = $type;
+    }
 }

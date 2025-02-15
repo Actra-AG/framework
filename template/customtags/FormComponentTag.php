@@ -14,38 +14,40 @@ use framework\template\template\TemplateTag;
 
 class FormComponentTag extends TemplateTag implements TagNode
 {
-	public static function getName(): string
-	{
-		return 'formComponent';
-	}
+    public static function getName(): string
+    {
+        return 'formComponent';
+    }
 
-	public static function isElseCompatible(): bool
-	{
-		return false;
-	}
+    public static function isElseCompatible(): bool
+    {
+        return false;
+    }
 
-	public static function isSelfClosing(): bool
-	{
-		return true;
-	}
+    public static function isSelfClosing(): bool
+    {
+        return true;
+    }
 
-	public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
-	{
-		$tplEngine->checkRequiredAttributes($elementNode, ['form', 'name']);
+    public static function render($formSelector, $componentName, TemplateEngine $tplEngine): string
+    {
+        $callback = [$tplEngine->getDataFromSelector($formSelector), 'getChildComponent'];
+        $component = call_user_func($callback, $componentName);
 
-		// DATA
-		$newNode = new TextNode();
-		$newNode->content = '<?= ' . FormComponentTag::class . '::render(\'' . $elementNode->getAttribute('form')->getValue() . '\', \'' . $elementNode->getAttribute('name')->getValue() . '\', $this); ?>';
+        return call_user_func([$component, 'render']);
+    }
 
-		$elementNode->parentNode->insertBefore($newNode, $elementNode);
-		$elementNode->parentNode->removeNode($elementNode);
-	}
+    public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
+    {
+        $tplEngine->checkRequiredAttributes($elementNode, ['form', 'name']);
 
-	public static function render($formSelector, $componentName, TemplateEngine $tplEngine): string
-	{
-		$callback = [$tplEngine->getDataFromSelector($formSelector), 'getChildComponent'];
-		$component = call_user_func($callback, $componentName);
+        // DATA
+        $newNode = new TextNode();
+        $newNode->content = '<?= ' . FormComponentTag::class . '::render(\'' . $elementNode->getAttribute(
+                'form'
+            )->getValue() . '\', \'' . $elementNode->getAttribute('name')->getValue() . '\', $this); ?>';
 
-		return call_user_func([$component, 'render']);
-	}
+        $elementNode->parentNode->insertBefore($newNode, $elementNode);
+        $elementNode->parentNode->removeNode($elementNode);
+    }
 }

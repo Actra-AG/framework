@@ -18,42 +18,42 @@ use framework\html\HtmlText;
 
 class CheckboxOptionsField extends OptionsField
 {
-	public function __construct(
-		string                $name,
-		HtmlText              $label,
-		FormOptions           $formOptions,
-		array                 $initialValues,
-		?HtmlText             $requiredError = null,
-		CheckboxOptionsLayout $layout = CheckboxOptionsLayout::LEGEND_AND_LIST
-	) {
-		parent::__construct(
-			name: $name,
-			label: $label,
-			formOptions: $formOptions,
-			initialValue: $initialValues,
-			autoComplete: null
-		);
-		$this->acceptArrayAsValue();
-		if (!is_null(value: $requiredError)) {
-			$this->addRule(formRule: new RequiredRule(defaultErrorMessage: $requiredError));
-		}
-		switch ($layout) {
-			case CheckboxOptionsLayout::DEFINITION_LIST:
-				$this->setRenderer(renderer: new DefinitionListRenderer(formField: $this));
-				break;
-			case CheckboxOptionsLayout::LEGEND_AND_LIST:
-				$this->setRenderer(renderer: new LegendAndListRenderer(optionsField: $this));
-				break;
-			case CheckboxOptionsLayout::CHECKBOX_ITEM:
-				$this->setRenderer(renderer: new CheckboxItemRenderer(checkboxOptionsField: $this));
-				break;
-			case CheckboxOptionsLayout::NONE:
-				break;
-		}
-	}
+    public function __construct(
+        string $name,
+        HtmlText $label,
+        FormOptions $formOptions,
+        array $initialValues,
+        ?HtmlText $requiredError = null,
+        CheckboxOptionsLayout $layout = CheckboxOptionsLayout::LEGEND_AND_LIST
+    ) {
+        parent::__construct(
+            name: $name,
+            label: $label,
+            formOptions: $formOptions,
+            initialValue: $initialValues,
+            autoComplete: null
+        );
+        $this->acceptArrayAsValue();
+        if (!is_null(value: $requiredError)) {
+            $this->addRule(formRule: new RequiredRule(defaultErrorMessage: $requiredError));
+        }
+        switch ($layout) {
+            case CheckboxOptionsLayout::DEFINITION_LIST:
+                $this->setRenderer(renderer: new DefinitionListRenderer(formField: $this));
+                break;
+            case CheckboxOptionsLayout::LEGEND_AND_LIST:
+                $this->setRenderer(renderer: new LegendAndListRenderer(optionsField: $this));
+                break;
+            case CheckboxOptionsLayout::CHECKBOX_ITEM:
+                $this->setRenderer(renderer: new CheckboxItemRenderer(checkboxOptionsField: $this));
+                break;
+            case CheckboxOptionsLayout::NONE:
+                break;
+        }
+    }
 
-	public function getDefaultRenderer(): FormRenderer
-	{
-		return new CheckboxOptionsRenderer(checkboxOptionsField: $this);
-	}
+    public function getDefaultRenderer(): FormRenderer
+    {
+        return new CheckboxOptionsRenderer(checkboxOptionsField: $this);
+    }
 }

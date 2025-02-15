@@ -8,8 +8,8 @@ namespace framework\template\htmlparser;
 
 class TextNode extends HtmlNode
 {
-	public function __construct()
-	{
-		parent::__construct(nodeType: HtmlNode::TEXT_NODE);
-	}
+    public function __construct()
+    {
+        parent::__construct(nodeType: HtmlNode::TEXT_NODE);
+    }
 }

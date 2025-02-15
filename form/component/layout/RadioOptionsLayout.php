@@ -8,7 +8,7 @@ namespace framework\form\component\layout;
 
 enum RadioOptionsLayout: int
 {
-	case NONE = 0;
-	case DEFINITION_LIST = 1;
-	case LEGEND_AND_LIST = 2;
+    case NONE = 0;
+    case DEFINITION_LIST = 1;
+    case LEGEND_AND_LIST = 2;
 }

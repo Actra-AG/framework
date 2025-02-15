@@ -8,7 +8,7 @@ namespace framework\datacheck\validatorTypes;
 
 enum IpTypeEnum
 {
-	case ip;
-	case ipv4;
-	case ipv6;
+    case ip;
+    case ipv4;
+    case ipv6;
 }

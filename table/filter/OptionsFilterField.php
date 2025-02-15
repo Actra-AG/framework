@@ -13,94 +13,97 @@ use LogicException;
 
 class OptionsFilterField extends AbstractTableFilterField
 {
-	/** @var FilterOption[] */
-	private readonly array $filterOptions;
-	private string $selectedValue = '';
+    /** @var FilterOption[] */
+    private readonly array $filterOptions;
+    private string $selectedValue = '';
 
-	public function __construct(
-		TableFilter             $parentFilter,
-		string                  $filterFieldIdentifier,
-		HtmlText                $label,
-		array                   $filterOptions,
-		private readonly string $defaultValue = '',
-		private readonly bool   $chosenEnhancedDropDown = false,
-		bool                    $highlightFieldIfSelected = false
-	) {
-		parent::__construct(
-			parentFilter: $parentFilter,
-			filterFieldIdentifier: $filterFieldIdentifier,
-			label: $label,
-			highlightFieldIfSelected: $highlightFieldIfSelected
-		);
-		$finalOptions = [];
-		foreach ($filterOptions as $filterOption) {
-			if (!($filterOption instanceof FilterOption)) {
-				throw new LogicException(message: 'Option must be an instance of FilterOption');
-			}
-			$finalOptions[$filterOption->identifier] = $filterOption;
-		}
-		$this->filterOptions = $finalOptions;
-	}
+    public function __construct(
+        TableFilter $parentFilter,
+        string $filterFieldIdentifier,
+        HtmlText $label,
+        array $filterOptions,
+        private readonly string $defaultValue = '',
+        private readonly bool $chosenEnhancedDropDown = false,
+        bool $highlightFieldIfSelected = false
+    ) {
+        parent::__construct(
+            parentFilter: $parentFilter,
+            filterFieldIdentifier: $filterFieldIdentifier,
+            label: $label,
+            highlightFieldIfSelected: $highlightFieldIfSelected
+        );
+        $finalOptions = [];
+        foreach ($filterOptions as $filterOption) {
+            if (!($filterOption instanceof FilterOption)) {
+                throw new LogicException(message: 'Option must be an instance of FilterOption');
+            }
+            $finalOptions[$filterOption->identifier] = $filterOption;
+        }
+        $this->filterOptions = $finalOptions;
+    }
 
-	public function init(): void
-	{
-		$this->selectedValue = (string)$this->getFromSession(index: $this->identifier);
-	}
+    public function init(): void
+    {
+        $this->selectedValue = (string)$this->getFromSession(index: $this->identifier);
+    }
 
-	public function reset(): void
-	{
-		$this->setSelectedValue(selectedValue: $this->defaultValue);
-	}
+    public function reset(): void
+    {
+        $this->setSelectedValue(selectedValue: $this->defaultValue);
+    }
 
-	private function setSelectedValue(string $selectedValue): void
-	{
-		$this->selectedValue = $selectedValue;
-		$this->saveToSession(index: $this->identifier, value: $selectedValue);
-	}
+    private function setSelectedValue(string $selectedValue): void
+    {
+        $this->selectedValue = $selectedValue;
+        $this->saveToSession(index: $this->identifier, value: $selectedValue);
+    }
 
-	public function checkInput(): void
-	{
-		$inputValue = (string)HttpRequest::getInputString(keyName: $this->identifier);
-		if (array_key_exists(key: $inputValue, array: $this->filterOptions)) {
-			$this->setSelectedValue(selectedValue: $inputValue);
-		}
-	}
+    public function checkInput(): void
+    {
+        $inputValue = (string)HttpRequest::getInputString(keyName: $this->identifier);
+        if (array_key_exists(key: $inputValue, array: $this->filterOptions)) {
+            $this->setSelectedValue(selectedValue: $inputValue);
+        }
+    }
 
-	public function getWhereCondition(): DbQueryData
-	{
-		return $this->filterOptions[$this->selectedValue]->whereCondition;
-	}
+    public function getWhereCondition(): DbQueryData
+    {
+        return $this->filterOptions[$this->selectedValue]->whereCondition;
+    }
 
-	protected function renderField(): string
-	{
-		$filterName = $this->identifier;
-		$htmlArr = [];
-		$classes = [];
-		if (
-			$this->highlightFieldIfSelected
-			&& $this->isSelected()
-		) {
-			$classes[] = 'highlight';
-		}
-		if ($this->chosenEnhancedDropDown) {
-			$classes[] = 'chosen';
-		}
-		$htmlArr[] = '<select name="' . $filterName . '" id="filter-' . $filterName . '" class="' . implode(separator: ' ', array: $classes) . '">';
-		foreach ($this->filterOptions as $filterOption) {
-			$htmlArr[] = $filterOption->render(selectedValue: $this->selectedValue);
-		}
-		$htmlArr[] = '</select>';
+    public function getSelectedValue(): string
+    {
+        return $this->selectedValue;
+    }
 
-		return implode(separator: PHP_EOL, array: $htmlArr);
-	}
+    protected function renderField(): string
+    {
+        $filterName = $this->identifier;
+        $htmlArr = [];
+        $classes = [];
+        if (
+            $this->highlightFieldIfSelected
+            && $this->isSelected()
+        ) {
+            $classes[] = 'highlight';
+        }
+        if ($this->chosenEnhancedDropDown) {
+            $classes[] = 'chosen';
+        }
+        $htmlArr[] = '<select name="' . $filterName . '" id="filter-' . $filterName . '" class="' . implode(
+                separator: ' ',
+                array: $classes
+            ) . '">';
+        foreach ($this->filterOptions as $filterOption) {
+            $htmlArr[] = $filterOption->render(selectedValue: $this->selectedValue);
+        }
+        $htmlArr[] = '</select>';
 
-	public function isSelected(): bool
-	{
-		return ($this->selectedValue !== '');
-	}
+        return implode(separator: PHP_EOL, array: $htmlArr);
+    }
 
-	public function getSelectedValue(): string
-	{
-		return $this->selectedValue;
-	}
+    public function isSelected(): bool
+    {
+        return ($this->selectedValue !== '');
+    }
 }

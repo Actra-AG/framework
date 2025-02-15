@@ -11,8 +11,8 @@ use framework\form\FormRule;
 
 class RequiredRule extends FormRule
 {
-	public function validate(FormField $formField): bool
-	{
-		return !$formField->isValueEmpty();
-	}
+    public function validate(FormField $formField): bool
+    {
+        return !$formField->isValueEmpty();
+    }
 }

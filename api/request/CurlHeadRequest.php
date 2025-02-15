@@ -13,19 +13,19 @@ use framework\api\AbstractCurlRequest;
  */
 class CurlHeadRequest extends AbstractCurlRequest
 {
-	private function __construct(string $requestTargetUrl)
-	{
-		parent::__construct(
-			requestTargetUrl: $requestTargetUrl,
-			requestTypeSpecificCurlOptions: [
-				CURLOPT_NOBODY => true,
-				CURLOPT_HEADER => true,
-			]
-		);
-	}
+    private function __construct(string $requestTargetUrl)
+    {
+        parent::__construct(
+            requestTargetUrl: $requestTargetUrl,
+            requestTypeSpecificCurlOptions: [
+                CURLOPT_NOBODY => true,
+                CURLOPT_HEADER => true,
+            ]
+        );
+    }
 
-	public static function prepare(string $requestTargetUrl): CurlHeadRequest
-	{
-		return new CurlHeadRequest(requestTargetUrl: $requestTargetUrl);
-	}
+    public static function prepare(string $requestTargetUrl): CurlHeadRequest
+    {
+        return new CurlHeadRequest(requestTargetUrl: $requestTargetUrl);
+    }
 }

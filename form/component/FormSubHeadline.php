@@ -12,22 +12,22 @@ use framework\html\HtmlText;
 
 class FormSubHeadline extends FormComponent
 {
-	private int $headingLevel;
-	private HtmlText $content;
+    private int $headingLevel;
+    private HtmlText $content;
 
-	public function __construct(int $headingLevel, HtmlText $content)
-	{
-		$this->headingLevel = $headingLevel;
-		$this->content = $content;
+    public function __construct(int $headingLevel, HtmlText $content)
+    {
+        $this->headingLevel = $headingLevel;
+        $this->content = $content;
 
-		parent::__construct(uniqid());
-	}
+        parent::__construct(uniqid());
+    }
 
-	public function getHtmlTag(): HtmlTag
-	{
-		$headline = new HtmlTag('h' . $this->headingLevel, false, []);
-		$headline->addText($this->content);
+    public function getHtmlTag(): HtmlTag
+    {
+        $headline = new HtmlTag('h' . $this->headingLevel, false, []);
+        $headline->addText($this->content);
 
-		return $headline;
-	}
+        return $headline;
+    }
 }

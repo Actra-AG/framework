@@ -11,20 +11,20 @@ use framework\form\FormRule;
 
 class FloatValueRule extends FormRule
 {
-	public function validate(FormField $formField): bool
-	{
-		if ($formField->isValueEmpty()) {
-			return true;
-		}
+    public function validate(FormField $formField): bool
+    {
+        if ($formField->isValueEmpty()) {
+            return true;
+        }
 
-		$value = $formField->getRawValue();
+        $value = $formField->getRawValue();
 
-		return (
-			filter_var($value, FILTER_VALIDATE_FLOAT, FILTER_FLAG_ALLOW_THOUSAND) !== false ||
-			filter_var($value, FILTER_VALIDATE_FLOAT, [
-				'flags'   => FILTER_FLAG_ALLOW_THOUSAND,
-				'options' => ['decimal' => ','],
-			]) !== false
-		);
-	}
+        return (
+            filter_var($value, FILTER_VALIDATE_FLOAT, FILTER_FLAG_ALLOW_THOUSAND) !== false ||
+            filter_var($value, FILTER_VALIDATE_FLOAT, [
+                'flags' => FILTER_FLAG_ALLOW_THOUSAND,
+                'options' => ['decimal' => ','],
+            ]) !== false
+        );
+    }
 }

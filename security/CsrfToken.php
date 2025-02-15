@@ -10,7 +10,7 @@ use framework\session\AbstractSessionHandler;
 
 class CsrfToken
 {
-	const string CSRFTOKENSTORAGE = 'csrftoken';
+    public const string CSRFTOKENSTORAGE = 'csrftoken';
 
 	/**
 	 * Returns a CSRF-Token (generate and stores it, if not already done)

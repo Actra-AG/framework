@@ -14,68 +14,71 @@ use framework\template\template\TemplateTag;
 
 class OptionsTag extends TemplateTag implements TagNode
 {
-	public static function getName(): string
-	{
-		return 'options';
-	}
+    public static function getName(): string
+    {
+        return 'options';
+    }
 
-	public static function isElseCompatible(): bool
-	{
-		return false;
-	}
+    public static function isElseCompatible(): bool
+    {
+        return false;
+    }
 
-	public static function isSelfClosing(): bool
-	{
-		return true;
-	}
+    public static function isSelfClosing(): bool
+    {
+        return true;
+    }
 
-	public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
-	{
-		$tplEngine->checkRequiredAttributes($elementNode, ['options']);
+    public static function render(TemplateEngine $tplEngine, $optionsSelector, $selectedSelector): string
+    {
+        $options = $tplEngine->getDataFromSelector($optionsSelector);
+        $selection = [];
 
-		$selectionSelector = "'{$elementNode->getAttribute('selected')->getValue()}'";
-		$optionsSelector = "'{$elementNode->getAttribute('options')->getValue()}'";
+        if ($selectedSelector !== null) {
+            $selection = (array)$tplEngine->getDataFromSelector($selectedSelector);
+        }
 
-		$textContent = '<?php echo ' . __CLASS__ . '::render($this, ' . $optionsSelector . ', ' . $selectionSelector . '); ?>';
+        return OptionsTag::renderOptions($options, $selection);
+    }
 
-		$newNode = new TextNode();
-		$newNode->content = $textContent;
+    public static function renderOptions(array $options, array $selection): string
+    {
+        $html = '';
 
-		$elementNode->parentNode->insertBefore($newNode, $elementNode);
-		$elementNode->parentNode->removeNode($elementNode);
-	}
+        foreach ($options as $key => $value) {
+            if (is_array($value) === true) {
+                $html .= '<optgroup label="' . $key . '">' . PHP_EOL . OptionsTag::renderOptions(
+                        $value,
+                        $selection
+                    ) . '</optgroup>' . PHP_EOL;
+            } else {
+                $attributes = [
+                    'option',
+                    'value="' . $key . '"',
+                ];
+                if (in_array($key, $selection)) {
+                    $attributes[] = 'selected';
+                }
+                $html .= '<' . implode(separator: ' ', array: $attributes) . '>' . $value . '</option>' . PHP_EOL;
+            }
+        }
 
-	public static function render(TemplateEngine $tplEngine, $optionsSelector, $selectedSelector): string
-	{
-		$options = $tplEngine->getDataFromSelector($optionsSelector);
-		$selection = [];
+        return $html;
+    }
 
-		if ($selectedSelector !== null) {
-			$selection = (array)$tplEngine->getDataFromSelector($selectedSelector);
-		}
+    public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
+    {
+        $tplEngine->checkRequiredAttributes($elementNode, ['options']);
 
-		return OptionsTag::renderOptions($options, $selection);
-	}
+        $selectionSelector = "'{$elementNode->getAttribute('selected')->getValue()}'";
+        $optionsSelector = "'{$elementNode->getAttribute('options')->getValue()}'";
 
-	public static function renderOptions(array $options, array $selection): string
-	{
-		$html = '';
+        $textContent = '<?php echo ' . __CLASS__ . '::render($this, ' . $optionsSelector . ', ' . $selectionSelector . '); ?>';
 
-		foreach ($options as $key => $value) {
-			if (is_array($value) === true) {
-				$html .= '<optgroup label="' . $key . '">' . PHP_EOL . OptionsTag::renderOptions($value, $selection) . '</optgroup>' . PHP_EOL;
-			} else {
-				$attributes = [
-					'option',
-					'value="' . $key . '"',
-				];
-				if (in_array($key, $selection)) {
-					$attributes[] = 'selected';
-				}
-				$html .= '<' . implode(separator: ' ', array: $attributes) . '>' . $value . '</option>' . PHP_EOL;
-			}
-		}
+        $newNode = new TextNode();
+        $newNode->content = $textContent;
 
-		return $html;
-	}
+        $elementNode->parentNode->insertBefore($newNode, $elementNode);
+        $elementNode->parentNode->removeNode($elementNode);
+    }
 }

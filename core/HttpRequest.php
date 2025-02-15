@@ -11,254 +11,264 @@ use framework\common\StringUtils;
 
 class HttpRequest
 {
-	public const string PROTOCOL_HTTP = 'http';
-	public const string PROTOCOL_HTTPS = 'https';
-	public const int SSL_PORT = 443;
+    public const string PROTOCOL_HTTP = 'http';
+    public const string PROTOCOL_HTTPS = 'https';
+    public const int SSL_PORT = 443;
 
-	private static ?array $inputData = null;
-	private static ?string $host = null;
-	private static ?string $protocol = null;
-	private static ?array $languages = null;
+    private static ?array $inputData = null;
+    private static ?string $host = null;
+    private static ?string $protocol = null;
+    private static ?array $languages = null;
 
-	public static function hasScalarInputValue(string $keyName): bool
-	{
-		$inputData = HttpRequest::getInputData();
+    public static function getInputString(string $keyName): ?string
+    {
+        $inputData = HttpRequest::getInputData();
 
-		return (array_key_exists(key: $keyName, array: $inputData) && is_scalar(value: $inputData[$keyName]));
-	}
+        return (HttpRequest::hasScalarInputValue(keyName: $keyName)) ? trim(
+            string: (string)$inputData[$keyName]
+        ) : null;
+    }
 
-	public static function getInputString(string $keyName): ?string
-	{
-		$inputData = HttpRequest::getInputData();
+    private static function getInputData(): array
+    {
+        if (!is_null(value: HttpRequest::$inputData)) {
+            return HttpRequest::$inputData;
+        }
 
-		return (HttpRequest::hasScalarInputValue(keyName: $keyName)) ? trim(string: (string)$inputData[$keyName]) : null;
-	}
+        return HttpRequest::$inputData = array_merge($_GET, $_POST);
+    }
 
-	public static function getInputInteger(string $keyName): ?int
-	{
-		$inputData = HttpRequest::getInputData();
+    public static function hasScalarInputValue(string $keyName): bool
+    {
+        $inputData = HttpRequest::getInputData();
 
-		return (HttpRequest::hasScalarInputValue(keyName: $keyName)) ? (int)$inputData[$keyName] : null;
-	}
+        return (array_key_exists(key: $keyName, array: $inputData) && is_scalar(value: $inputData[$keyName]));
+    }
 
-	public static function getInputFloat(string $keyName): ?float
-	{
-		$inputData = HttpRequest::getInputData();
+    public static function getInputInteger(string $keyName): ?int
+    {
+        $inputData = HttpRequest::getInputData();
 
-		return (HttpRequest::hasScalarInputValue(keyName: $keyName)) ? (float)$inputData[$keyName] : null;
-	}
+        return (HttpRequest::hasScalarInputValue(keyName: $keyName)) ? (int)$inputData[$keyName] : null;
+    }
 
-	public static function getInputArray(string $keyName): ?array
-	{
-		$inputData = HttpRequest::getInputData();
+    public static function getInputFloat(string $keyName): ?float
+    {
+        $inputData = HttpRequest::getInputData();
 
-		return (array_key_exists(key: $keyName, array: $inputData) && is_array(value: $inputData[$keyName])) ? $inputData[$keyName] : null;
-	}
+        return (HttpRequest::hasScalarInputValue(keyName: $keyName)) ? (float)$inputData[$keyName] : null;
+    }
 
-	public static function getInputValue(string $keyName): null|string|array
-	{
-		$inputData = HttpRequest::getInputData();
+    public static function getInputArray(string $keyName): ?array
+    {
+        $inputData = HttpRequest::getInputData();
 
-		return array_key_exists(key: $keyName, array: $inputData) ? $inputData[$keyName] : null;
-	}
+        return (array_key_exists(key: $keyName, array: $inputData) && is_array(
+                value: $inputData[$keyName]
+            )) ? $inputData[$keyName] : null;
+    }
 
-	public static function getCookies(): array
-	{
-		return $_COOKIE;
-	}
+    public static function getInputValue(string $keyName): null|string|array
+    {
+        $inputData = HttpRequest::getInputData();
 
-	public static function getHost(): string
-	{
-		if (!is_null(value: HttpRequest::$host)) {
-			return HttpRequest::$host;
-		}
-		if (array_key_exists(key: 'HTTP_HOST', array: $_SERVER)) {
-			return HttpRequest::$host = $_SERVER['HTTP_HOST'];
-		}
-		if (array_key_exists(key: 'SERVER_NAME', array: $_SERVER)) {
-			return HttpRequest::$host = $_SERVER['SERVER_NAME'];
-		}
-		throw new Exception(message: 'HTTP_HOST and SERVER_NAME are not defined');
-	}
+        return array_key_exists(key: $keyName, array: $inputData) ? $inputData[$keyName] : null;
+    }
 
-	public static function getURI(): string
-	{
-		return $_SERVER['REQUEST_URI'];
-	}
+    public static function getCookies(): array
+    {
+        return $_COOKIE;
+    }
 
-	public static function getPath(): string
-	{
-		return StringUtils::beforeFirst(str: HttpRequest::getURI(), before: '?');
-	}
+    public static function getPath(): string
+    {
+        return StringUtils::beforeFirst(str: HttpRequest::getURI(), before: '?');
+    }
 
-	public static function getPort(): int
-	{
-		return (int)$_SERVER['SERVER_PORT'];
-	}
+    public static function getURI(): string
+    {
+        return $_SERVER['REQUEST_URI'];
+    }
 
-	public static function getProtocol(): string
-	{
-		if (!is_null(value: HttpRequest::$protocol)) {
-			return HttpRequest::$protocol;
-		}
-		if (array_key_exists(key: 'HTTPS', array: $_SERVER)) {
-			if (
-				(int)$_SERVER['HTTPS'] === 1 // Apache
-				|| (string)$_SERVER['HTTPS'] === 'on' // IIS
-			) {
-				return HttpRequest::$protocol = HttpRequest::PROTOCOL_HTTPS;
-			}
-		}
-		if (HttpRequest::getPort() === HttpRequest::SSL_PORT) {
-			return HttpRequest::$protocol = HttpRequest::PROTOCOL_HTTPS; // Others
-		}
+    public static function isSSL(): bool
+    {
+        return (HttpRequest::getProtocol() === HttpRequest::PROTOCOL_HTTPS);
+    }
 
-		return HttpRequest::$protocol = HttpRequest::PROTOCOL_HTTP;
-	}
+    public static function getProtocol(): string
+    {
+        if (!is_null(value: HttpRequest::$protocol)) {
+            return HttpRequest::$protocol;
+        }
+        if (array_key_exists(key: 'HTTPS', array: $_SERVER)) {
+            if (
+                (int)$_SERVER['HTTPS'] === 1 // Apache
+                || (string)$_SERVER['HTTPS'] === 'on' // IIS
+            ) {
+                return HttpRequest::$protocol = HttpRequest::PROTOCOL_HTTPS;
+            }
+        }
+        if (HttpRequest::getPort() === HttpRequest::SSL_PORT) {
+            return HttpRequest::$protocol = HttpRequest::PROTOCOL_HTTPS; // Others
+        }
 
-	public static function isSSL(): bool
-	{
-		return (HttpRequest::getProtocol() === HttpRequest::PROTOCOL_HTTPS);
-	}
+        return HttpRequest::$protocol = HttpRequest::PROTOCOL_HTTP;
+    }
 
-	public static function getQuery(): string
-	{
-		return $_SERVER['QUERY_STRING'];
-	}
+    public static function getPort(): int
+    {
+        return (int)$_SERVER['SERVER_PORT'];
+    }
 
-	public static function getRequestMethod(): string
-	{
-		return $_SERVER['REQUEST_METHOD'];
-	}
+    public static function getQuery(): string
+    {
+        return $_SERVER['QUERY_STRING'];
+    }
 
-	public static function getUserAgent(): string
-	{
-		return array_key_exists(key: 'HTTP_USER_AGENT', array: $_SERVER) ? $_SERVER['HTTP_USER_AGENT'] : '';
-	}
+    public static function getRequestMethod(): string
+    {
+        return $_SERVER['REQUEST_METHOD'];
+    }
 
-	/**
-	 * @return string[]
-	 */
-	public static function listBrowserLanguagesByQuality(): array
-	{
-		if (!is_null(value: HttpRequest::$languages)) {
-			return HttpRequest::$languages;
-		}
-		HttpRequest::$languages = [];
-		$acceptLanguageString = array_key_exists(key: 'HTTP_ACCEPT_LANGUAGE', array: $_SERVER) ? (string)$_SERVER['HTTP_ACCEPT_LANGUAGE'] : '';
-		if ($acceptLanguageString === '') {
-			return [];
-		}
-		$acceptedLanguages = explode(separator: ',', string: $acceptLanguageString);
-		$listByQuality = [];
-		foreach ($acceptedLanguages as $acceptedLanguageDetails) {
-			$languageAndQuality = explode(separator: ';q=', string: $acceptedLanguageDetails);
-			$languageCode = trim(string: explode(separator: '-', string: $languageAndQuality[0])[0]);
-			$quality = (int)((array_key_exists(key: 1, array: $languageAndQuality) ? round(num: (float)$languageAndQuality[1], precision: 2) : 1.0) * 100);
-			if (!array_key_exists(key: $quality, array: $listByQuality)) {
-				$listByQuality[$quality] = $languageCode;
-			}
-		}
-		krsort(array: $listByQuality);
-		foreach ($listByQuality as $languageCode) {
-			HttpRequest::$languages[] = $languageCode;
-		}
+    public static function getUserAgent(): string
+    {
+        return array_key_exists(key: 'HTTP_USER_AGENT', array: $_SERVER) ? $_SERVER['HTTP_USER_AGENT'] : '';
+    }
 
-		return HttpRequest::$languages;
-	}
+    /**
+     * @return string[]
+     */
+    public static function listBrowserLanguagesByQuality(): array
+    {
+        if (!is_null(value: HttpRequest::$languages)) {
+            return HttpRequest::$languages;
+        }
+        HttpRequest::$languages = [];
+        $acceptLanguageString = array_key_exists(
+            key: 'HTTP_ACCEPT_LANGUAGE',
+            array: $_SERVER
+        ) ? (string)$_SERVER['HTTP_ACCEPT_LANGUAGE'] : '';
+        if ($acceptLanguageString === '') {
+            return [];
+        }
+        $acceptedLanguages = explode(separator: ',', string: $acceptLanguageString);
+        $listByQuality = [];
+        foreach ($acceptedLanguages as $acceptedLanguageDetails) {
+            $languageAndQuality = explode(separator: ';q=', string: $acceptedLanguageDetails);
+            $languageCode = trim(string: explode(separator: '-', string: $languageAndQuality[0])[0]);
+            $quality = (int)((array_key_exists(key: 1, array: $languageAndQuality) ? round(
+                    num: (float)$languageAndQuality[1],
+                    precision: 2
+                ) : 1.0) * 100);
+            if (!array_key_exists(key: $quality, array: $listByQuality)) {
+                $listByQuality[$quality] = $languageCode;
+            }
+        }
+        krsort(array: $listByQuality);
+        foreach ($listByQuality as $languageCode) {
+            HttpRequest::$languages[] = $languageCode;
+        }
 
-	public static function getRemoteAddress(): string
-	{
-		return array_key_exists(key: 'REMOTE_ADDR', array: $_SERVER) ? $_SERVER['REMOTE_ADDR'] : '';
-	}
+        return HttpRequest::$languages;
+    }
 
-	private static function getInputData(): array
-	{
-		if (!is_null(value: HttpRequest::$inputData)) {
-			return HttpRequest::$inputData;
-		}
+    public static function getRemoteAddress(): string
+    {
+        return array_key_exists(key: 'REMOTE_ADDR', array: $_SERVER) ? $_SERVER['REMOTE_ADDR'] : '';
+    }
 
-		return HttpRequest::$inputData = array_merge($_GET, $_POST);
-	}
+    public static function getReferrer(): string
+    {
+        return array_key_exists(key: 'HTTP_REFERER', array: $_SERVER) ? $_SERVER['HTTP_REFERER'] : '';
+    }
 
-	public static function getReferrer(): string
-	{
-		return array_key_exists(key: 'HTTP_REFERER', array: $_SERVER) ? $_SERVER['HTTP_REFERER'] : '';
-	}
+    public static function getURL(?string $protocol = null): string
+    {
+        if (is_null(value: $protocol)) {
+            $protocol = HttpRequest::getProtocol();
+        }
 
-	public static function getURL(?string $protocol = null): string
-	{
-		if (is_null(value: $protocol)) {
-			$protocol = HttpRequest::getProtocol();
-		}
+        return $protocol . '://' . HttpRequest::getHost() . HttpRequest::getURI();
+    }
 
-		return $protocol . '://' . HttpRequest::getHost() . HttpRequest::getURI();
-	}
+    public static function getHost(): string
+    {
+        if (!is_null(value: HttpRequest::$host)) {
+            return HttpRequest::$host;
+        }
+        if (array_key_exists(key: 'HTTP_HOST', array: $_SERVER)) {
+            return HttpRequest::$host = $_SERVER['HTTP_HOST'];
+        }
+        if (array_key_exists(key: 'SERVER_NAME', array: $_SERVER)) {
+            return HttpRequest::$host = $_SERVER['SERVER_NAME'];
+        }
+        throw new Exception(message: 'HTTP_HOST and SERVER_NAME are not defined');
+    }
 
-	/**
-	 * Returns the details about a file
-	 *
-	 * @param string $name The name of the file field
-	 *
-	 * @return array|null Returns the information about the file or null if it does not exist
-	 */
-	public static function getFile(string $name): ?array
-	{
-		return array_key_exists(key: $name, array: $_FILES) ? $_FILES[$name] : null;
-	}
+    /**
+     * Returns a normalized array with file information where each entry of the array
+     * is a set of all information known about one file if the FILES field has an array markup
+     * like field_name[]
+     *
+     * @param string $name The name of the file field
+     *
+     * @return array Returns an array with the information about the files
+     */
+    public static function getFiles(string $name): array
+    {
+        $filesArr = HttpRequest::getFile(name: $name);
 
-	/**
-	 * Returns a normalized array with file information where each entry of the array
-	 * is a set of all information known about one file if the FILES field has an array markup
-	 * like field_name[]
-	 *
-	 * @param string $name The name of the file field
-	 *
-	 * @return array Returns an array with the information about the files
-	 */
-	public static function getFiles(string $name): array
-	{
-		$filesArr = HttpRequest::getFile(name: $name);
+        $files = [];
+        $filesCount = count(value: $filesArr['name']);
 
-		$files = [];
-		$filesCount = count(value: $filesArr['name']);
+        for ($i = 0; $i < $filesCount; ++$i) {
+            $file = [
+                'name' => $filesArr['name'][$i],
+                'type' => $filesArr['type'][$i],
+                'tmp_name' => $filesArr['tmp_name'][$i],
+                'error' => $filesArr['error'][$i],
+                'size' => $filesArr['size'][$i],
+            ];
 
-		for ($i = 0; $i < $filesCount; ++$i) {
-			$file = [
-				'name'     => $filesArr['name'][$i],
-				'type'     => $filesArr['type'][$i],
-				'tmp_name' => $filesArr['tmp_name'][$i],
-				'error'    => $filesArr['error'][$i],
-				'size'     => $filesArr['size'][$i],
-			];
+            $files[] = $file;
+        }
 
-			$files[] = $file;
-		}
+        return $files;
+    }
 
-		return $files;
-	}
+    /**
+     * Returns the details about a file
+     *
+     * @param string $name The name of the file field
+     *
+     * @return array|null Returns the information about the file or null if it does not exist
+     */
+    public static function getFile(string $name): ?array
+    {
+        return array_key_exists(key: $name, array: $_FILES) ? $_FILES[$name] : null;
+    }
 
-	public static function getBearer(): false|string
-	{
-		$allHeaders = getallheaders();
-		if (!array_key_exists(
-			key: 'Authorization',
-			array: $allHeaders
-		)) {
-			return false;
-		}
-		if (!str_starts_with(
-			haystack: $allHeaders['Authorization'],
-			needle: 'Bearer '
-		)) {
-			return false;
-		}
+    public static function getBearer(): false|string
+    {
+        $allHeaders = getallheaders();
+        if (!array_key_exists(
+            key: 'Authorization',
+            array: $allHeaders
+        )) {
+            return false;
+        }
+        if (!str_starts_with(
+            haystack: $allHeaders['Authorization'],
+            needle: 'Bearer '
+        )) {
+            return false;
+        }
 
-		return trim(
-			string: substr(
-				string: $allHeaders['Authorization'],
-				offset: 7
-			)
-		);
-	}
+        return trim(
+            string: substr(
+                string: $allHeaders['Authorization'],
+                offset: 7
+            )
+        );
+    }
 }

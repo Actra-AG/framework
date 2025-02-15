@@ -13,10 +13,10 @@ use Exception;
 
 class PhoneParseException extends Exception
 {
-	public const int EMPTY_STRING = 0;
-	public const int INVALID_COUNTRY_CODE = 1;
-	public const int NOT_A_NUMBER = 2;
-	public const int TOO_SHORT_AFTER_IDD = 3;
-	public const int TOO_SHORT_NSN = 4;
-	public const int TOO_LONG = 5;
+    public const int EMPTY_STRING = 0;
+    public const int INVALID_COUNTRY_CODE = 1;
+    public const int NOT_A_NUMBER = 2;
+    public const int TOO_SHORT_AFTER_IDD = 3;
+    public const int TOO_SHORT_NSN = 4;
+    public const int TOO_LONG = 5;
 }

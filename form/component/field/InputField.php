@@ -15,23 +15,23 @@ use framework\html\HtmlText;
 
 abstract class InputField extends FormField
 {
-	public function __construct(
-		public readonly InputTypeValue     $inputType,
-		string                             $name,
-		HtmlText                           $label,
-		int|float|string|bool|null         $value,
-		public readonly ?string            $placeholder,
-		public readonly ?AutoCompleteValue $autoComplete
-	) {
-		parent::__construct(
-			name: $name,
-			label: $label,
-			value: $value
-		);
-	}
+    public function __construct(
+        public readonly InputTypeValue $inputType,
+        string $name,
+        HtmlText $label,
+        int|float|string|bool|null $value,
+        public readonly ?string $placeholder,
+        public readonly ?AutoCompleteValue $autoComplete
+    ) {
+        parent::__construct(
+            name: $name,
+            label: $label,
+            value: $value
+        );
+    }
 
-	public function getDefaultRenderer(): FormRenderer
-	{
-		return new InputFieldRenderer(formField: $this);
-	}
+    public function getDefaultRenderer(): FormRenderer
+    {
+        return new InputFieldRenderer(formField: $this);
+    }
 }

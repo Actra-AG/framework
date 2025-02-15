@@ -8,15 +8,15 @@ namespace framework\response;
 
 abstract class HttpResponseContent
 {
-	private string $content;
+    private string $content;
 
-	protected function __construct(string $content)
-	{
-		$this->content = $content;
-	}
+    protected function __construct(string $content)
+    {
+        $this->content = $content;
+    }
 
-	public function getContent(): string
-	{
-		return $this->content;
-	}
+    public function getContent(): string
+    {
+        return $this->content;
+    }
 }

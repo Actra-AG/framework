@@ -11,12 +11,12 @@ use framework\form\FormRule;
 
 class NumericValueRule extends FormRule
 {
-	public function validate(FormField $formField): bool
-	{
-		if ($formField->isValueEmpty()) {
-			return true;
-		}
+    public function validate(FormField $formField): bool
+    {
+        if ($formField->isValueEmpty()) {
+            return true;
+        }
 
-		return is_numeric($formField->getRawValue());
-	}
+        return is_numeric($formField->getRawValue());
+    }
 }

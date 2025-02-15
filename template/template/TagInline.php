@@ -8,7 +8,7 @@ namespace framework\template\template;
 
 interface TagInline
 {
-	public function replaceInline(TemplateEngine $tplEngine, array $tagArr): string;
+    public static function getName(): string;
 
-	public static function getName(): string;
+    public function replaceInline(TemplateEngine $tplEngine, array $tagArr): string;
 }

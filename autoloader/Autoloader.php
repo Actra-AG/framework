@@ -12,154 +12,159 @@ use LogicException;
 
 class Autoloader
 {
-	private static ?Autoloader $registeredInstance = null;
+    private static ?Autoloader $registeredInstance = null;
 
-	private string $cacheFilePath;
-	private array $cachedClasses = [];
-	/** @var AutoloaderPathModel[] */
-	private array $paths = [];
-	private bool $cachedClassesChanged = false;
+    private string $cacheFilePath;
+    private array $cachedClasses = [];
+    /** @var AutoloaderPathModel[] */
+    private array $paths = [];
+    private bool $cachedClassesChanged = false;
 
-	public static function register(string $cacheFilePath = ''): Autoloader
-	{
-		if (!is_null(value: Autoloader::$registeredInstance)) {
-			throw new LogicException(message: 'Autoloader is already registered.');
-		}
-		Autoloader::$registeredInstance = new Autoloader(cacheFilePath: $cacheFilePath);
-		spl_autoload_register(callback: [Autoloader::$registeredInstance, 'doAutoload']);
+    private function __construct(string $cacheFilePath = '')
+    {
+        $this->cacheFilePath = trim(string: $cacheFilePath);
+        if (!$this->checkIfCacheDirectoryExists(cacheFilePath: $cacheFilePath)) {
+            return;
+        }
+        $this->cachedClasses = $this->initCachedClasses(cacheFilePath: $cacheFilePath);
+    }
 
-		return Autoloader::$registeredInstance;
-	}
+    private function checkIfCacheDirectoryExists(string $cacheFilePath): bool
+    {
+        if ($cacheFilePath === '') {
+            return true;
+        }
+        $dir = dirname(path: $cacheFilePath);
+        if (!is_dir(filename: $dir)) {
+            throw new Exception(message: 'Cache-Directory ' . $dir . ' does not exist');
+        }
 
-	public static function get(): Autoloader
-	{
-		return Autoloader::$registeredInstance;
-	}
+        return true;
+    }
 
-	private function __construct(string $cacheFilePath = '')
-	{
-		$this->cacheFilePath = trim(string: $cacheFilePath);
-		if (!$this->checkIfCacheDirectoryExists(cacheFilePath: $cacheFilePath)) {
-			return;
-		}
-		$this->cachedClasses = $this->initCachedClasses(cacheFilePath: $cacheFilePath);
-	}
+    private function initCachedClasses(string $cacheFilePath): array
+    {
+        if ($cacheFilePath === '' || !file_exists(filename: $cacheFilePath)) {
+            return [];
+        }
 
-	private function checkIfCacheDirectoryExists(string $cacheFilePath): bool
-	{
-		if ($cacheFilePath === '') {
-			return true;
-		}
-		$dir = dirname(path: $cacheFilePath);
-		if (!is_dir(filename: $dir)) {
-			throw new Exception(message: 'Cache-Directory ' . $dir . ' does not exist');
-		}
+        $jsonString = file_get_contents(filename: $cacheFilePath);
 
-		return true;
-	}
+        return json_decode(json: $jsonString, associative: true, flags: JSON_THROW_ON_ERROR);
+    }
 
-	private function initCachedClasses(string $cacheFilePath): array
-	{
-		if ($cacheFilePath === '' || !file_exists(filename: $cacheFilePath)) {
-			return [];
-		}
+    public static function register(string $cacheFilePath = ''): Autoloader
+    {
+        if (!is_null(value: Autoloader::$registeredInstance)) {
+            throw new LogicException(message: 'Autoloader is already registered.');
+        }
+        Autoloader::$registeredInstance = new Autoloader(cacheFilePath: $cacheFilePath);
+        spl_autoload_register(callback: [Autoloader::$registeredInstance, 'doAutoload']);
 
-		$jsonString = file_get_contents(filename: $cacheFilePath);
+        return Autoloader::$registeredInstance;
+    }
 
-		return json_decode(json: $jsonString, associative: true, flags: JSON_THROW_ON_ERROR);
-	}
+    public static function get(): Autoloader
+    {
+        return Autoloader::$registeredInstance;
+    }
 
-	public function addPath(AutoloaderPathModel $autoloaderPathModel): void
-	{
-		$this->paths[] = $autoloaderPathModel;
-	}
+    public function addPath(AutoloaderPathModel $autoloaderPathModel): void
+    {
+        $this->paths[] = $autoloaderPathModel;
+    }
 
-	private function doAutoload(string $className): bool
-	{
-		$includePath = $this->getPathFromCache($className);
-		if (!is_null(value: $includePath)) {
-			require_once $includePath;
+    public function __destruct()
+    {
+        if ($this->cacheFilePath === '' || !$this->cachedClassesChanged) {
+            return;
+        }
 
-			return true;
-		}
+        file_put_contents(
+            filename: $this->cacheFilePath,
+            data: JsonUtils::convertToJsonString(
+                valueToConvert: $this->cachedClasses
+            )
+        );
+    }
 
-		foreach ($this->paths as $autoloaderPathModel) {
-			$path = $autoloaderPathModel->getPath();
-			$mode = $autoloaderPathModel->getMode();
+    private function doAutoload(string $className): bool
+    {
+        $includePath = $this->getPathFromCache($className);
+        if (!is_null(value: $includePath)) {
+            require_once $includePath;
 
-			if ($mode === AutoloaderPathModel::MODE_NAMESPACE) {
-				$delimiter = '\\';
-			} else if ($mode === AutoloaderPathModel::MODE_UNDERSCORE) {
-				$delimiter = '_';
-			} else {
-				throw new Exception(message: 'Unknown mode for path "' . $path . '": ' . $mode);
-			}
+            return true;
+        }
 
-			$classPathParts = explode(separator: $delimiter, string: $className);
-			$phpFilePath = implode(separator: DIRECTORY_SEPARATOR, array: $classPathParts);
+        foreach ($this->paths as $autoloaderPathModel) {
+            $path = $autoloaderPathModel->getPath();
+            $mode = $autoloaderPathModel->getMode();
 
-			$phpFilePathRemove = $autoloaderPathModel->phpFilePathRemove;
-			if ($phpFilePathRemove !== '') {
-				$phpFilePath = preg_replace(
-					pattern: '#' . $phpFilePathRemove . '#',
-					replacement: '',
-					subject: $phpFilePath
-				);
-			}
+            if ($mode === AutoloaderPathModel::MODE_NAMESPACE) {
+                $delimiter = '\\';
+            } elseif ($mode === AutoloaderPathModel::MODE_UNDERSCORE) {
+                $delimiter = '_';
+            } else {
+                throw new Exception(message: 'Unknown mode for path "' . $path . '": ' . $mode);
+            }
 
-			foreach ($autoloaderPathModel->fileSuffixList as $fileSuffix) {
-				$includePath = $path . $phpFilePath . $fileSuffix;
+            $classPathParts = explode(separator: $delimiter, string: $className);
+            $phpFilePath = implode(separator: DIRECTORY_SEPARATOR, array: $classPathParts);
 
-				$streamResolvedIncludePath = stream_resolve_include_path(filename: $includePath);
-				if ($streamResolvedIncludePath === false) {
-					continue;
-				}
+            $phpFilePathRemove = $autoloaderPathModel->phpFilePathRemove;
+            if ($phpFilePathRemove !== '') {
+                $phpFilePath = preg_replace(
+                    pattern: '#' . $phpFilePathRemove . '#',
+                    replacement: '',
+                    subject: $phpFilePath
+                );
+            }
 
-				$this->doInclude(includePath: $includePath, className: $className);
+            foreach ($autoloaderPathModel->fileSuffixList as $fileSuffix) {
+                $includePath = $path . $phpFilePath . $fileSuffix;
 
-				return true;
-			}
-		}
+                $streamResolvedIncludePath = stream_resolve_include_path(filename: $includePath);
+                if ($streamResolvedIncludePath === false) {
+                    continue;
+                }
 
-		return false;
-	}
+                $this->doInclude(includePath: $includePath, className: $className);
 
-	private function getPathFromCache(string $className): ?string
-	{
-		if (!array_key_exists(key: $className, array: $this->cachedClasses)) {
-			return null;
-		}
+                return true;
+            }
+        }
 
-		$classPath = $this->cachedClasses[$className];
+        return false;
+    }
 
-		if (file_exists(filename: $classPath)) {
-			return $classPath;
-		}
+    private function getPathFromCache(string $className): ?string
+    {
+        if (!array_key_exists(key: $className, array: $this->cachedClasses)) {
+            return null;
+        }
 
-		if (file_exists(filename: 'phar://' . $classPath)) {
-			return 'phar://' . $classPath;
-		}
+        $classPath = $this->cachedClasses[$className];
 
-		return null;
-	}
+        if (file_exists(filename: $classPath)) {
+            return $classPath;
+        }
 
-	private function doInclude(string $includePath, string $className): void
-	{
-		if (class_exists(class: $className)) {
-			return;
-		}
-		require_once $includePath;
+        if (file_exists(filename: 'phar://' . $classPath)) {
+            return 'phar://' . $classPath;
+        }
 
-		$this->cachedClasses[$className] = $includePath;
-		$this->cachedClassesChanged = true;
-	}
+        return null;
+    }
 
-	public function __destruct()
-	{
-		if ($this->cacheFilePath === '' || !$this->cachedClassesChanged) {
-			return;
-		}
+    private function doInclude(string $includePath, string $className): void
+    {
+        if (class_exists(class: $className)) {
+            return;
+        }
+        require_once $includePath;
 
-		file_put_contents(filename: $this->cacheFilePath, data: JsonUtils::convertToJsonString(valueToConvert: $this->cachedClasses));
-	}
+        $this->cachedClasses[$className] = $includePath;
+        $this->cachedClassesChanged = true;
+    }
 }

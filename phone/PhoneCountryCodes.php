@@ -11,5 +11,5 @@ namespace framework\phone;
 
 class PhoneCountryCodes
 {
-	public const int IT = 39;
+    public const int IT = 39;
 }

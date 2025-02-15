@@ -10,10 +10,10 @@ use Exception;
 
 class PhpException extends Exception
 {
-	public function __construct(string $message, int $code, string $file, int $line)
-	{
-		parent::__construct(message: $message, code: $code);
-		$this->file = $file;
-		$this->line = $line;
-	}
+    public function __construct(string $message, int $code, string $file, int $line)
+    {
+        parent::__construct(message: $message, code: $code);
+        $this->file = $file;
+        $this->line = $line;
+    }
 }

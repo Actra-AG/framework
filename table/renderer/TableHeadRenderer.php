@@ -11,44 +11,44 @@ use framework\table\table\SmartTable;
 
 class TableHeadRenderer
 {
-	private bool $addColumnScopeAttribute = true;
+    private bool $addColumnScopeAttribute = true;
 
-	protected function isAddColumnScopeAttribute(): bool
-	{
-		return $this->addColumnScopeAttribute;
-	}
+    public function render(SmartTable $smartTable): string
+    {
+        $columns = [];
 
-	protected function setAddColumnScopeAttribute(bool $addColumnScopeAttribute): void
-	{
-		$this->addColumnScopeAttribute = $addColumnScopeAttribute;
-	}
+        foreach ($smartTable->getColumns() as $abstractTableColumn) {
+            $columns[] = $this->renderColumnHead($abstractTableColumn);
+        }
 
-	public function render(SmartTable $smartTable): string
-	{
-		$columns = [];
+        return implode(separator: PHP_EOL, array: [
+            '<tr>',
+            implode(separator: PHP_EOL, array: $columns),
+            '</tr>',
+        ]);
+    }
 
-		foreach ($smartTable->getColumns() as $abstractTableColumn) {
-			$columns[] = $this->renderColumnHead($abstractTableColumn);
-		}
+    protected function renderColumnHead(AbstractTableColumn $abstractTableColumn): string
+    {
+        $columnCssClasses = $abstractTableColumn->getColumnCssClasses();
+        $attributesArr = ['th'];
+        if ($this->addColumnScopeAttribute) {
+            $attributesArr[] = 'scope="col"';
+        }
+        if (count(value: $columnCssClasses) > 0) {
+            $attributesArr[] = 'class="' . implode(separator: ' ', array: $columnCssClasses) . '"';
+        }
 
-		return implode(separator: PHP_EOL, array: [
-			'<tr>',
-			implode(separator: PHP_EOL, array: $columns),
-			'</tr>',
-		]);
-	}
+        return '<' . implode(separator: ' ', array: $attributesArr) . '>' . $abstractTableColumn->label . '</th>';
+    }
 
-	protected function renderColumnHead(AbstractTableColumn $abstractTableColumn): string
-	{
-		$columnCssClasses = $abstractTableColumn->getColumnCssClasses();
-		$attributesArr = ['th'];
-		if ($this->addColumnScopeAttribute) {
-			$attributesArr[] = 'scope="col"';
-		}
-		if (count(value: $columnCssClasses) > 0) {
-			$attributesArr[] = 'class="' . implode(separator: ' ', array: $columnCssClasses) . '"';
-		}
+    protected function isAddColumnScopeAttribute(): bool
+    {
+        return $this->addColumnScopeAttribute;
+    }
 
-		return '<' . implode(separator: ' ', array: $attributesArr) . '>' . $abstractTableColumn->label . '</th>';
-	}
+    protected function setAddColumnScopeAttribute(bool $addColumnScopeAttribute): void
+    {
+        $this->addColumnScopeAttribute = $addColumnScopeAttribute;
+    }
 }

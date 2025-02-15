@@ -8,29 +8,29 @@ namespace framework\html;
 
 class HtmlTextCollection
 {
-	/** @var HtmlText[] */
-	private array $items = [];
+    /** @var HtmlText[] */
+    private array $items = [];
 
-	/**
-	 * @param HtmlText[] $items
-	 */
-	public function __construct(array $items = [])
-	{
-		foreach ($items as $item) {
-			$this->add(htmlText: $item);
-		}
-	}
+    /**
+     * @param HtmlText[] $items
+     */
+    public function __construct(array $items = [])
+    {
+        foreach ($items as $item) {
+            $this->add(htmlText: $item);
+        }
+    }
 
-	public function add(HtmlText $htmlText): void
-	{
-		$this->items[] = $htmlText;
-	}
+    public function add(HtmlText $htmlText): void
+    {
+        $this->items[] = $htmlText;
+    }
 
-	/**
-	 * @return HtmlText[]
-	 */
-	public function getItems(): array
-	{
-		return $this->items;
-	}
+    /**
+     * @return HtmlText[]
+     */
+    public function getItems(): array
+    {
+        return $this->items;
+    }
 }

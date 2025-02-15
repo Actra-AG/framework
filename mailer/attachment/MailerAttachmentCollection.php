@@ -10,45 +10,45 @@ use framework\mailer\MailerException;
 
 class MailerAttachmentCollection
 {
-	/** @var MailerFileAttachment[]|MailerStringAttachment[] */
-	private array $items = [];
+    /** @var MailerFileAttachment[]|MailerStringAttachment[] */
+    private array $items = [];
 
-	public function addItem(MailerFileAttachment|MailerStringAttachment $mailerAttachment): void
-	{
-		$fileName = $mailerAttachment->fileName;
-		if (array_key_exists(key: $fileName, array: $this->items)) {
-			throw new MailerException(message: 'Attachment with fileName "' . $fileName . '" already exists.');
-		}
-		$this->items[$fileName] = $mailerAttachment;
-	}
+    public function addItem(MailerFileAttachment|MailerStringAttachment $mailerAttachment): void
+    {
+        $fileName = $mailerAttachment->fileName;
+        if (array_key_exists(key: $fileName, array: $this->items)) {
+            throw new MailerException(message: 'Attachment with fileName "' . $fileName . '" already exists.');
+        }
+        $this->items[$fileName] = $mailerAttachment;
+    }
 
-	/**
-	 * @return MailerFileAttachment[]|MailerStringAttachment[]
-	 */
-	public function list(): array
-	{
-		return $this->items;
-	}
+    /**
+     * @return MailerFileAttachment[]|MailerStringAttachment[]
+     */
+    public function list(): array
+    {
+        return $this->items;
+    }
 
-	public function hasInlineImages(): bool
-	{
-		foreach ($this->items as $mailerAttachment) {
-			if ($mailerAttachment->dispositionInline) {
-				return true;
-			}
-		}
+    public function hasInlineImages(): bool
+    {
+        foreach ($this->items as $mailerAttachment) {
+            if ($mailerAttachment->dispositionInline) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function hasAttachments(): bool
-	{
-		foreach ($this->items as $mailerAttachment) {
-			if (!$mailerAttachment->dispositionInline) {
-				return true;
-			}
-		}
+    public function hasAttachments(): bool
+    {
+        foreach ($this->items as $mailerAttachment) {
+            if (!$mailerAttachment->dispositionInline) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 }

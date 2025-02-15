@@ -15,50 +15,50 @@ use framework\template\template\TemplateTag;
 
 class ElseifTag extends TemplateTag implements TagNode
 {
-	public static function getName(): string
-	{
-		return 'elseif';
-	}
+    public static function getName(): string
+    {
+        return 'elseif';
+    }
 
-	public static function isElseCompatible(): bool
-	{
-		return true;
-	}
+    public static function isElseCompatible(): bool
+    {
+        return true;
+    }
 
-	public static function isSelfClosing(): bool
-	{
-		return false;
-	}
+    public static function isSelfClosing(): bool
+    {
+        return false;
+    }
 
-	public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
-	{
-		$tplEngine->checkRequiredAttributes($elementNode, ['cond']);
+    public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
+    {
+        $tplEngine->checkRequiredAttributes($elementNode, ['cond']);
 
-		$condAttr = $elementNode->getAttribute('cond')->getValue();
+        $condAttr = $elementNode->getAttribute('cond')->getValue();
 
-		$phpCode = '<?php ';
+        $phpCode = '<?php ';
 
-		$phpCode .= 'elseif(' . preg_replace_callback(
-				pattern: '/\${(.*?)}/i',
-				callback: function($m) {
-					if (strlen($m[1]) === 0) {
-						throw new Exception('Empty template data reference');
-					}
+        $phpCode .= 'elseif(' . preg_replace_callback(
+                pattern: '/\${(.*?)}/i',
+                callback: function ($m) {
+                    if (strlen($m[1]) === 0) {
+                        throw new Exception('Empty template data reference');
+                    }
 
-					return '$this->getDataFromSelector(\'' . $m[1] . '\')';
-				},
-				subject: $condAttr
-			) . '): ?>';
-		$phpCode .= $elementNode->getInnerHtml();
+                    return '$this->getDataFromSelector(\'' . $m[1] . '\')';
+                },
+                subject: $condAttr
+            ) . '): ?>';
+        $phpCode .= $elementNode->getInnerHtml();
 
-		if ($tplEngine->isFollowedBy($elementNode, ['else', 'elseif']) === false) {
-			$phpCode .= '<?php endif; ?>';
-		}
+        if ($tplEngine->isFollowedBy($elementNode, ['else', 'elseif']) === false) {
+            $phpCode .= '<?php endif; ?>';
+        }
 
-		$textNode = new TextNode();
-		$textNode->content = $phpCode;
+        $textNode = new TextNode();
+        $textNode->content = $phpCode;
 
-		$elementNode->parentNode->replaceNode($elementNode, $textNode);
-		$elementNode->parentNode->removeNode($elementNode);
-	}
+        $elementNode->parentNode->replaceNode($elementNode, $textNode);
+        $elementNode->parentNode->removeNode($elementNode);
+    }
 }

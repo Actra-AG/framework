@@ -14,75 +14,80 @@ use framework\html\HtmlText;
 
 class TextFilterField extends AbstractTableFilterField
 {
-	protected string $value = '';
+    protected string $value = '';
 
-	public function __construct(
-		TableFilter             $parentFilter,
-		string                  $filterFieldIdentifier,
-		HtmlText                $label,
-		private readonly string $dataTableColumnReference,
-		bool                    $highlightFieldIfSelected = false
-	) {
-		parent::__construct(
-			parentFilter: $parentFilter,
-			filterFieldIdentifier: $filterFieldIdentifier,
-			label: $label,
-			highlightFieldIfSelected: $highlightFieldIfSelected
-		);
-	}
+    public function __construct(
+        TableFilter $parentFilter,
+        string $filterFieldIdentifier,
+        HtmlText $label,
+        private readonly string $dataTableColumnReference,
+        bool $highlightFieldIfSelected = false
+    ) {
+        parent::__construct(
+            parentFilter: $parentFilter,
+            filterFieldIdentifier: $filterFieldIdentifier,
+            label: $label,
+            highlightFieldIfSelected: $highlightFieldIfSelected
+        );
+    }
 
-	public function init(): void
-	{
-		$this->value = (string)$this->getFromSession(index: $this->identifier);
-	}
+    public function init(): void
+    {
+        $this->value = (string)$this->getFromSession(index: $this->identifier);
+    }
 
-	public function reset(): void
-	{
-		$this->setValue(value: '');
-	}
+    public function reset(): void
+    {
+        $this->setValue(value: '');
+    }
 
-	protected function setValue(string $value): void
-	{
-		$this->value = $value;
-		$this->saveToSession(index: $this->identifier, value: $value);
-	}
+    public function checkInput(): void
+    {
+        $this->setValue(value: (string)HttpRequest::getInputString(keyName: $this->identifier));
+    }
 
-	public function checkInput(): void
-	{
-		$this->setValue(value: (string)HttpRequest::getInputString(keyName: $this->identifier));
-	}
+    public function getWhereCondition(): DbQueryData
+    {
+        return SearchHelper::createSQLFilters(filterArr: [
+            preg_replace(
+                pattern: '!\s+!',
+                replacement: ' ',
+                subject: $this->dataTableColumnReference
+            ) => $this->value,
+        ]);
+    }
 
-	public function getWhereCondition(): DbQueryData
-	{
-		return SearchHelper::createSQLFilters(filterArr: [
-			preg_replace(
-				pattern: '!\s+!',
-				replacement: ' ',
-				subject: $this->dataTableColumnReference
-			) => $this->value,
-		]);
-	}
+    public function getValue(): string
+    {
+        return $this->value;
+    }
 
-	protected function renderField(): string
-	{
-		$classes = ['text'];
-		if (
-			$this->highlightFieldIfSelected
-			&& $this->isSelected()
-		) {
-			$classes[] = 'highlight';
-		}
+    protected function setValue(string $value): void
+    {
+        $this->value = $value;
+        $this->saveToSession(index: $this->identifier, value: $value);
+    }
 
-		return '<input type="text" class="' . implode(separator: ' ', array: $classes) . '" name="' . $this->identifier . '" id="filter-' . $this->identifier . '" value="' . HtmlEncoder::encode(value: $this->value) . '">';
-	}
+    protected function renderField(): string
+    {
+        $classes = ['text'];
+        if (
+            $this->highlightFieldIfSelected
+            && $this->isSelected()
+        ) {
+            $classes[] = 'highlight';
+        }
 
-	public function isSelected(): bool
-	{
-		return ($this->value !== '');
-	}
+        return '<input type="text" class="' . implode(
+                separator: ' ',
+                array: $classes
+            ) . '" name="' . $this->identifier . '" id="filter-' . $this->identifier . '" value="' . HtmlEncoder::encode(
+                value: $this->value
+            ) . '">';
+    }
 
-	public function getValue(): string
-	{
-		return $this->value;
-	}
+    public function isSelected(): bool
+    {
+        return ($this->value !== '');
+    }
 }

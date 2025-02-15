@@ -8,9 +8,9 @@ namespace framework\core;
 
 readonly class Language
 {
-	public function __construct(
-		public string $code,
-		public string $locale
-	) {
-	}
+    public function __construct(
+        public string $code,
+        public string $locale
+    ) {
+    }
 }

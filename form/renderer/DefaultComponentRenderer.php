@@ -13,20 +13,20 @@ use framework\html\HtmlTagAttribute;
 
 class DefaultComponentRenderer extends FormRenderer
 {
-	private FormComponent $formComponent;
+    private FormComponent $formComponent;
 
-	public function __construct(FormComponent $formComponent)
-	{
-		$this->formComponent = $formComponent;
-	}
+    public function __construct(FormComponent $formComponent)
+    {
+        $this->formComponent = $formComponent;
+    }
 
-	public function prepare(): void
-	{
-		$componentTag = new HtmlTag($this->formComponent->getName(), false);
+    public function prepare(): void
+    {
+        $componentTag = new HtmlTag($this->formComponent->getName(), false);
 
-		if ($this->formComponent->hasErrors(withChildElements: true)) {
-			$componentTag->addHtmlTagAttribute(new HtmlTagAttribute('class', 'has-error', true));
-		}
-		$this->setHtmlTag($componentTag);
-	}
+        if ($this->formComponent->hasErrors(withChildElements: true)) {
+            $componentTag->addHtmlTagAttribute(new HtmlTagAttribute('class', 'has-error', true));
+        }
+        $this->setHtmlTag($componentTag);
+    }
 }

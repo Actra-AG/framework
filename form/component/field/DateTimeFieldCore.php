@@ -17,44 +17,44 @@ use Throwable;
 
 abstract class DateTimeFieldCore extends InputField
 {
-	public function __construct(
-		InputTypeValue     $inputType,
-		string             $name,
-		HtmlText           $label,
-		private string     $renderValueFormat,
-		?string            $value = null,
-		?HtmlText          $requiredError = null,
-		?string            $placeholder = null,
-		?AutoCompleteValue $autoComplete = null
-	) {
-		parent::__construct(
-			inputType: $inputType,
-			name: $name,
-			label: $label,
-			value: $value,
-			placeholder: $placeholder,
-			autoComplete: $autoComplete
-		);
-		if (!is_null(value: $requiredError)) {
-			$this->addRule(formRule: new RequiredRule(defaultErrorMessage: $requiredError));
-		}
-	}
+    public function __construct(
+        InputTypeValue $inputType,
+        string $name,
+        HtmlText $label,
+        private string $renderValueFormat,
+        ?string $value = null,
+        ?HtmlText $requiredError = null,
+        ?string $placeholder = null,
+        ?AutoCompleteValue $autoComplete = null
+    ) {
+        parent::__construct(
+            inputType: $inputType,
+            name: $name,
+            label: $label,
+            value: $value,
+            placeholder: $placeholder,
+            autoComplete: $autoComplete
+        );
+        if (!is_null(value: $requiredError)) {
+            $this->addRule(formRule: new RequiredRule(defaultErrorMessage: $requiredError));
+        }
+    }
 
-	public function renderValue(): string
-	{
-		if ($this->isValueEmpty()) {
-			return '';
-		}
-		$originalValue = $this->getRawValue();
-		if ($this->hasErrors(withChildElements: false)) {
-			// Invalid value; show original input
-			return HtmlEncoder::encode(value: Sanitizer::trimmedString(input: $originalValue));
-		}
-		try {
-			return (new DateTimeImmutable(datetime: $originalValue))->format(format: $this->renderValueFormat);
-		} catch (Throwable) {
-			// Should not be reached. Anyway ... invalid value; show original input
-			return HtmlEncoder::encode(value: Sanitizer::trimmedString(input: $originalValue));
-		}
-	}
+    public function renderValue(): string
+    {
+        if ($this->isValueEmpty()) {
+            return '';
+        }
+        $originalValue = $this->getRawValue();
+        if ($this->hasErrors(withChildElements: false)) {
+            // Invalid value; show original input
+            return HtmlEncoder::encode(value: Sanitizer::trimmedString(input: $originalValue));
+        }
+        try {
+            return (new DateTimeImmutable(datetime: $originalValue))->format(format: $this->renderValueFormat);
+        } catch (Throwable) {
+            // Should not be reached. Anyway ... invalid value; show original input
+            return HtmlEncoder::encode(value: Sanitizer::trimmedString(input: $originalValue));
+        }
+    }
 }

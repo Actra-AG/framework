@@ -8,19 +8,19 @@ namespace framework\mailer;
 
 class MailerHeaderCollection
 {
-	/** @var MailerHeader[] */
-	private array $items = [];
+    /** @var MailerHeader[] */
+    private array $items = [];
 
-	public function addItem(MailerHeader $mailerHeader): void
-	{
-		$this->items[] = $mailerHeader;
-	}
+    public function addItem(MailerHeader $mailerHeader): void
+    {
+        $this->items[] = $mailerHeader;
+    }
 
-	/**
-	 * @return MailerHeader[]
-	 */
-	public function list(): array
-	{
-		return $this->items;
-	}
+    /**
+     * @return MailerHeader[]
+     */
+    public function list(): array
+    {
+        return $this->items;
+    }
 }

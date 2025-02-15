@@ -21,201 +21,204 @@ use LogicException;
 
 class Form extends FormCollection
 {
-	private static array $formNameList = [];
-	private bool $acceptUpload;
-	private ?HtmlText $globalErrorMessage;
-	private bool $methodPost;
-	private string $sentIndicator;
-	private array $cssClasses = [];
-	private bool $renderRequiredAbbr = true;
+    private static array $formNameList = [];
+    private bool $acceptUpload;
+    private ?HtmlText $globalErrorMessage;
+    private bool $methodPost;
+    private string $sentIndicator;
+    private array $cssClasses = [];
+    private bool $renderRequiredAbbr = true;
 
-	public function __construct(
-		string    $name,
-		bool      $acceptUpload = false,
-		?HtmlText $globalErrorMessage = null,
-		bool      $methodPost = true,
-		?string   $individualSentIndicator = null
-	) {
-		if (in_array($name, Form::$formNameList)) {
-			throw new LogicException('A Form with the name "' . $name . '" has already been defined.');
-		}
-		Form::$formNameList[] = $name;
+    public function __construct(
+        string $name,
+        bool $acceptUpload = false,
+        ?HtmlText $globalErrorMessage = null,
+        bool $methodPost = true,
+        ?string $individualSentIndicator = null
+    ) {
+        if (in_array($name, Form::$formNameList)) {
+            throw new LogicException('A Form with the name "' . $name . '" has already been defined.');
+        }
+        Form::$formNameList[] = $name;
 
-		$this->acceptUpload = $acceptUpload;
-		$this->globalErrorMessage = $globalErrorMessage;
-		$this->methodPost = $methodPost;
-		$this->sentIndicator = is_null($individualSentIndicator) ? $name : $individualSentIndicator;
+        $this->acceptUpload = $acceptUpload;
+        $this->globalErrorMessage = $globalErrorMessage;
+        $this->methodPost = $methodPost;
+        $this->sentIndicator = is_null($individualSentIndicator) ? $name : $individualSentIndicator;
 
-		parent::__construct($name);
+        parent::__construct($name);
 
-		$this->addField(new CsrfTokenField());
-	}
+        $this->addField(new CsrfTokenField());
+    }
 
-	public function removeCsrfProtection(): void
-	{
-		if ($this->hasChildComponent(CsrfToken::getFieldName())) {
-			$this->removeChildComponent(CsrfToken::getFieldName());
-		}
-	}
+    public function addField(FormField $formField): void
+    {
+        if (!$this->renderRequiredAbbr) {
+            $formField->setRenderRequiredAbbr(false);
+        }
+        $formField->setTopFormComponent($this);
+        $this->addChildComponent($formField);
+    }
 
-	public function getDefaultFormFieldRenderer(FormField $formField): FormRenderer
-	{
-		return new DefinitionListRenderer(formField: $formField);
-	}
+    public function removeCsrfProtection(): void
+    {
+        if ($this->hasChildComponent(CsrfToken::getFieldName())) {
+            $this->removeChildComponent(CsrfToken::getFieldName());
+        }
+    }
 
-	public function addCssClass(string $className): void
-	{
-		$this->cssClasses[] = $className;
-	}
+    public function getDefaultFormFieldRenderer(FormField $formField): FormRenderer
+    {
+        return new DefinitionListRenderer(formField: $formField);
+    }
 
-	public function addComponent(FormComponent $formComponent): void
-	{
-		$this->addChildComponent($formComponent);
-	}
+    public function addCssClass(string $className): void
+    {
+        $this->cssClasses[] = $className;
+    }
 
-	public function addField(FormField $formField): void
-	{
-		if (!$this->renderRequiredAbbr) {
-			$formField->setRenderRequiredAbbr(false);
-		}
-		$formField->setTopFormComponent($this);
-		$this->addChildComponent($formField);
-	}
+    public function addComponent(FormComponent $formComponent): void
+    {
+        $this->addChildComponent($formComponent);
+    }
 
-	public function hasField(string $name): bool
-	{
-		if (!$this->hasChildComponent($name)) {
-			return false;
-		}
+    public function removeField(string $name): void
+    {
+        if (!$this->hasField($name)) {
+            throw new Exception('The requested component ' . $name . ' is not an instance of FormField');
+        }
+        $this->removeChildComponent($name);
+    }
 
-		$component = $this->getChildComponent($name);
+    public function hasField(string $name): bool
+    {
+        if (!$this->hasChildComponent($name)) {
+            return false;
+        }
 
-		return ($component instanceof FormField);
-	}
+        $component = $this->getChildComponent($name);
 
-	public function getField(string $name): FormField
-	{
-		$childComponent = $this->getChildComponent($name);
+        return ($component instanceof FormField);
+    }
 
-		if (!($childComponent instanceof FormField)) {
-			throw new Exception('The requested component ' . $name . ' is not an instance of FormField');
-		}
+    public function validate(): bool
+    {
+        if (!$this->isSent()) {
+            return false;
+        }
 
-		return $childComponent;
-	}
+        $inputData = ($this->methodPost ? $_POST : $_GET) + $_FILES;
 
-	public function removeField(string $name): void
-	{
-		if (!$this->hasField($name)) {
-			throw new Exception('The requested component ' . $name . ' is not an instance of FormField');
-		}
-		$this->removeChildComponent($name);
-	}
+        foreach ($this->getChildComponents() as $formComponent) {
+            if (!$formComponent instanceof FormField) {
+                continue;
+            }
 
-	public function isSent(): bool
-	{
-		return array_key_exists($this->sentIndicator, $_GET);
-	}
+            $formComponent->validate($inputData);
+        }
 
-	public function validate(): bool
-	{
-		if (!$this->isSent()) {
-			return false;
-		}
+        if (!$this->hasErrors(withChildElements: true)) {
+            $this->validateCsrf($inputData);
+        }
 
-		$inputData = ($this->methodPost ? $_POST : $_GET) + $_FILES;
+        if ($this->hasErrors(withChildElements: true) && !$this->hasErrors(withChildElements: false) && !is_null(
+                $this->globalErrorMessage
+            )) {
+            $this->addErrorAsHtmlTextObject($this->globalErrorMessage);
+        }
 
-		foreach ($this->getChildComponents() as $formComponent) {
+        return !$this->hasErrors(withChildElements: true);
+    }
 
-			if (!$formComponent instanceof FormField) {
-				continue;
-			}
+    public function isSent(): bool
+    {
+        return array_key_exists($this->sentIndicator, $_GET);
+    }
 
-			$formComponent->validate($inputData);
-		}
+    private function validateCsrf(array $inputData): void
+    {
+        if (!$this->hasChildComponent(CsrfToken::getFieldName())) {
+            // The Csrf protection has been disabled
+            return;
+        }
 
-		if (!$this->hasErrors(withChildElements: true)) {
-			$this->validateCsrf($inputData);
-		}
+        /** @var CsrfTokenField $csrfTokenField */
+        $csrfTokenField = $this->getField(CsrfToken::getFieldName());
 
-		if ($this->hasErrors(withChildElements: true) && !$this->hasErrors(withChildElements: false) && !is_null($this->globalErrorMessage)) {
-			$this->addErrorAsHtmlTextObject($this->globalErrorMessage);
-		}
+        $validCsrfTokenValue = new ValidCsrfTokenValue();
+        $csrfTokenField->addRule($validCsrfTokenValue);
 
-		return !$this->hasErrors(withChildElements: true);
-	}
+        if (!$csrfTokenField->validate($inputData)) {
+            $this->addErrorAsHtmlTextObject($validCsrfTokenValue->getErrorMessage());
+        }
+    }
 
-	public function render(): string
-	{
-		if ($this->hasErrors(withChildElements: true) && !$this->hasErrors(withChildElements: false) && !is_null($this->globalErrorMessage)) {
-			$this->addErrorAsHtmlTextObject($this->globalErrorMessage);
-		}
+    public function getField(string $name): FormField
+    {
+        $childComponent = $this->getChildComponent($name);
 
-		return parent::render();
-	}
+        if (!($childComponent instanceof FormField)) {
+            throw new Exception('The requested component ' . $name . ' is not an instance of FormField');
+        }
 
-	private function validateCsrf(array $inputData): void
-	{
-		if (!$this->hasChildComponent(CsrfToken::getFieldName())) {
-			// The Csrf protection has been disabled
-			return;
-		}
+        return $childComponent;
+    }
 
-		/** @var CsrfTokenField $csrfTokenField */
-		$csrfTokenField = $this->getField(CsrfToken::getFieldName());
+    public function render(): string
+    {
+        if ($this->hasErrors(withChildElements: true) && !$this->hasErrors(withChildElements: false) && !is_null(
+                $this->globalErrorMessage
+            )) {
+            $this->addErrorAsHtmlTextObject($this->globalErrorMessage);
+        }
 
-		$validCsrfTokenValue = new ValidCsrfTokenValue();
-		$csrfTokenField->addRule($validCsrfTokenValue);
+        return parent::render();
+    }
 
-		if (!$csrfTokenField->validate($inputData)) {
-			$this->addErrorAsHtmlTextObject($validCsrfTokenValue->getErrorMessage());
-		}
-	}
+    /**
+     * @return FormField[]
+     */
+    public function getAllFields(): array
+    {
+        $allFields = [];
 
-	/**
-	 * @return FormField[]
-	 */
-	public function getAllFields(): array
-	{
-		$allFields = [];
+        foreach ($this->getChildComponents() as $formComponent) {
+            if (!$formComponent instanceof FormField) {
+                continue;
+            }
+            $allFields[] = $formComponent;
+        }
 
-		foreach ($this->getChildComponents() as $formComponent) {
-			if (!$formComponent instanceof FormField) {
-				continue;
-			}
-			$allFields[] = $formComponent;
-		}
+        return $allFields;
+    }
 
-		return $allFields;
-	}
+    public function dontRenderRequiredAbbr(): void
+    {
+        $this->renderRequiredAbbr = false;
+    }
 
-	public function dontRenderRequiredAbbr(): void
-	{
-		$this->renderRequiredAbbr = false;
-	}
+    public function isMethodPost(): bool
+    {
+        return $this->methodPost;
+    }
 
-	public function isMethodPost(): bool
-	{
-		return $this->methodPost;
-	}
+    public function getSentIndicator(): string
+    {
+        return $this->sentIndicator;
+    }
 
-	public function getSentIndicator(): string
-	{
-		return $this->sentIndicator;
-	}
+    public function getCssClasses(): array
+    {
+        return $this->cssClasses;
+    }
 
-	public function getCssClasses(): array
-	{
-		return $this->cssClasses;
-	}
+    public function acceptUpload(): bool
+    {
+        return $this->acceptUpload;
+    }
 
-	public function acceptUpload(): bool
-	{
-		return $this->acceptUpload;
-	}
-
-	public function getDefaultRenderer(): FormRenderer
-	{
-		return new DefaultFormRenderer($this);
-	}
+    public function getDefaultRenderer(): FormRenderer
+    {
+        return new DefaultFormRenderer($this);
+    }
 }

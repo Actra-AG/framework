@@ -14,27 +14,27 @@ use framework\template\template\TemplateTag;
 
 class DateTag extends TemplateTag implements TagNode
 {
-	public static function getName(): string
-	{
-		return 'date';
-	}
+    public static function getName(): string
+    {
+        return 'date';
+    }
 
-	public static function isElseCompatible(): bool
-	{
-		return false;
-	}
+    public static function isElseCompatible(): bool
+    {
+        return false;
+    }
 
-	public static function isSelfClosing(): bool
-	{
-		return true;
-	}
+    public static function isSelfClosing(): bool
+    {
+        return true;
+    }
 
-	public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
-	{
-		$format = $elementNode->getAttribute('format')->getValue();
-		$replNode = new TextNode();
-		$replNode->content = '<?php echo date(\'' . $format . '\'); ?>';
+    public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void
+    {
+        $format = $elementNode->getAttribute('format')->getValue();
+        $replNode = new TextNode();
+        $replNode->content = '<?php echo date(\'' . $format . '\'); ?>';
 
-		$elementNode->parentNode->replaceNode($elementNode, $replNode);
-	}
+        $elementNode->parentNode->replaceNode($elementNode, $replNode);
+    }
 }

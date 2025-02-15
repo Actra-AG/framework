@@ -14,34 +14,34 @@ use UnexpectedValueException;
 
 class MaxLengthRule extends FormRule
 {
-	protected int $maxLength;
+    protected int $maxLength;
 
-	function __construct(int $maxLength, HtmlText $errorMessage)
-	{
-		$this->maxLength = $maxLength;
+    public function __construct(int $maxLength, HtmlText $errorMessage)
+    {
+        $this->maxLength = $maxLength;
 
-		parent::__construct($errorMessage);
-	}
+        parent::__construct($errorMessage);
+    }
 
-	public function validate(FormField $formField): bool
-	{
-		if ($formField->isValueEmpty()) {
-			return true;
-		}
+    public function validate(FormField $formField): bool
+    {
+        if ($formField->isValueEmpty()) {
+            return true;
+        }
 
-		$fieldValue = $formField->getRawValue();
+        $fieldValue = $formField->getRawValue();
 
-		if (is_scalar($fieldValue)) {
-			return $this->checkValueLengthAgainst(mb_strlen($fieldValue));
-		}
-		if (is_array($fieldValue) || $fieldValue instanceof ArrayObject) {
-			return $this->checkValueLengthAgainst(count($fieldValue));
-		}
-		throw new UnexpectedValueException('Could not handle field value for rule ' . __CLASS__);
-	}
+        if (is_scalar($fieldValue)) {
+            return $this->checkValueLengthAgainst(mb_strlen($fieldValue));
+        }
+        if (is_array($fieldValue) || $fieldValue instanceof ArrayObject) {
+            return $this->checkValueLengthAgainst(count($fieldValue));
+        }
+        throw new UnexpectedValueException('Could not handle field value for rule ' . __CLASS__);
+    }
 
-	private function checkValueLengthAgainst($valueLength): bool
-	{
-		return ($valueLength <= $this->maxLength);
-	}
+    private function checkValueLengthAgainst($valueLength): bool
+    {
+        return ($valueLength <= $this->maxLength);
+    }
 }

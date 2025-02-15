@@ -49,7 +49,7 @@ class PhoneValidator
 	 *
 	 * @param string $number Number to be checked for viability as a phone number
 	 *
-	 * @return boolean true if the number could be a phone number of some sort, otherwise false
+     * @return bool true if the number could be a phone number of some sort, otherwise false
 	 */
 	public static function isViablePhoneNumber(string $number): bool
 	{

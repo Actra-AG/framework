@@ -23,128 +23,134 @@ namespace framework\mailer;
 
 class MailerAddress
 {
-	private string $punyEncodedDomain;
-	private string $emailNamePart;
-	private string $addressName;
+    private string $punyEncodedDomain;
+    private string $emailNamePart;
+    private string $addressName;
 
-	private function __construct(
-		public readonly MailerAddressKindEnum $mailerAddressKindEnum,
-		string                                $inputEmail,
-		string                                $inputName
-	) {
-		$inputEmail = mb_strtolower(string: trim(string: $inputEmail));
-		$atPos = strrpos(haystack: $inputEmail, needle: '@');
-		if ($atPos === false) {
-			throw new MailerException(message: 'Missing @-sign (' . $mailerAddressKindEnum->value . '): ' . $inputEmail);
-		}
-		$domain = substr(string: $inputEmail, offset: ++$atPos);
+    private function __construct(
+        public readonly MailerAddressKindEnum $mailerAddressKindEnum,
+        string $inputEmail,
+        string $inputName
+    ) {
+        $inputEmail = mb_strtolower(string: trim(string: $inputEmail));
+        $atPos = strrpos(haystack: $inputEmail, needle: '@');
+        if ($atPos === false) {
+            throw new MailerException(
+                message: 'Missing @-sign (' . $mailerAddressKindEnum->value . '): ' . $inputEmail
+            );
+        }
+        $domain = substr(string: $inputEmail, offset: ++$atPos);
 
-		$this->punyEncodedDomain = MailerFunctions::punyEncodeDomain(domain: $domain);
-		$this->emailNamePart = substr(string: $inputEmail, offset: 0, length: $atPos - 1);
+        $this->punyEncodedDomain = MailerFunctions::punyEncodeDomain(domain: $domain);
+        $this->emailNamePart = substr(string: $inputEmail, offset: 0, length: $atPos - 1);
 
-		if (!MailerFunctions::validateAddress(address: $this->getPunyEncodedEmail())) {
-			throw new MailerException(message: 'Invalid address (' . $mailerAddressKindEnum->value . '): ' . $this->getPunyEncodedEmail());
-		}
+        if (!MailerFunctions::validateAddress(address: $this->getPunyEncodedEmail())) {
+            throw new MailerException(
+                message: 'Invalid address (' . $mailerAddressKindEnum->value . '): ' . $this->getPunyEncodedEmail()
+            );
+        }
 
-		$this->addressName = trim(string: preg_replace(
-			pattern: '/[\r\n]+/',
-			replacement: '',
-			subject: $inputName
-		)); // Strip breaks and trim
-	}
+        $this->addressName = trim(
+            string: preg_replace(
+            pattern: '/[\r\n]+/',
+            replacement: '',
+            subject: $inputName
+        )
+        ); // Strip breaks and trim
+    }
 
-	public static function createSenderAddress(string $inputEmail, string $inputName): MailerAddress
-	{
-		return new MailerAddress(
-			mailerAddressKindEnum: MailerAddressKindEnum::KIND_SENDER,
-			inputEmail: $inputEmail,
-			inputName: $inputName
-		);
-	}
+    public function getPunyEncodedEmail(): string
+    {
+        return $this->emailNamePart . '@' . $this->punyEncodedDomain;
+    }
 
-	public static function createFromAddress(string $inputEmail, string $inputName): MailerAddress
-	{
-		return new MailerAddress(
-			mailerAddressKindEnum: MailerAddressKindEnum::KIND_FROM,
-			inputEmail: $inputEmail,
-			inputName: $inputName
-		);
-	}
+    public static function createSenderAddress(string $inputEmail, string $inputName): MailerAddress
+    {
+        return new MailerAddress(
+            mailerAddressKindEnum: MailerAddressKindEnum::KIND_SENDER,
+            inputEmail: $inputEmail,
+            inputName: $inputName
+        );
+    }
 
-	public static function createConfirmReadingToAddress(string $inputEmail, string $inputName): MailerAddress
-	{
-		return new MailerAddress(
-			mailerAddressKindEnum: MailerAddressKindEnum::KIND_CONFIRM_READING_TO,
-			inputEmail: $inputEmail,
-			inputName: $inputName
-		);
-	}
+    public static function createFromAddress(string $inputEmail, string $inputName): MailerAddress
+    {
+        return new MailerAddress(
+            mailerAddressKindEnum: MailerAddressKindEnum::KIND_FROM,
+            inputEmail: $inputEmail,
+            inputName: $inputName
+        );
+    }
 
-	public static function createToAddress(string $inputEmail, string $inputName): MailerAddress
-	{
-		return new MailerAddress(
-			mailerAddressKindEnum: MailerAddressKindEnum::KIND_TO,
-			inputEmail: $inputEmail,
-			inputName: $inputName
-		);
-	}
+    public static function createConfirmReadingToAddress(string $inputEmail, string $inputName): MailerAddress
+    {
+        return new MailerAddress(
+            mailerAddressKindEnum: MailerAddressKindEnum::KIND_CONFIRM_READING_TO,
+            inputEmail: $inputEmail,
+            inputName: $inputName
+        );
+    }
 
-	public static function createCcAddress(string $inputEmail, string $inputName): MailerAddress
-	{
-		return new MailerAddress(
-			mailerAddressKindEnum: MailerAddressKindEnum::KIND_CC,
-			inputEmail: $inputEmail,
-			inputName: $inputName
-		);
-	}
+    public static function createToAddress(string $inputEmail, string $inputName): MailerAddress
+    {
+        return new MailerAddress(
+            mailerAddressKindEnum: MailerAddressKindEnum::KIND_TO,
+            inputEmail: $inputEmail,
+            inputName: $inputName
+        );
+    }
 
-	public static function createBccAddress(string $inputEmail, string $inputName): MailerAddress
-	{
-		return new MailerAddress(
-			mailerAddressKindEnum: MailerAddressKindEnum::KIND_BCC,
-			inputEmail: $inputEmail,
-			inputName: $inputName
-		);
-	}
+    public static function createCcAddress(string $inputEmail, string $inputName): MailerAddress
+    {
+        return new MailerAddress(
+            mailerAddressKindEnum: MailerAddressKindEnum::KIND_CC,
+            inputEmail: $inputEmail,
+            inputName: $inputName
+        );
+    }
 
-	public static function createReplyToAddress(string $inputEmail, string $inputName): MailerAddress
-	{
-		return new MailerAddress(
-			mailerAddressKindEnum: MailerAddressKindEnum::KIND_REPLY_TO,
-			inputEmail: $inputEmail,
-			inputName: $inputName
-		);
-	}
+    public static function createBccAddress(string $inputEmail, string $inputName): MailerAddress
+    {
+        return new MailerAddress(
+            mailerAddressKindEnum: MailerAddressKindEnum::KIND_BCC,
+            inputEmail: $inputEmail,
+            inputName: $inputName
+        );
+    }
 
-	public function getPunyEncodedEmail(): string
-	{
-		return $this->emailNamePart . '@' . $this->punyEncodedDomain;
-	}
+    public static function createReplyToAddress(string $inputEmail, string $inputName): MailerAddress
+    {
+        return new MailerAddress(
+            mailerAddressKindEnum: MailerAddressKindEnum::KIND_REPLY_TO,
+            inputEmail: $inputEmail,
+            inputName: $inputName
+        );
+    }
 
-	public function getName(): string
-	{
-		return $this->addressName;
-	}
+    public function getName(): string
+    {
+        return $this->addressName;
+    }
 
-	public function getFormattedAddressForMailer(
-		int    $maxLineLength,
-		string $defaultCharSet
-	): string {
-		$preparedEmailAddress = MailerFunctions::secureHeader(string: $this->getPunyEncodedEmail());
-		if ($this->addressName === '') {
-			return $preparedEmailAddress;
-		}
+    public function getFormattedAddressForMailer(
+        int $maxLineLength,
+        string $defaultCharSet
+    ): string {
+        $preparedEmailAddress = MailerFunctions::secureHeader(string: $this->getPunyEncodedEmail());
+        if ($this->addressName === '') {
+            return $preparedEmailAddress;
+        }
 
-		return implode(
-			separator: ' ',
-			array: [
-				MailerFunctions::encodeHeaderPhrase(
-					string: MailerFunctions::secureHeader(string: $this->addressName),
-					maxLineLength: $maxLineLength,
-					defaultCharSet: $defaultCharSet
-				),
-				'<' . $preparedEmailAddress . '>',
-			]
-		);
-	}
+        return implode(
+            separator: ' ',
+            array: [
+                MailerFunctions::encodeHeaderPhrase(
+                    string: MailerFunctions::secureHeader(string: $this->addressName),
+                    maxLineLength: $maxLineLength,
+                    defaultCharSet: $defaultCharSet
+                ),
+                '<' . $preparedEmailAddress . '>',
+            ]
+        );
+    }
 }

@@ -23,52 +23,52 @@ namespace framework\mailer;
 
 readonly class MailerHeader
 {
-	private string $name;
-	private string $value;
+    private string $name;
+    private string $value;
 
-	private function __construct(
-		string $name,
-		string $value
-	) {
-		$name = trim(string: $name);
-		$value = trim(string: $value);
+    private function __construct(
+        string $name,
+        string $value
+    ) {
+        $name = trim(string: $name);
+        $value = trim(string: $value);
 
-		// Ensure name is not empty, and that neither name nor value contain line breaks
-		if ($name === '' || strpbrk(string: $name . $value, characters: MailerConstants::CRLF) !== false) {
-			throw new MailerException(message: 'Invalid header name or value');
-		}
-		$this->name = $name;
-		$this->value = $value;
-	}
+        // Ensure name is not empty, and that neither name nor value contain line breaks
+        if ($name === '' || strpbrk(string: $name . $value, characters: MailerConstants::CRLF) !== false) {
+            throw new MailerException(message: 'Invalid header name or value');
+        }
+        $this->name = $name;
+        $this->value = $value;
+    }
 
-	public static function createRaw(
-		string $name,
-		string $value
-	): string {
-		return (new MailerHeader(
-			name: $name,
-			value: $value
-		))->get();
-	}
+    public static function createRaw(
+        string $name,
+        string $value
+    ): string {
+        return (new MailerHeader(
+            name: $name,
+            value: $value
+        ))->get();
+    }
 
-	public static function createEncodedHeaderText(
-		string $name,
-		string $value,
-		int    $maxLineLength,
-		string $defaultCharSet
-	): MailerHeader {
-		return (new MailerHeader(
-			name: $name,
-			value: MailerFunctions::encodeHeaderText(
-				string: $value,
-				maxLineLength: $maxLineLength,
-				defaultCharSet: $defaultCharSet
-			)
-		));
-	}
+    public function get(): string
+    {
+        return $this->name . ': ' . $this->value . MailerConstants::CRLF;
+    }
 
-	public function get(): string
-	{
-		return $this->name . ': ' . $this->value . MailerConstants::CRLF;
-	}
+    public static function createEncodedHeaderText(
+        string $name,
+        string $value,
+        int $maxLineLength,
+        string $defaultCharSet
+    ): MailerHeader {
+        return (new MailerHeader(
+            name: $name,
+            value: MailerFunctions::encodeHeaderText(
+                string: $value,
+                maxLineLength: $maxLineLength,
+                defaultCharSet: $defaultCharSet
+            )
+        ));
+    }
 }

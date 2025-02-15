@@ -12,18 +12,18 @@ use framework\html\HtmlText;
 
 class HiddenField extends InputField
 {
-	public function __construct(
-		string                     $name,
-		int|float|string|bool|null $value = null
-	) {
-		parent::__construct(
-			inputType: InputTypeValue::HIDDEN,
-			name: $name,
-			label: HtmlText::encoded(textContent: ''),
-			value: $value,
-			placeholder: null,
-			autoComplete: null
-		);
-		$this->setRenderer(renderer: new HiddenFieldRenderer(hiddenField: $this));
-	}
+    public function __construct(
+        string $name,
+        int|float|string|bool|null $value = null
+    ) {
+        parent::__construct(
+            inputType: InputTypeValue::HIDDEN,
+            name: $name,
+            label: HtmlText::encoded(textContent: ''),
+            value: $value,
+            placeholder: null,
+            autoComplete: null
+        );
+        $this->setRenderer(renderer: new HiddenFieldRenderer(hiddenField: $this));
+    }
 }

@@ -13,25 +13,25 @@ use framework\html\HtmlTagAttribute;
 
 class DefaultCollectionRenderer extends FormRenderer
 {
-	private FormCollection $formCollection;
+    private FormCollection $formCollection;
 
-	public function __construct(FormCollection $formCollection)
-	{
-		$this->formCollection = $formCollection;
-	}
+    public function __construct(FormCollection $formCollection)
+    {
+        $this->formCollection = $formCollection;
+    }
 
-	public function prepare(): void
-	{
-		$componentTag = new HtmlTag($this->formCollection->getName(), false);
+    public function prepare(): void
+    {
+        $componentTag = new HtmlTag($this->formCollection->getName(), false);
 
-		if ($this->formCollection->hasErrors(withChildElements: true)) {
-			$componentTag->addHtmlTagAttribute(new HtmlTagAttribute('class', 'has-error', true));
-		}
+        if ($this->formCollection->hasErrors(withChildElements: true)) {
+            $componentTag->addHtmlTagAttribute(new HtmlTagAttribute('class', 'has-error', true));
+        }
 
-		foreach ($this->formCollection->getChildComponents() as $childComponent) {
-			$componentTag->addTag($childComponent->getHtmlTag());
-		}
+        foreach ($this->formCollection->getChildComponents() as $childComponent) {
+            $componentTag->addTag($childComponent->getHtmlTag());
+        }
 
-		$this->setHtmlTag($componentTag);
-	}
+        $this->setHtmlTag($componentTag);
+    }
 }

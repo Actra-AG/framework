@@ -27,29 +27,29 @@ use framework\mailer\MailerFunctions;
 
 readonly class MailerStringAttachment
 {
-	public string $contentString;
-	public string $fileName;
-	public string $type;
-	public string $encoding;
+    public string $contentString;
+    public string $fileName;
+    public string $type;
+    public string $encoding;
 
-	public function __construct(
-		string      $contentString,
-		string      $fileName,
-		string      $type,
-		public bool $dispositionInline = false
-	) {
-		$contentString = trim(string: $contentString);
-		$fileName = trim(string: $fileName);
-		$this->encoding = MailerConstants::ENCODING_BASE64;
-		if ($contentString === '' || $fileName === '') {
-			throw new MailerException(message: 'Empty contentString or fileName.');
-		}
-		$type = trim(string: $type);
-		if ($type === '') {
-			$type = MailerFunctions::filenameToType(fileName: $fileName);
-		}
-		$this->contentString = $contentString;
-		$this->fileName = $fileName;
-		$this->type = $type;
-	}
+    public function __construct(
+        string $contentString,
+        string $fileName,
+        string $type,
+        public bool $dispositionInline = false
+    ) {
+        $contentString = trim(string: $contentString);
+        $fileName = trim(string: $fileName);
+        $this->encoding = MailerConstants::ENCODING_BASE64;
+        if ($contentString === '' || $fileName === '') {
+            throw new MailerException(message: 'Empty contentString or fileName.');
+        }
+        $type = trim(string: $type);
+        if ($type === '') {
+            $type = MailerFunctions::filenameToType(fileName: $fileName);
+        }
+        $this->contentString = $contentString;
+        $this->fileName = $fileName;
+        $this->type = $type;
+    }
 }

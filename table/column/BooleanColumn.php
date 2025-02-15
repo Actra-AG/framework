@@ -10,35 +10,35 @@ use framework\table\TableItemModel;
 
 class BooleanColumn extends AbstractTableColumn
 {
-	private string $trueLabel = 'Ja';
-	private string $falseLabel = 'Nein';
+    private string $trueLabel = 'Ja';
+    private string $falseLabel = 'Nein';
 
-	public function setTrueLabel(string $trueLabel): void
-	{
-		$this->trueLabel = $trueLabel;
-	}
+    public function setTrueLabel(string $trueLabel): void
+    {
+        $this->trueLabel = $trueLabel;
+    }
 
-	public function setFalseLabel(string $falseLabel): void
-	{
-		$this->falseLabel = $falseLabel;
-	}
+    public function setFalseLabel(string $falseLabel): void
+    {
+        $this->falseLabel = $falseLabel;
+    }
 
-	protected function renderCellValue(TableItemModel $tableItemModel): string
-	{
-		$value = $tableItemModel->getRawValue(name: $this->identifier);
+    protected function renderCellValue(TableItemModel $tableItemModel): string
+    {
+        $value = $tableItemModel->getRawValue(name: $this->identifier);
 
-		if (is_null(value: $value)) {
-			return '';
-		}
+        if (is_null(value: $value)) {
+            return '';
+        }
 
-		if ($value === 1 || $value === true) {
-			return $this->trueLabel;
-		}
+        if ($value === 1 || $value === true) {
+            return $this->trueLabel;
+        }
 
-		if ($value === 0 || $value === false) {
-			return $this->falseLabel;
-		}
+        if ($value === 0 || $value === false) {
+            return $this->falseLabel;
+        }
 
-		return $tableItemModel->renderValue(name: $this->identifier);
-	}
+        return $tableItemModel->renderValue(name: $this->identifier);
+    }
 }

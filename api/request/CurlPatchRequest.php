@@ -13,51 +13,51 @@ use framework\api\AbstractCurlRequest;
  */
 class CurlPatchRequest extends AbstractCurlRequest
 {
-	private function __construct(string $requestTargetUrl)
-	{
-		parent::__construct(
-			requestTargetUrl: $requestTargetUrl,
-			requestTypeSpecificCurlOptions: [CURLOPT_CUSTOMREQUEST => 'PATCH']
-		);
-	}
+    private function __construct(string $requestTargetUrl)
+    {
+        parent::__construct(
+            requestTargetUrl: $requestTargetUrl,
+            requestTypeSpecificCurlOptions: [CURLOPT_CUSTOMREQUEST => 'PATCH']
+        );
+    }
 
-	public static function prepareWithPostBody(string $requestTargetUrl, array $postData): CurlPatchRequest
-	{
-		$curlPatchRequest = new CurlPatchRequest(requestTargetUrl: $requestTargetUrl);
-		$curlPatchRequest->setPostBody(postData: $postData);
+    public static function prepareWithPostBody(string $requestTargetUrl, array $postData): CurlPatchRequest
+    {
+        $curlPatchRequest = new CurlPatchRequest(requestTargetUrl: $requestTargetUrl);
+        $curlPatchRequest->setPostBody(postData: $postData);
 
-		return $curlPatchRequest;
-	}
+        return $curlPatchRequest;
+    }
 
-	public static function prepareWithXmlBody(string $requestTargetUrl, string $xmlString): CurlPatchRequest
-	{
-		$curlPatchRequest = new CurlPatchRequest(requestTargetUrl: $requestTargetUrl);
-		$curlPatchRequest->setXmlBody(xmlString: $xmlString);
+    public static function prepareWithXmlBody(string $requestTargetUrl, string $xmlString): CurlPatchRequest
+    {
+        $curlPatchRequest = new CurlPatchRequest(requestTargetUrl: $requestTargetUrl);
+        $curlPatchRequest->setXmlBody(xmlString: $xmlString);
 
-		return $curlPatchRequest;
-	}
+        return $curlPatchRequest;
+    }
 
-	public static function prepareWithJsonBody(string $requestTargetUrl, string $jsonString): CurlPatchRequest
-	{
-		$curlPatchRequest = new CurlPatchRequest(requestTargetUrl: $requestTargetUrl);
-		$curlPatchRequest->setJsonBody(jsonString: $jsonString);
+    public static function prepareWithJsonBody(string $requestTargetUrl, string $jsonString): CurlPatchRequest
+    {
+        $curlPatchRequest = new CurlPatchRequest(requestTargetUrl: $requestTargetUrl);
+        $curlPatchRequest->setJsonBody(jsonString: $jsonString);
 
-		return $curlPatchRequest;
-	}
+        return $curlPatchRequest;
+    }
 
-	public static function prepareJsonApiRequest(string $requestTargetUrl, string $jsonString): CurlPatchRequest
-	{
-		$curlPatchRequest = new CurlPatchRequest(requestTargetUrl: $requestTargetUrl);
-		$curlPatchRequest->setJsonApiBody(jsonString: $jsonString);
+    public static function prepareJsonApiRequest(string $requestTargetUrl, string $jsonString): CurlPatchRequest
+    {
+        $curlPatchRequest = new CurlPatchRequest(requestTargetUrl: $requestTargetUrl);
+        $curlPatchRequest->setJsonApiBody(jsonString: $jsonString);
 
-		return $curlPatchRequest;
-	}
+        return $curlPatchRequest;
+    }
 
-	public static function prepareWithPlainTextBody(string $requestTargetUrl, string $plainText): CurlPatchRequest
-	{
-		$curlPatchRequest = new CurlPatchRequest(requestTargetUrl: $requestTargetUrl);
-		$curlPatchRequest->setPlainTextBody(plainText: $plainText);
+    public static function prepareWithPlainTextBody(string $requestTargetUrl, string $plainText): CurlPatchRequest
+    {
+        $curlPatchRequest = new CurlPatchRequest(requestTargetUrl: $requestTargetUrl);
+        $curlPatchRequest->setPlainTextBody(plainText: $plainText);
 
-		return $curlPatchRequest;
-	}
+        return $curlPatchRequest;
+    }
 }

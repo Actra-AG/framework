@@ -34,14 +34,8 @@ class RegexRule extends FormRule
 		if (is_scalar($fieldValue)) {
 			return $this->checkAgainstPattern($fieldValue);
 		} else if (is_array($fieldValue) || $fieldValue instanceof ArrayObject) {
-			foreach ($fieldValue as $value) {
-				if (!$this->checkAgainstPattern($value)) {
-					return false;
-				}
-			}
-
-			return true;
-		} else {
+            return array_all($fieldValue, fn($value) => $this->checkAgainstPattern($value));
+        } else {
 			throw new UnexpectedValueException('The field value is neither scalar nor an array');
 		}
 	}

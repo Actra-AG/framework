@@ -11,8 +11,8 @@ use framework\form\FormRule;
 
 class NoArrayRule extends FormRule
 {
-	public function validate(FormField $formField): bool
-	{
-		return !is_array($formField->getRawValue());
-	}
+    public function validate(FormField $formField): bool
+    {
+        return !is_array($formField->getRawValue());
+    }
 }
