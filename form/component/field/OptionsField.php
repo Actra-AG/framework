@@ -15,8 +15,8 @@ use framework\html\HtmlText;
 
 abstract class OptionsField extends FormField
 {
-    private array $listTagClasses = [];
     private ?HtmlText $listDescription = null;
+    private array $listTagClasses = [];
 
     public function __construct(
         string $name,
@@ -35,9 +35,9 @@ abstract class OptionsField extends FormField
         // It can only happen by data manipulation, which we don't want to be notified about (by exception).
         $this->addRule(
             formRule: new ValidateAgainstOptions(
-            errorMessage: HtmlText::encoded(textContent: 'Selected invalid value in field ' . $name),
-            validFormOptions: $this->formOptions
-        )
+                errorMessage: HtmlText::encoded(textContent: 'Selected invalid value in field ' . $name),
+                validFormOptions: $this->formOptions
+            )
         );
     }
 
