@@ -15,7 +15,7 @@ use framework\html\HtmlText;
 
 abstract class OptionsField extends FormField
 {
-    public ?HtmlText $listDescription;
+    public ?HtmlText $listDescription = null;
     private array $listTagClasses = [];
 
     public function __construct(
