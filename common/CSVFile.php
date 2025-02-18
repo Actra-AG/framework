@@ -71,7 +71,8 @@ class CSVFile
                 stream: $fileResource,
                 fields: $this->headersList,
                 separator: $this->delimiter,
-                enclosure: $this->enclosure
+                enclosure: $this->enclosure,
+                escape: ''
             );
         }
         foreach ($this->rows as $row) {
