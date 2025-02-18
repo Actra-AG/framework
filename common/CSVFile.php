@@ -76,7 +76,13 @@ class CSVFile
             );
         }
         foreach ($this->rows as $row) {
-            fputcsv(stream: $fileResource, fields: $row, separator: $this->delimiter, enclosure: $this->enclosure);
+            fputcsv(
+                stream: $fileResource,
+                fields: $row,
+                separator: $this->delimiter,
+                enclosure: $this->enclosure,
+                escape: ''
+            );
         }
         fclose(stream: $fileResource);
 
