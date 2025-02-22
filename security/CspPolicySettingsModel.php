@@ -63,10 +63,14 @@ readonly class CspPolicySettingsModel
         }
         if ($this->scriptSrc !== '') {
             $val = $this->scriptSrc;
-            if (!str_contains(haystack: $val, needle: "'none'") && !str_contains(
+            if (
+                !str_contains(haystack: $val, needle: "'none'")
+                && !str_contains(
                     haystack: $val,
                     needle: "'unsafe-inline'"
-                )) {
+                )
+                && $nonce !== ''
+            ) {
                 $val .= " 'nonce-" . $nonce . "'";
             }
             $dataArray[] = 'script-src ' . $val;
