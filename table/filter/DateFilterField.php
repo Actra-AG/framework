@@ -104,4 +104,9 @@ class DateFilterField extends AbstractTableFilterField
     {
         return !is_null(value: $this->value);
     }
+
+    protected function getValue(): ?DateTimeImmutable
+    {
+        return $this->value;
+    }
 }
