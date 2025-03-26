@@ -23,26 +23,29 @@ use LogicException;
 class Form extends FormCollection
 {
     private static array $formNameList = [];
-    private(set) string $sentIndicator;
+    public readonly string $sentIndicator;
     private(set) array $cssClasses = [];
     private bool $renderRequiredAbbr = true;
 
     public function __construct(
         string $name,
-        private(set) readonly bool $acceptUpload = false,
-        private(set) readonly ?HtmlText $globalErrorMessage = null,
-        private(set) readonly bool $methodPost = true,
-        ?string $individualSentIndicator = null
+        public readonly bool $acceptUpload = false,
+        public readonly ?HtmlText $globalErrorMessage = null,
+        public readonly bool $methodPost = true,
+        ?string $individualSentIndicator = null,
+        public readonly bool $disableClientValidation = false
     ) {
-        if (in_array(needle: $name, haystack: Form::$formNameList)) {
+        if (in_array(
+            needle: $name,
+            haystack: Form::$formNameList
+        )) {
             throw new LogicException(message: 'A Form with the name "' . $name . '" has already been defined.');
         }
         Form::$formNameList[] = $name;
-        $this->sentIndicator = is_null($individualSentIndicator) ? $name : $individualSentIndicator;
+        $this->sentIndicator = is_null(value: $individualSentIndicator) ? $name : $individualSentIndicator;
+        parent::__construct(name: $name);
 
-        parent::__construct($name);
-
-        $this->addField(new CsrfTokenField());
+        $this->addField(formField: new CsrfTokenField());
     }
 
     public function addField(FormField $formField): void
@@ -51,13 +54,13 @@ class Form extends FormCollection
             $formField->renderRequiredAbbr = false;
         }
         $formField->topFormComponent = $this;
-        $this->addChildComponent($formField);
+        $this->addChildComponent(formComponent: $formField);
     }
 
     public function removeCsrfProtection(): void
     {
-        if ($this->hasChildComponent(CsrfToken::getFieldName())) {
-            $this->removeChildComponent(CsrfToken::getFieldName());
+        if ($this->hasChildComponent(childComponentName: CsrfToken::getFieldName())) {
+            $this->removeChildComponent(childComponentName: CsrfToken::getFieldName());
         }
     }
 
@@ -73,24 +76,24 @@ class Form extends FormCollection
 
     public function addComponent(FormComponent $formComponent): void
     {
-        $this->addChildComponent($formComponent);
+        $this->addChildComponent(formComponent: $formComponent);
     }
 
     public function removeField(string $name): void
     {
-        if (!$this->hasField($name)) {
-            throw new Exception('The requested component ' . $name . ' is not an instance of FormField');
+        if (!$this->hasField(name: $name)) {
+            throw new Exception(message: 'The requested component ' . $name . ' is not an instance of FormField');
         }
-        $this->removeChildComponent($name);
+        $this->removeChildComponent(childComponentName: $name);
     }
 
     public function hasField(string $name): bool
     {
-        if (!$this->hasChildComponent($name)) {
+        if (!$this->hasChildComponent(childComponentName: $name)) {
             return false;
         }
 
-        $component = $this->getChildComponent($name);
+        $component = $this->getChildComponent(childComponentName: $name);
 
         return ($component instanceof FormField);
     }
@@ -112,13 +115,15 @@ class Form extends FormCollection
         }
 
         if (!$this->hasErrors(withChildElements: true)) {
-            $this->validateCsrf($inputData);
+            $this->validateCsrf(inputData: $inputData);
         }
 
-        if ($this->hasErrors(withChildElements: true) && !$this->hasErrors(withChildElements: false) && !is_null(
-                $this->globalErrorMessage
-            )) {
-            $this->addErrorAsHtmlTextObject($this->globalErrorMessage);
+        if (
+            $this->hasErrors(withChildElements: true)
+            && !$this->hasErrors(withChildElements: false)
+            && !is_null(value: $this->globalErrorMessage)
+        ) {
+            $this->addErrorAsHtmlTextObject(errorMessageObject: $this->globalErrorMessage);
         }
 
         return !$this->hasErrors(withChildElements: true);
@@ -126,33 +131,32 @@ class Form extends FormCollection
 
     public function isSent(): bool
     {
-        return array_key_exists($this->sentIndicator, $_GET);
+        return array_key_exists(
+            key: $this->sentIndicator,
+            array: $_GET
+        );
     }
 
     private function validateCsrf(array $inputData): void
     {
-        if (!$this->hasChildComponent(CsrfToken::getFieldName())) {
+        if (!$this->hasChildComponent(childComponentName: CsrfToken::getFieldName())) {
             // The Csrf protection has been disabled
             return;
         }
-
         /** @var CsrfTokenField $csrfTokenField */
-        $csrfTokenField = $this->getField(CsrfToken::getFieldName());
-
+        $csrfTokenField = $this->getField(name: CsrfToken::getFieldName());
         $validCsrfTokenValue = new ValidCsrfTokenValue();
-        $csrfTokenField->addRule($validCsrfTokenValue);
-
-        if (!$csrfTokenField->validate($inputData)) {
-            $this->addErrorAsHtmlTextObject($validCsrfTokenValue->getErrorMessage());
+        $csrfTokenField->addRule(formRule: $validCsrfTokenValue);
+        if (!$csrfTokenField->validate(inputData: $inputData)) {
+            $this->addErrorAsHtmlTextObject(errorMessageObject: $validCsrfTokenValue->getErrorMessage());
         }
     }
 
     public function getField(string $name): FormField
     {
-        $childComponent = $this->getChildComponent($name);
-
+        $childComponent = $this->getChildComponent(childComponentName: $name);
         if (!($childComponent instanceof FormField)) {
-            throw new Exception('The requested component ' . $name . ' is not an instance of FormField');
+            throw new Exception(message: 'The requested component ' . $name . ' is not an instance of FormField');
         }
 
         return $childComponent;
@@ -160,10 +164,14 @@ class Form extends FormCollection
 
     public function render(): string
     {
-        if ($this->hasErrors(withChildElements: true) && !$this->hasErrors(withChildElements: false) && !is_null(
+        if (
+            $this->hasErrors(withChildElements: true)
+            && !$this->hasErrors(withChildElements: false)
+            && !is_null(
                 $this->globalErrorMessage
-            )) {
-            $this->addErrorAsHtmlTextObject($this->globalErrorMessage);
+            )
+        ) {
+            $this->addErrorAsHtmlTextObject(errorMessageObject: $this->globalErrorMessage);
         }
 
         return parent::render();
@@ -175,7 +183,6 @@ class Form extends FormCollection
     public function getAllFields(): array
     {
         $allFields = [];
-
         foreach ($this->childComponents as $formComponent) {
             if (!$formComponent instanceof FormField) {
                 continue;
@@ -191,13 +198,8 @@ class Form extends FormCollection
         $this->renderRequiredAbbr = false;
     }
 
-    public function acceptUpload(): bool
-    {
-        return $this->acceptUpload;
-    }
-
     public function getDefaultRenderer(): FormRenderer
     {
-        return new DefaultFormRenderer($this);
+        return new DefaultFormRenderer(form: $this);
     }
 }
