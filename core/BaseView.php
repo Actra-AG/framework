@@ -26,9 +26,10 @@ abstract class BaseView
     protected function __construct(
         string $requiredViewGroupName,
         array $ipWhitelist,
-        private readonly ?AuthUser $authUser,
+        ?AuthUser $authUser,
         AccessRightCollection $requiredAccessRights,
-        private readonly InputParameterCollection $inputParameterCollection
+        private readonly InputParameterCollection $inputParameterCollection,
+        int $maxAllowedPathVars = 0
     ) {
         $viewGroup = RequestHandler::get()->route->viewGroup;
         if ($viewGroup !== $requiredViewGroupName) {
@@ -48,13 +49,14 @@ abstract class BaseView
         }
         if (
             !$requiredAccessRights->isEmpty()
-            && (is_null(value: $this->authUser) || !$authUser->hasOneOfRights(
-                    accessRightCollection: $requiredAccessRights
-                ))
+            && (
+                is_null(value: $authUser)
+                || !$authUser->hasOneOfRights(accessRightCollection: $requiredAccessRights)
+            )
         ) {
             throw new UnauthorizedAccessRightException();
         }
-        foreach ($this->inputParameterCollection->listRequiredParameters() as $inputParameter) {
+        foreach ($inputParameterCollection->listRequiredParameters() as $inputParameter) {
             $name = $inputParameter->name;
             $paramValue = HttpRequest::getInputValue(keyName: $name);
             if (
@@ -68,6 +70,17 @@ abstract class BaseView
                 $this->setErrorResponseContent(errorMessage: 'missing or empty mandatory parameter: ' . $name);
 
                 return;
+            }
+        }
+        if (array_key_exists(
+            key: ($maxAllowedPathVars + 1),
+            array: RequestHandler::get()->pathVars
+        )) {
+            throw new NotFoundException();
+        }
+        foreach ($_GET as $key => $value) {
+            if (!$inputParameterCollection->hasParameter(name: $key)) {
+                throw new NotFoundException();
             }
         }
     }
