@@ -42,10 +42,17 @@ class DefaultFormRenderer extends FormRenderer
                 valueIsEncodedForRendering: true
             );
         }
-        if ($form->acceptUpload()) {
+        if ($form->acceptUpload) {
             $attributes[] = new HtmlTagAttribute(
                 name: 'enctype',
                 value: 'multipart/form-data',
+                valueIsEncodedForRendering: true
+            );
+        }
+        if ($form->disableClientValidation) {
+            $attributes[] = new HtmlTagAttribute(
+                name: 'novalidate',
+                value: null,
                 valueIsEncodedForRendering: true
             );
         }
