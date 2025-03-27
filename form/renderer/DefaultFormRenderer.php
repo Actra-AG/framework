@@ -90,10 +90,10 @@ class DefaultFormRenderer extends FormRenderer
         if ($amountOfErrors === 1) {
             $htmlTag->addTag(
                 htmlTag: $pTag = new HtmlTag(
-                name: 'p',
-                selfClosing: false,
-                htmlTagAttributes: $mainAttributes
-            )
+                    name: 'p',
+                    selfClosing: false,
+                    htmlTagAttributes: $mainAttributes
+                )
             );
             $pTag->addTag(htmlTag: $bTag = new HtmlTag(name: 'b', selfClosing: false));
             $bTag->addText(htmlText: current(array: $errorsAsHtmlTextObjects));
@@ -102,10 +102,10 @@ class DefaultFormRenderer extends FormRenderer
         }
         $htmlTag->addTag(
             htmlTag: $divTag = new HtmlTag(
-            name: 'div',
-            selfClosing: false,
-            htmlTagAttributes: $mainAttributes
-        )
+                name: 'div',
+                selfClosing: false,
+                htmlTagAttributes: $mainAttributes
+            )
         );
         $divTag->addTag(htmlTag: $ulTag = new HtmlTag(name: 'ul', selfClosing: false));
         foreach ($errorsAsHtmlTextObjects as $htmlText) {

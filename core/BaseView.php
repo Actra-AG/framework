@@ -29,7 +29,7 @@ abstract class BaseView
         ?AuthUser $authUser,
         AccessRightCollection $requiredAccessRights,
         private readonly InputParameterCollection $inputParameterCollection,
-        int $maxAllowedPathVars = 0
+        public readonly int $maxAllowedPathVars = 0
     ) {
         $viewGroup = RequestHandler::get()->route->viewGroup;
         if ($viewGroup !== $requiredViewGroupName) {
@@ -70,17 +70,6 @@ abstract class BaseView
                 $this->setErrorResponseContent(errorMessage: 'missing or empty mandatory parameter: ' . $name);
 
                 return;
-            }
-        }
-        if (array_key_exists(
-            key: ($maxAllowedPathVars + 1),
-            array: RequestHandler::get()->pathVars
-        )) {
-            throw new NotFoundException();
-        }
-        foreach ($_GET as $key => $value) {
-            if (!$inputParameterCollection->hasParameter(name: $key)) {
-                throw new NotFoundException();
             }
         }
     }
@@ -171,9 +160,7 @@ abstract class BaseView
 
     protected function getPathVar(int $nr): ?string
     {
-        $pathVars = RequestHandler::get()->pathVars;
-
-        return array_key_exists(key: $nr, array: $pathVars) ? trim(string: $pathVars[$nr]) : null;
+        return RequestHandler::get()->getPathVar(nr: $nr);
     }
 
     protected function setContentByXmlObject(SimpleXMLExtended $xmlObject): void
