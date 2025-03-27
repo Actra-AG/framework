@@ -22,11 +22,11 @@ class RequestHandler
     public readonly Route $route;
     public readonly Language $language;
     public readonly string $fileTitle;
-    public readonly array $pathVars;
     public readonly string $fileExtension;
     private(set) string $fileName;
     private(set) ?string $fileGroup = null;
     private(set) array $routeVariables = [];
+    private readonly array $pathVars;
 
     private function __construct(RouteCollection $allRoutes)
     {
@@ -210,5 +210,12 @@ class RequestHandler
     public static function register(RouteCollection $routeCollection): void
     {
         new RequestHandler(allRoutes: $routeCollection);
+    }
+
+    public function getPathVar(int $nr): ?string
+    {
+        $pathVars = $this->pathVars;
+
+        return array_key_exists(key: $nr, array: $pathVars) ? trim(string: $pathVars[$nr]) : null;
     }
 }

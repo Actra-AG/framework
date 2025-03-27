@@ -9,6 +9,7 @@ namespace framework\core;
 
 use Exception;
 use framework\Core;
+use framework\exception\NotFoundException;
 use framework\html\HtmlDocument;
 use LogicException;
 
@@ -32,18 +33,27 @@ class ContentHandler
         ob_implicit_flush(enable: false);
         $this->loadLocalizedText();
         $viewClass = $this->getViewClass();
+        if (is_null(value: $viewClass)) {
+            if (!is_null(value: RequestHandler::get()->getPathVar(nr: 1))) {
+                throw new NotFoundException();
+            }
+        } else {
+            if (!is_null(value: RequestHandler::get()->getPathVar(nr: ($viewClass->maxAllowedPathVars + 1)))) {
+                throw new NotFoundException();
+            }
+            if (!$this->hasContent()) {
+                $viewClass->execute();
+            }
+        }
         if (
             !$this->hasContent()
-            && !is_null(value: $viewClass)
+            && $this->contentType->isHtml()
         ) {
-            $viewClass->execute();
-        }
-        if (!$this->hasContent() && $this->contentType->isHtml()) {
             $this->setContent(HtmlDocument::get()->render());
         }
         $outputBufferContents = trim(string: ob_get_clean());
         if ($outputBufferContents !== '') {
-            $this->setContent($outputBufferContents);
+            $this->setContent(contentString: $outputBufferContents);
         }
     }
 
