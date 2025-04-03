@@ -7,6 +7,7 @@
 
 namespace framework\form;
 
+use framework\form\component\collection\ErrorCollection;
 use framework\form\renderer\DefaultComponentRenderer;
 use framework\html\HtmlElement;
 use framework\html\HtmlTag;
@@ -15,56 +16,46 @@ use LogicException;
 
 abstract class FormComponent extends HtmlElement
 {
-    private ?FormRenderer $renderer; // The responsible renderer to generate the HTML-output for this component
+    public readonly ErrorCollection $errorCollection;
     private ?FormComponent $parentFormComponent = null;
-    /** @var HtmlText[] */
-    private array $errors = [];
     private bool $hasErrors = false;
 
-    /**
-     * @param string $name : Name of this component which might also be used by the descending classes
-     * @param FormRenderer|null $renderer : The renderer which does generate the html-output for this component. null = use default
-     */
-    public function __construct(string $name, ?FormRenderer $renderer = null)
-    {
-        $this->renderer = $renderer;
-        parent::__construct($name);
+    public function __construct(
+        string $name,
+        private ?FormRenderer $renderer = null
+    ) {
+        $this->errorCollection = new ErrorCollection();
+        parent::__construct(name: $name);
     }
 
-    /**
-     * @return HtmlText[]
-     */
-    public function getErrorsAsHtmlTextObjects(): array
-    {
-        return $this->errors;
-    }
-
-    public function addError(string $errorMessage, bool $isEncodedForRendering): void
-    {
+    public function addError(
+        string $errorMessage,
+        bool $isEncodedForRendering
+    ): void {
         if ($isEncodedForRendering) {
-            $this->addErrorAsHtmlTextObject(HtmlText::encoded($errorMessage));
+            $this->addErrorAsHtmlTextObject(errorMessageObject: HtmlText::encoded(textContent: $errorMessage));
         } else {
-            $this->addErrorAsHtmlTextObject(HtmlText::unencoded($errorMessage));
+            $this->addErrorAsHtmlTextObject(errorMessageObject: HtmlText::unencoded(textContent: $errorMessage));
         }
     }
 
     public function addErrorAsHtmlTextObject(HtmlText $errorMessageObject): void
     {
-        $this->errors[] = $errorMessageObject;
+        $this->errorCollection->add(errorMessageObject: $errorMessageObject);
         $this->setHasErrorsToTrue();
     }
 
     final protected function setHasErrorsToTrue(): void
     {
         $this->hasErrors = true;
-        if (!is_null($this->parentFormComponent)) {
+        if (!is_null(value: $this->parentFormComponent)) {
             $this->parentFormComponent->setHasErrorsToTrue();
         }
     }
 
     public function hasErrors(bool $withChildElements): bool
     {
-        return $withChildElements ? $this->hasErrors : (count($this->errors) > 0);
+        return $withChildElements ? $this->hasErrors : $this->errorCollection->hasErrors();
     }
 
     /**
@@ -76,7 +67,7 @@ abstract class FormComponent extends HtmlElement
     {
         $htmlTag = $this->getHtmlTag();
 
-        return is_null($htmlTag) ? '' : $htmlTag->render();
+        return is_null(value: $htmlTag) ? '' : $htmlTag->render();
     }
 
     /**
@@ -87,7 +78,7 @@ abstract class FormComponent extends HtmlElement
      */
     public function getHtmlTag(): ?HtmlTag
     {
-        $renderer = $this->getRenderer(true);
+        $renderer = $this->getRenderer(setDefaultIfNull: true);
         $renderer->prepare();
 
         return $renderer->getHtmlTag();
@@ -102,8 +93,11 @@ abstract class FormComponent extends HtmlElement
      */
     public function getRenderer(bool $setDefaultIfNull = false): ?FormRenderer
     {
-        if (is_null($this->renderer) && $setDefaultIfNull) {
-            $this->setRenderer($this->getDefaultRenderer());
+        if (
+            is_null(value: $this->renderer)
+            && $setDefaultIfNull
+        ) {
+            $this->setRenderer(renderer: $this->getDefaultRenderer());
         }
 
         return $this->renderer;
@@ -111,8 +105,8 @@ abstract class FormComponent extends HtmlElement
 
     public function setRenderer(FormRenderer $renderer): void
     {
-        if (!is_null($this->renderer)) {
-            throw new LogicException('You cannot overwrite a renderer which is already set');
+        if (!is_null(value: $this->renderer)) {
+            throw new LogicException(message: 'You cannot overwrite a renderer which is already set');
         }
 
         $this->renderer = $renderer;
@@ -120,7 +114,7 @@ abstract class FormComponent extends HtmlElement
 
     public function getDefaultRenderer(): FormRenderer
     {
-        return new DefaultComponentRenderer($this);
+        return new DefaultComponentRenderer(formComponent: $this);
     }
 
     final protected function setParentFormComponent(FormComponent $parentFormComponent): void
