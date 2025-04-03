@@ -57,7 +57,7 @@ class DefaultFormRenderer extends FormRenderer
             );
         }
         $htmlTag = new HtmlTag(name: 'form', selfClosing: false, htmlTagAttributes: $attributes);
-        $this->renderErrors(htmlTag: $htmlTag);
+        $this->renderErrors(parentTag: $htmlTag);
         foreach ($form->childComponents as $childComponent) {
             $componentRenderer = $childComponent->getRenderer();
             if (is_null(value: $componentRenderer)) {
@@ -73,44 +73,58 @@ class DefaultFormRenderer extends FormRenderer
         $this->setHtmlTag(htmlTag: $htmlTag);
     }
 
-    private function renderErrors(HtmlTag $htmlTag): void
+    private function renderErrors(HtmlTag $parentTag): void
     {
         $form = $this->form;
         if (!$form->hasErrors(withChildElements: true)) {
             return;
         }
-        $errorsAsHtmlTextObjects = $form->getErrorsAsHtmlTextObjects();
-        $amountOfErrors = count(value: $errorsAsHtmlTextObjects);
-        if ($amountOfErrors === 0) {
+        $errorCollection = $form->errorCollection;
+        if (!$errorCollection->hasErrors()) {
             return;
         }
         $mainAttributes = [
-            new HtmlTagAttribute(name: 'class', value: 'form-error', valueIsEncodedForRendering: true),
+            new HtmlTagAttribute(
+                name: 'class',
+                value: 'form-error',
+                valueIsEncodedForRendering: true
+            ),
         ];
-        if ($amountOfErrors === 1) {
-            $htmlTag->addTag(
-                htmlTag: $pTag = new HtmlTag(
-                    name: 'p',
-                    selfClosing: false,
-                    htmlTagAttributes: $mainAttributes
-                )
+        if ($errorCollection->count() === 1) {
+            $pTag = new HtmlTag(
+                name: 'p',
+                selfClosing: false,
+                htmlTagAttributes: $mainAttributes
             );
-            $pTag->addTag(htmlTag: $bTag = new HtmlTag(name: 'b', selfClosing: false));
-            $bTag->addText(htmlText: current(array: $errorsAsHtmlTextObjects));
+            $strongTag = new HtmlTag(
+                name: 'strong',
+                selfClosing: false
+            );
+            $strongTag->addText(htmlText: $errorCollection->getFirstError());
+            $pTag->addTag(htmlTag: $strongTag);
+            $parentTag->addTag(htmlTag: $pTag);
 
             return;
         }
-        $htmlTag->addTag(
+        $parentTag->addTag(
             htmlTag: $divTag = new HtmlTag(
                 name: 'div',
                 selfClosing: false,
                 htmlTagAttributes: $mainAttributes
             )
         );
-        $divTag->addTag(htmlTag: $ulTag = new HtmlTag(name: 'ul', selfClosing: false));
-        foreach ($errorsAsHtmlTextObjects as $htmlText) {
-            $ulTag->addTag(htmlTag: $liTag = new HtmlTag(name: 'li', selfClosing: false));
+        $ulTag = new HtmlTag(
+            name: 'ul',
+            selfClosing: false
+        );
+        foreach ($errorCollection->listErrors() as $htmlText) {
+            $liTag = new HtmlTag(
+                name: 'li',
+                selfClosing: false
+            );
             $liTag->addText(htmlText: $htmlText);
+            $ulTag->addTag(htmlTag: $liTag);
+            $divTag->addTag(htmlTag: $ulTag);
         }
     }
 }
