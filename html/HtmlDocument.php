@@ -32,16 +32,13 @@ class HtmlDocument
         $this->replacements = new HtmlReplacementCollection();
         $environmentSettingsModel = EnvironmentSettingsModel::get();
 
-        $copyright = $environmentSettingsModel->copyrightYear;
         $replacements = $this->replacements;
         $replacements->addEncodedText(identifier: 'bodyid', content: 'body_' . $fileTitle);
         $replacements->addEncodedText(identifier: 'language', content: $request->language->code);
         $replacements->addEncodedText(identifier: 'charset', content: 'UTF-8');
         $replacements->addEncodedText(
             identifier: 'copyright',
-            content: ($copyright < (int)date(
-                    format: 'Y'
-                )) ? $copyright . '-' . date(format: 'Y') : $copyright
+            content: $environmentSettingsModel->renderCopyrightYear()
         );
         $replacements->addEncodedText(identifier: 'robots', content: $environmentSettingsModel->robots);
         $replacements->addEncodedText(identifier: 'scripts', content: '');
