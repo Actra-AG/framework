@@ -70,8 +70,8 @@ class HtmlDocument
         $request = RequestHandler::get();
         $viewDirectory = $request->route->viewDirectory;
         $contentFileDirectory = $viewDirectory . 'html/';
-        if (!is_null(value: $request->fileGroup)) {
-            $contentFileDirectory .= $request->fileGroup . '/';
+        if (!is_null(value: $request->getFileGroup())) {
+            $contentFileDirectory .= $request->getFileGroup() . '/';
         }
         if ($this->contentFileName === '') {
             throw new NotFoundException();

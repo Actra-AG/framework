@@ -24,7 +24,7 @@ class Form extends FormCollection
 {
     private static array $formNameList = [];
     public readonly string $sentIndicator;
-    private(set) array $cssClasses = [];
+    private array $cssClasses = [];
     private bool $renderRequiredAbbr = true;
 
     public function __construct(
@@ -51,9 +51,9 @@ class Form extends FormCollection
     public function addField(FormField $formField): void
     {
         if (!$this->renderRequiredAbbr) {
-            $formField->renderRequiredAbbr = false;
+            $formField->setRenderRequiredAbbr(renderRequiredAbbr: false);
         }
-        $formField->topFormComponent = $this;
+        $formField->setTopFormComponent(topFormComponent: $this);
         $this->addChildComponent(formComponent: $formField);
     }
 
@@ -106,7 +106,7 @@ class Form extends FormCollection
 
         $inputData = ($this->methodPost ? $_POST : $_GET) + $_FILES;
 
-        foreach ($this->childComponents as $formComponent) {
+        foreach ($this->getChildComponents() as $formComponent) {
             if (!$formComponent instanceof FormField) {
                 continue;
             }
@@ -183,7 +183,7 @@ class Form extends FormCollection
     public function getAllFields(): array
     {
         $allFields = [];
-        foreach ($this->childComponents as $formComponent) {
+        foreach ($this->getChildComponents() as $formComponent) {
             if (!$formComponent instanceof FormField) {
                 continue;
             }
@@ -196,6 +196,12 @@ class Form extends FormCollection
     public function dontRenderRequiredAbbr(): void
     {
         $this->renderRequiredAbbr = false;
+    }
+
+
+    public function getCssClasses(): array
+    {
+        return $this->cssClasses;
     }
 
     public function getDefaultRenderer(): FormRenderer

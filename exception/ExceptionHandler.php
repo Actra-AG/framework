@@ -96,9 +96,9 @@ class ExceptionHandler
         ) : '';
         $placeholders['vardump_sess'] = isset($_SESSION) ? htmlentities(
             string: var_export(
-            value: $_SESSION,
-            return: true
-        )
+                value: $_SESSION,
+                return: true
+            )
         ) : '';
 
         $this->sendHttpResponseAndExit(

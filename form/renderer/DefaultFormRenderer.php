@@ -34,7 +34,7 @@ class DefaultFormRenderer extends FormRenderer
                 valueIsEncodedForRendering: true
             ),
         ];
-        $cssClasses = $form->cssClasses;
+        $cssClasses = $form->getCssClasses();
         if (count(value: $cssClasses) > 0) {
             $attributes[] = new HtmlTagAttribute(
                 name: 'class',
@@ -58,7 +58,7 @@ class DefaultFormRenderer extends FormRenderer
         }
         $htmlTag = new HtmlTag(name: 'form', selfClosing: false, htmlTagAttributes: $attributes);
         $this->renderErrors(parentTag: $htmlTag);
-        foreach ($form->childComponents as $childComponent) {
+        foreach ($form->getChildComponents() as $childComponent) {
             $componentRenderer = $childComponent->getRenderer();
             if (is_null(value: $componentRenderer)) {
                 if ($childComponent instanceof FormField) {

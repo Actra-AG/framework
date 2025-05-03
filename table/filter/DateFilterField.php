@@ -15,7 +15,7 @@ use Throwable;
 
 class DateFilterField extends AbstractTableFilterField
 {
-    protected private(set) ?DateTimeImmutable $value = null;
+    private ?DateTimeImmutable $value = null;
 
     public function __construct(
         TableFilter $parentFilter,
@@ -103,5 +103,10 @@ class DateFilterField extends AbstractTableFilterField
     public function isSelected(): bool
     {
         return !is_null(value: $this->value);
+    }
+
+    protected function getValue(): ?DateTimeImmutable
+    {
+        return $this->value;
     }
 }

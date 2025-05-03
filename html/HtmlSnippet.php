@@ -39,7 +39,7 @@ readonly class HtmlSnippet
         $core = Core::get();
 
         return (new TemplateEngine(
-            tplCacheInterface: new DirectoryTemplateCache(
+            templateCacheInterface: new DirectoryTemplateCache(
                 cachePath: $core->cacheDirectory,
                 templateBaseDirectory: str_replace(
                     search: $htmlSnippetFilePath,

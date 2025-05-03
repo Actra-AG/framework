@@ -22,7 +22,7 @@ abstract class DateTimeFieldCore extends InputField
         InputTypeValue $inputType,
         string $name,
         HtmlText $label,
-        private string $renderValueFormat,
+        private readonly string $renderValueFormat,
         ?string $value = null,
         ?HtmlText $requiredError = null,
         ?string $placeholder = null,
