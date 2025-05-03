@@ -18,7 +18,7 @@ class EnvironmentSettingsModel
         public readonly array $allowedDomains,
         public readonly LanguageCollection $availableLanguages,
         public readonly bool $debug,
-        public readonly int $copyrightYear,
+        private readonly int $copyrightYear,
         public readonly string $robots,
         public readonly ?CspPolicySettingsModel $cspPolicySettingsModel
     ) {
@@ -35,5 +35,14 @@ class EnvironmentSettingsModel
     public static function get(): EnvironmentSettingsModel
     {
         return EnvironmentSettingsModel::$registeredInstance;
+    }
+
+    public function renderCopyrightYear(): string
+    {
+        $copyrightYear = $this->copyrightYear;
+        if ($copyrightYear < (int)date(format: 'Y')) {
+            return $copyrightYear . '-' . date(format: 'Y');
+        }
+        return $copyrightYear;
     }
 }

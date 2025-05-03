@@ -20,8 +20,8 @@ class HtmlDocument
 {
     private static ?HtmlDocument $instance = null;
     public readonly HtmlReplacementCollection $replacements;
-    private string $templateName = 'default';
-    private string $contentFileName;
+    public string $templateName = 'default';
+    public string $contentFileName;
     private array $activeHtmlIds = [];
 
     private function __construct()
@@ -32,16 +32,13 @@ class HtmlDocument
         $this->replacements = new HtmlReplacementCollection();
         $environmentSettingsModel = EnvironmentSettingsModel::get();
 
-        $copyright = $environmentSettingsModel->copyrightYear;
         $replacements = $this->replacements;
         $replacements->addEncodedText(identifier: 'bodyid', content: 'body_' . $fileTitle);
         $replacements->addEncodedText(identifier: 'language', content: $request->language->code);
         $replacements->addEncodedText(identifier: 'charset', content: 'UTF-8');
         $replacements->addEncodedText(
             identifier: 'copyright',
-            content: ($copyright < (int)date(
-                format: 'Y'
-            )) ? $copyright . '-' . date(format: 'Y') : $copyright
+            content: $environmentSettingsModel->renderCopyrightYear()
         );
         $replacements->addEncodedText(identifier: 'robots', content: $environmentSettingsModel->robots);
         $replacements->addEncodedText(identifier: 'scripts', content: '');
@@ -56,16 +53,6 @@ class HtmlDocument
         }
 
         return HtmlDocument::$instance;
-    }
-
-    public function setTemplateName(string $templateName): void
-    {
-        $this->templateName = $templateName;
-    }
-
-    public function setContentFileName(string $contentFileName): void
-    {
-        $this->contentFileName = $contentFileName;
     }
 
     public function setActiveHtmlId(int $key, string $val): void
@@ -83,8 +70,8 @@ class HtmlDocument
         $request = RequestHandler::get();
         $viewDirectory = $request->route->viewDirectory;
         $contentFileDirectory = $viewDirectory . 'html/';
-        if (!is_null(value: $request->getFileGroup())) {
-            $contentFileDirectory .= $request->getFileGroup() . '/';
+        if (!is_null(value: $request->fileGroup)) {
+            $contentFileDirectory .= $request->fileGroup . '/';
         }
         if ($this->contentFileName === '') {
             throw new NotFoundException();
@@ -101,7 +88,7 @@ class HtmlDocument
         }
         $core = Core::get();
         $tplEngine = new TemplateEngine(
-            tplCacheInterface: new DirectoryTemplateCache(
+            templateCacheInterface: new DirectoryTemplateCache(
                 cachePath: $core->cacheDirectory,
                 templateBaseDirectory: $core->viewDirectory
             ),

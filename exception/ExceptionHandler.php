@@ -117,6 +117,8 @@ class ExceptionHandler
         string $htmlFileName,
         array $placeholders
     ): void {
+        $environmentSettingsModel = EnvironmentSettingsModel::get();
+        $placeholders['copyright'] = $environmentSettingsModel->renderCopyrightYear();
         $contentType = $this->contentType;
         if ($contentType->isJson()) {
             $httpResponse = HttpResponse::createResponseFromString(
@@ -144,7 +146,7 @@ class ExceptionHandler
         $httpResponse = HttpResponse::createHtmlResponse(
             httpStatusCode: $httpStatusCode,
             htmlContent: $this->getHtmlContent(htmlFileName: $htmlFileName, placeholders: $placeholders),
-            cspPolicySettingsModel: EnvironmentSettingsModel::get()->cspPolicySettingsModel,
+            cspPolicySettingsModel: $environmentSettingsModel->cspPolicySettingsModel,
             nonce: CspNonce::get()
         );
         $httpResponse->sendAndExit();
