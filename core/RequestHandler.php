@@ -26,7 +26,7 @@ class RequestHandler
     private(set) string $fileName;
     private(set) ?string $fileGroup = null;
     private(set) array $routeVariables = [];
-    private readonly array $pathVars;
+    public readonly array $pathVars;
 
     private function __construct(RouteCollection $allRoutes)
     {
