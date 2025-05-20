@@ -22,7 +22,8 @@ abstract class InputField extends FormField
         HtmlText $label,
         int|float|string|bool|null $value,
         public readonly ?string $placeholder,
-        public readonly ?AutoCompleteValue $autoComplete
+        public readonly ?AutoCompleteValue $autoComplete,
+        public readonly ?int $maxLength = null
     ) {
         parent::__construct(
             name: $name,

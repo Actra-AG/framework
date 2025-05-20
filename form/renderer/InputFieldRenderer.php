@@ -76,6 +76,15 @@ class InputFieldRenderer extends FormRenderer
             )
             );
         }
+        if (!is_null(value: $formField->maxLength)) {
+            $inputTag->addHtmlTagAttribute(
+                htmlTagAttribute: new HtmlTagAttribute(
+                    name: 'maxlength',
+                    value: $formField->maxLength,
+                    valueIsEncodedForRendering: true
+                )
+            );
+        }
         FormRenderer::addAriaAttributesToHtmlTag(formField: $formField, parentHtmlTag: $inputTag);
         $this->setHtmlTag(htmlTag: $inputTag);
     }
