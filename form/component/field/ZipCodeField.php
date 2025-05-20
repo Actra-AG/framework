@@ -22,7 +22,8 @@ class ZipCodeField extends TextField
         private string $countryCode = 'CH',
         private readonly string $countryCodeFieldName = 'countryCode',
         ?string $placeholder = null,
-        ?AutoCompleteValue $autoComplete = null
+        ?AutoCompleteValue $autoComplete = null,
+        ?int $maxLength = null
     ) {
         parent::__construct(
             name: $name,
@@ -30,7 +31,8 @@ class ZipCodeField extends TextField
             value: $value,
             requiredError: $requiredError,
             placeholder: $placeholder,
-            autoComplete: $autoComplete
+            autoComplete: $autoComplete,
+            maxLength: $maxLength
         );
         $invalidError = is_null(value: $individualInvalidError) ? HtmlText::encoded(
             textContent: 'Die eingegebene PLZ ist ungültig.'

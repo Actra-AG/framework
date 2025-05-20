@@ -20,7 +20,8 @@ class TextField extends InputField
         ?string $value = null,
         ?HtmlText $requiredError = null,
         ?string $placeholder = null,
-        ?AutoCompleteValue $autoComplete = null
+        ?AutoCompleteValue $autoComplete = null,
+        ?int $maxLength = null
     ) {
         parent::__construct(
             inputType: InputTypeValue::TEXT,
@@ -28,7 +29,8 @@ class TextField extends InputField
             label: $label,
             value: $value,
             placeholder: $placeholder,
-            autoComplete: $autoComplete
+            autoComplete: $autoComplete,
+            maxLength: $maxLength
         );
         if (!is_null(value: $requiredError)) {
             $this->addRule(formRule: new RequiredRule(defaultErrorMessage: $requiredError));

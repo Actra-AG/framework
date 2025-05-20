@@ -24,7 +24,8 @@ class EmailField extends InputField
         bool $dnsCheck = true,
         bool $trueOnDnsError = true,
         ?string $placeholder = null,
-        ?AutoCompleteValue $autoComplete = null
+        ?AutoCompleteValue $autoComplete = null,
+        ?int $maxLength = null
     ) {
         parent::__construct(
             inputType: InputTypeValue::EMAIL,
@@ -32,7 +33,8 @@ class EmailField extends InputField
             label: $label,
             value: $value,
             placeholder: $placeholder,
-            autoComplete: $autoComplete
+            autoComplete: $autoComplete,
+            maxLength: $maxLength
         );
         if (!is_null(value: $requiredError)) {
             $this->addRule(formRule: new RequiredRule(defaultErrorMessage: $requiredError));
