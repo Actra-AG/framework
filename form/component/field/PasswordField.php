@@ -19,7 +19,8 @@ class PasswordField extends InputField
         HtmlText $label,
         HtmlText $requiredError,
         ?string $placeholder = null,
-        ?AutoCompleteValue $autoComplete = null
+        ?AutoCompleteValue $autoComplete = null,
+        ?int $maxLength = null
     ) {
         parent::__construct(
             inputType: InputTypeValue::PASSWORD,
@@ -27,7 +28,8 @@ class PasswordField extends InputField
             label: $label,
             value: '',
             placeholder: $placeholder,
-            autoComplete: $autoComplete
+            autoComplete: $autoComplete,
+            maxLength: $maxLength
         );
         $this->addRule(formRule: new RequiredRule(defaultErrorMessage: $requiredError));
     }

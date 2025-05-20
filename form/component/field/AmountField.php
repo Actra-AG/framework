@@ -21,7 +21,8 @@ class AmountField extends TextField
         ?HtmlText $individualInvalidError = null,
         ?HtmlText $requiredError = null,
         ?string $placeholder = null,
-        ?AutoCompleteValue $autoComplete = null
+        ?AutoCompleteValue $autoComplete = null,
+        ?int $maxLength = null
     ) {
         parent::__construct(
             name: $name,
@@ -29,7 +30,8 @@ class AmountField extends TextField
             value: $initialValue,
             requiredError: $requiredError,
             placeholder: $placeholder,
-            autoComplete: $autoComplete
+            autoComplete: $autoComplete,
+            maxLength: $maxLength
         );
         $this->addRule(
             formRule: new ValidAmountRule(
