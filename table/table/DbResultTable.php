@@ -28,26 +28,8 @@ class DbResultTable extends SmartTable
     protected const string sessionDataType = 'table';
     protected const string filter = '[filter]';
     protected const string pagination = '[pagination]';
-    private(set) ?int $totalAmount = null {
-        get {
-            if (!is_null(value: $this->totalAmount)) {
-                return $this->totalAmount;
-            }
-            $this->fillBySelectQuery();
-            if (
-                (
-                    $this->getCurrentPaginationPage() === 1
-                    && $this->filledAmount < $this->itemsPerPage
-                )
-                || $this->limitToOnePage
-            ) {
-                return $this->totalAmount = $this->filledAmount;
-            }
-
-            return $this->totalAmount = $this->dbQuery->getTotalAmount(db: $this->db);
-        }
-    }
     private(set) array $additionalLinkParameters = [];
+    private ?int $totalAmount = null;
     private bool $filledDataBySelectQuery = false;
     private ?AbstractTableColumn $defaultSortColumn = null;
     private TablePaginationRenderer $tablePaginationRenderer;
@@ -291,5 +273,21 @@ class DbResultTable extends SmartTable
     public function addAdditionalLinkParameter(string $key, string $value): void
     {
         $this->additionalLinkParameters[urlencode(string: $key)] = urlencode(string: $value);
+    }
+
+    public function getTotalAmount(): int
+    {
+        if (!is_null(value: $this->totalAmount)) {
+            return $this->totalAmount;
+        }
+
+        $this->fillBySelectQuery();
+
+        if (($this->getCurrentPaginationPage(
+                ) === 1 && $this->filledAmount < $this->itemsPerPage) || $this->limitToOnePage) {
+            return $this->totalAmount = $this->filledAmount;
+        }
+
+        return $this->totalAmount = $this->dbQuery->getTotalAmount(db: $this->db);
     }
 }

@@ -24,7 +24,7 @@ readonly class TablePaginationRenderer
     ): string {
         return Pagination::render(
             listIdentifier: $dbResultTable->identifier,
-            totalAmount: $dbResultTable->totalAmount,
+            totalAmount: $dbResultTable->getTotalAmount(),
             currentPage: $dbResultTable->getCurrentPaginationPage(),
             entriesPerPage: $entriesPerPage,
             beforeAfter: $beforeAfter,
