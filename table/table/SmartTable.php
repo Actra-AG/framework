@@ -129,7 +129,7 @@ class SmartTable
 
     public function render(): string
     {
-        $totalAmountOfItems = $this->tableItemCollection->count();
+        $totalAmountOfItems = $this->getTotalAmount();
         if ($totalAmountOfItems === 1) {
             $totalAmountMessage = $this->totalAmountMessage_oneResult;
         } else {
@@ -195,5 +195,10 @@ class SmartTable
             replace: $rplArr,
             subject: $this->fullHtml
         );
+    }
+
+    public function getTotalAmount(): int
+    {
+        return $this->tableItemCollection->count();
     }
 }

@@ -28,12 +28,12 @@ class DbResultTable extends SmartTable
     protected const string sessionDataType = 'table';
     protected const string filter = '[filter]';
     protected const string pagination = '[pagination]';
+    private array $additionalLinkParameters = [];
+    private ?int $totalAmount = null;
     private bool $filledDataBySelectQuery = false;
     private ?AbstractTableColumn $defaultSortColumn = null;
     private TablePaginationRenderer $tablePaginationRenderer;
     private ?int $filledAmount = null;
-    private ?int $totalAmount = null;
-    private array $additionalLinkParameters = [];
 
     public function __construct(
         string $identifier, // Can be the name of main table, but must be unique per site
@@ -160,8 +160,8 @@ class DbResultTable extends SmartTable
 
         if (empty($this->getCurrentSortColumn()) || !is_null(
                 value: HttpRequest::getInputString(
-                keyName: DbResultTable::PARAM_RESET
-            )
+                    keyName: DbResultTable::PARAM_RESET
+                )
             )) {
             $defaultSortColumn = $this->defaultSortColumn;
             if (is_null(value: $defaultSortColumn)) {
@@ -225,10 +225,10 @@ class DbResultTable extends SmartTable
         $inputPageArr = explode(
             separator: '|',
             string: trim(
-            string: (string)HttpRequest::getInputString(
-            keyName: DbResultTable::PARAM_PAGE
-        )
-        )
+                string: (string)HttpRequest::getInputString(
+                    keyName: DbResultTable::PARAM_PAGE
+                )
+            )
         );
         $inputPage = (int)$inputPageArr[0];
         $inputTable = trim(string: array_key_exists(key: 1, array: $inputPageArr) ? $inputPageArr[1] : '');
