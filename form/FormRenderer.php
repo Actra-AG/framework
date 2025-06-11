@@ -24,14 +24,32 @@ abstract class FormRenderer
         if (!$formComponentWithErrors->hasErrors(withChildElements: false)) {
             return;
         }
-        $divTag = new HtmlTag(name: 'div', selfClosing: false, htmlTagAttributes: [
-            new HtmlTagAttribute(name: 'class', value: 'form-input-error', valueIsEncodedForRendering: true),
-            new HtmlTagAttribute(
-                name: 'id',
-                value: $formComponentWithErrors->name . '-error',
-                valueIsEncodedForRendering: true
-            ),
-        ]);
+        $divTag = new HtmlTag(
+            name: 'div',
+            selfClosing: false,
+            htmlTagAttributes: [
+                new HtmlTagAttribute(
+                    name: 'class',
+                    value: 'form-input-error',
+                    valueIsEncodedForRendering: true
+                ),
+                new HtmlTagAttribute(
+                    name: 'id',
+                    value: $formComponentWithErrors->name . '-error',
+                    valueIsEncodedForRendering: true
+                ),
+                new HtmlTagAttribute(
+                    name: 'role',
+                    value: 'alert',
+                    valueIsEncodedForRendering: true
+                ),
+                new HtmlTagAttribute(
+                    name: 'aria-live',
+                    value: 'assertive',
+                    valueIsEncodedForRendering: true
+                ),
+            ]
+        );
         $errorsHTML = [];
         foreach ($formComponentWithErrors->errorCollection->listErrors() as $htmlText) {
             $errorsHTML[] = $htmlText->render();

@@ -89,6 +89,16 @@ class DefaultFormRenderer extends FormRenderer
                 value: 'form-error',
                 valueIsEncodedForRendering: true
             ),
+            new HtmlTagAttribute(
+                name: 'role',
+                value: 'alert',
+                valueIsEncodedForRendering: true
+            ),
+            new HtmlTagAttribute(
+                name: 'aria-live',
+                value: 'assertive',
+                valueIsEncodedForRendering: true
+            ),
         ];
         if ($errorCollection->count() === 1) {
             $pTag = new HtmlTag(
