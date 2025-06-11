@@ -11,7 +11,6 @@ use framework\form\component\field\CheckboxOptionsField;
 use framework\form\FormRenderer;
 use framework\html\HtmlTag;
 use framework\html\HtmlTagAttribute;
-use framework\html\HtmlText;
 
 class CheckboxItemRenderer extends FormRenderer
 {
@@ -23,74 +22,134 @@ class CheckboxItemRenderer extends FormRenderer
     {
         $checkboxOptionsField = $this->checkboxOptionsField;
 
-        $htmlElementDiv = new HtmlTag('div', false, [new HtmlTagAttribute('class', 'form-element', true)]);
-
-        $formItemCheckboxClasses = ['form-item-checkbox'];
+        $divFormCheck = new HtmlTag(
+            name: 'div',
+            selfClosing: false
+        );
+        $formItemCheckboxClasses = ['form-check'];
         if ($checkboxOptionsField->hasErrors(withChildElements: true)) {
             $formItemCheckboxClasses[] = 'has-error';
         }
-        $formItemCheckboxDiv = new HtmlTag(
-            'div',
-            false,
-            [new HtmlTagAttribute('class', implode(separator: ' ', array: $formItemCheckboxClasses), true)]
+        $divFormCheck->addHtmlTagAttribute(
+            htmlTagAttribute: new HtmlTagAttribute(
+                name: 'class',
+                value: implode(
+                    separator: ' ',
+                    array: $formItemCheckboxClasses
+                ),
+                valueIsEncodedForRendering: true
+            )
         );
-
-        $labelTag = new HtmlTag('label', false);
-        $labelTag->addTag($this->getInputTag());
-
-        // Create inner "span-label":
-        $spanLabelTag = new HtmlTag('span', false, [new HtmlTagAttribute('class', 'label-text', true)]);
-        $spanLabelTag->addText($checkboxOptionsField->label);
-
-        $labelTag->addText(HtmlText::encoded(' ' . $spanLabelTag->render()));
-        $formItemCheckboxDiv->addTag($labelTag);
-        $htmlElementDiv->addTag($formItemCheckboxDiv);
-
-        if (!is_null($checkboxOptionsField->fieldInfo)) {
-            FormRenderer::addFieldInfoToParentHtmlTag($checkboxOptionsField, $htmlElementDiv);
+        $divFormCheck->addTag(htmlTag: $this->getInputTag());
+        $labelTag = new HtmlTag(
+            name: 'label',
+            selfClosing: false
+        );
+        $labelTag->addHtmlTagAttribute(
+            htmlTagAttribute: new HtmlTagAttribute(
+                name: 'for',
+                value: $this->checkboxOptionsField->id,
+                valueIsEncodedForRendering: true
+            )
+        );
+        $labelTag->addHtmlTagAttribute(
+            htmlTagAttribute: new HtmlTagAttribute(
+                name: 'class',
+                value: 'form-check-label',
+                valueIsEncodedForRendering: true
+            )
+        );
+        $labelTag->addText(htmlText: $checkboxOptionsField->label);
+        $divFormCheck->addTag(htmlTag: $labelTag);
+        if (!is_null(value: $checkboxOptionsField->fieldInfo)) {
+            FormRenderer::addFieldInfoToParentHtmlTag(
+                formFieldWithFieldInfo: $checkboxOptionsField,
+                parentHtmlTag: $divFormCheck
+            );
         }
-
-        FormRenderer::addErrorsToParentHtmlTag($checkboxOptionsField, $htmlElementDiv);
-
-        $this->setHtmlTag($htmlElementDiv);
+        FormRenderer::addErrorsToParentHtmlTag(
+            formComponentWithErrors: $checkboxOptionsField,
+            parentHtmlTag: $divFormCheck
+        );
+        $this->setHtmlTag(htmlTag: $divFormCheck);
     }
 
     private function getInputTag(): HtmlTag
     {
+        $inputTag = new HtmlTag(
+            name: 'input',
+            selfClosing: true
+        );
+        $inputTag->addHtmlTagAttribute(
+            htmlTagAttribute: new HtmlTagAttribute(
+                name: 'type',
+                value: 'checkbox',
+                valueIsEncodedForRendering: true
+            )
+        );
+        $inputTag->addHtmlTagAttribute(
+            htmlTagAttribute: new HtmlTagAttribute(
+                name: 'name',
+                value: $this->checkboxOptionsField->name,
+                valueIsEncodedForRendering: true
+            )
+        );
+        $inputTag->addHtmlTagAttribute(
+            htmlTagAttribute: new HtmlTagAttribute(
+                name: 'id',
+                value: $this->checkboxOptionsField->id,
+                valueIsEncodedForRendering: true
+            )
+        );
         $options = $this->checkboxOptionsField->formOptions->data;
         $optionValue = key(array: $options);
-        $attributes = [
-            new HtmlTagAttribute('type', 'checkbox', true),
-            new HtmlTagAttribute('name', $this->checkboxOptionsField->name, true),
-            new HtmlTagAttribute('id', $this->checkboxOptionsField->id, true),
-            new HtmlTagAttribute('value', $optionValue, true),
-        ];
-
+        $inputTag->addHtmlTagAttribute(
+            htmlTagAttribute: new HtmlTagAttribute(
+                name: 'value',
+                value: $optionValue,
+                valueIsEncodedForRendering: true
+            )
+        );
         $checkboxValue = $this->checkboxOptionsField->getRawValue();
-
-        if (is_scalar($checkboxValue) && (string)$checkboxValue == $optionValue) {
-            $attributes[] = new HtmlTagAttribute('checked', null, true);
+        if (
+            is_scalar(value: $checkboxValue)
+            && (string)$checkboxValue == $optionValue
+        ) {
+            $inputTag->addHtmlTagAttribute(
+                htmlTagAttribute: new HtmlTagAttribute(
+                    name: 'checked',
+                    value: null,
+                    valueIsEncodedForRendering: true
+                )
+            );
         }
-
         $ariaDescribedBy = [];
-
         if ($this->checkboxOptionsField->hasErrors(withChildElements: true)) {
-            $attributes[] = new HtmlTagAttribute('aria-invalid', 'true', true);
+            $inputTag->addHtmlTagAttribute(
+                htmlTagAttribute: new HtmlTagAttribute(
+                    name: 'aria-invalid',
+                    value: 'true',
+                    valueIsEncodedForRendering: true
+                )
+            );
             $ariaDescribedBy[] = $this->checkboxOptionsField->name . '-error';
         }
-
-        if (!is_null($this->checkboxOptionsField->fieldInfo)) {
+        if (!is_null(value: $this->checkboxOptionsField->fieldInfo)) {
             $ariaDescribedBy[] = $this->checkboxOptionsField->name . '-info';
         }
-
-        if (count($ariaDescribedBy) > 0) {
-            $attributes[] = new HtmlTagAttribute(
-                'aria-describedby',
-                implode(separator: ' ', array: $ariaDescribedBy),
-                true
+        if (count(value: $ariaDescribedBy) > 0) {
+            $inputTag->addHtmlTagAttribute(
+                htmlTagAttribute: new HtmlTagAttribute(
+                    name: 'aria-describedby',
+                    value: implode(
+                        separator: ' ',
+                        array: $ariaDescribedBy
+                    ),
+                    valueIsEncodedForRendering: true
+                )
             );
         }
 
-        return new HtmlTag('input', true, $attributes);
+        return $inputTag;
     }
 }
