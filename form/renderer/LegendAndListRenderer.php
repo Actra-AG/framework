@@ -22,51 +22,24 @@ class LegendAndListRenderer extends FormRenderer
     public function prepare(): void
     {
         $optionsField = $this->optionsField;
-        $labelInfoText = $optionsField->getLabelInfoText();
-        $labelText = $optionsField->getLabel();
-        if (!is_null(value: $labelInfoText)) {
-            // Add a space to separate it from following labelInfo-Tag
-            $labelText = HtmlText::encoded(textContent: ' ' . $labelText->render());
-        }
-        $legendAttributes = [];
-        if (!$optionsField->isRenderLabel()) {
-            $legendAttributes[] = new HtmlTagAttribute(
-                name: 'class',
-                value: 'visuallyhidden',
-                valueIsEncodedForRendering: true
-            );
-        }
-        $legendTag = new HtmlTag(name: 'legend', selfClosing: false, htmlTagAttributes: $legendAttributes);
-        $legendTag->addText(htmlText: $labelText);
-        if (!is_null(value: $labelInfoText)) {
-            $labelInfoTag = new HtmlTag(name: 'i', selfClosing: false, htmlTagAttributes: [
-                new HtmlTagAttribute(name: 'class', value: 'legend-info', valueIsEncodedForRendering: true),
-            ]);
-            $labelInfoTag->addText(htmlText: $labelInfoText);
-            $legendTag->addTag(htmlTag: $labelInfoTag);
-        }
-        if ($optionsField->isRequired() && $optionsField->isRenderRequiredAbbr()) {
-            $spanTag = new HtmlTag(name: 'span', selfClosing: false, htmlTagAttributes: [
-                new HtmlTagAttribute(name: 'class', value: 'required', valueIsEncodedForRendering: true),
-            ]);
-            $spanTag->addText(htmlText: HtmlText::encoded(textContent: '*'));
-            $legendTag->addTag(htmlTag: $spanTag);
-        }
         $fieldsetTag = LegendAndListRenderer::createFieldsetTag(optionsField: $optionsField);
-        $fieldsetTag->addTag(htmlTag: $legendTag);
-        $listDescription = $optionsField->getListDescription();
+        $fieldsetTag->addTag(htmlTag: LegendAndListRenderer::createLegendTag(optionsField: $optionsField));
+        $listDescription = $optionsField->listDescription;
         if (!is_null(value: $listDescription)) {
             $fieldsetTag->addText(
                 htmlText: HtmlText::encoded(
-                textContent: '<div class="fieldset-info">' . $listDescription->render() . '</div>'
-            )
+                    textContent: '<div class="fieldset-info">' . $listDescription->render() . '</div>'
+                )
             );
         }
         $defaultFormFieldRenderer = $optionsField->getDefaultRenderer();
         $defaultFormFieldRenderer->prepare();
         $fieldsetTag->addTag(htmlTag: $defaultFormFieldRenderer->getHtmlTag());
-        FormRenderer::addErrorsToParentHtmlTag(formComponentWithErrors: $optionsField, parentHtmlTag: $fieldsetTag);
-        if (!is_null(value: $optionsField->getFieldInfo())) {
+        FormRenderer::addErrorsToParentHtmlTag(
+            formComponentWithErrors: $optionsField,
+            parentHtmlTag: $fieldsetTag
+        );
+        if (!is_null(value: $optionsField->fieldInfo)) {
             FormRenderer::addFieldInfoToParentHtmlTag(
                 formFieldWithFieldInfo: $optionsField,
                 parentHtmlTag: $fieldsetTag
@@ -91,5 +64,59 @@ class LegendAndListRenderer extends FormRenderer
         FormRenderer::addAriaAttributesToHtmlTag(formField: $optionsField, parentHtmlTag: $fieldsetTag);
 
         return $fieldsetTag;
+    }
+
+    public static function createLegendTag(OptionsField $optionsField): HtmlTag
+    {
+        $legendAttributes = [];
+        if (!$optionsField->renderLabel) {
+            $legendAttributes[] = new HtmlTagAttribute(
+                name: 'class',
+                value: 'visuallyhidden',
+                valueIsEncodedForRendering: true
+            );
+        }
+        $labelText = $optionsField->label;
+        $labelInfoText = $optionsField->labelInfoText;
+        if (!is_null(value: $labelInfoText)) {
+            // Add a space to separate it from the following labelInfo-Tag
+            $labelText = HtmlText::encoded(textContent: ' ' . $labelText->render());
+        }
+        $legendTag = new HtmlTag(
+            name: 'legend',
+            selfClosing: false,
+            htmlTagAttributes: $legendAttributes
+        );
+        $legendTag->addText(htmlText: $labelText);
+        if (!is_null(value: $labelInfoText)) {
+            $labelInfoTag = new HtmlTag(
+                name: 'i',
+                selfClosing: false,
+                htmlTagAttributes: [
+                    new HtmlTagAttribute(name: 'class', value: 'legend-info', valueIsEncodedForRendering: true),
+                ]
+            );
+            $labelInfoTag->addText(htmlText: $labelInfoText);
+            $legendTag->addTag(htmlTag: $labelInfoTag);
+        }
+        if (
+            $optionsField->isRequired()
+            && $optionsField->renderRequiredAbbr
+        ) {
+            $spanTag = new HtmlTag(
+                name: 'span',
+                selfClosing: false,
+                htmlTagAttributes: [
+                    new HtmlTagAttribute(
+                        name: 'class',
+                        value: 'required',
+                        valueIsEncodedForRendering: true
+                    ),
+                ]
+            );
+            $spanTag->addText(htmlText: HtmlText::encoded(textContent: '*'));
+            $legendTag->addTag(htmlTag: $spanTag);
+        }
+        return $legendTag;
     }
 }

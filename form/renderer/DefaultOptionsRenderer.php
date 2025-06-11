@@ -11,78 +11,141 @@ use framework\form\component\field\OptionsField;
 use framework\form\FormRenderer;
 use framework\html\HtmlTag;
 use framework\html\HtmlTagAttribute;
-use framework\html\HtmlText;
 use LogicException;
 
 abstract class DefaultOptionsRenderer extends FormRenderer
 {
-    private OptionsField $optionsField;
-    private string $inputFieldType;
-    private bool $acceptMultipleValues;
-
-    protected function __construct(OptionsField $optionsField, string $inputFieldType, bool $acceptMultipleValues)
-    {
-        $this->optionsField = $optionsField;
-        $this->inputFieldType = $inputFieldType;
-        $this->acceptMultipleValues = $acceptMultipleValues;
+    protected function __construct(
+        private readonly OptionsField $optionsField,
+        private readonly string $inputFieldType,
+        private readonly bool $acceptMultipleValues
+    ) {
     }
 
     public function prepare(): void
     {
         $optionsField = $this->optionsField;
-        $options = $optionsField->getFormOptions()->getData();
-        if (count($options) === 0) {
-            throw new LogicException('There must be at least one option!');
+        $options = $optionsField->formOptions->data;
+        if (count(value: $options) === 0) {
+            throw new LogicException(message: 'There must be at least one option!');
+        }
+        $ulTag = DefaultOptionsRenderer::createUlTag(optionsField: $optionsField);
+        foreach ($options as $key => $htmlText) {
+            $liTag = new HtmlTag(
+                name: 'li',
+                selfClosing: false
+            );
+            $ulTag->addTag(htmlTag: $liTag);
+            $liTag->addHtmlTagAttribute(
+                htmlTagAttribute: new HtmlTagAttribute(
+                    name: 'class',
+                    value: 'form-check',
+                    valueIsEncodedForRendering: true
+                )
+            );
+            $inputTag = new HtmlTag(
+                name: 'input',
+                selfClosing: true
+            );
+            $inputTag->addHtmlTagAttribute(
+                htmlTagAttribute: new HtmlTagAttribute(
+                    name: 'type',
+                    value: $this->inputFieldType,
+                    valueIsEncodedForRendering: true
+                )
+            );
+            $inputTag->addHtmlTagAttribute(
+                htmlTagAttribute: new HtmlTagAttribute(
+                    name: 'name',
+                    value: ($this->acceptMultipleValues) ? $optionsField->name . '[]' : $optionsField->name,
+                    valueIsEncodedForRendering: true
+                )
+            );
+            $inputTag->addHtmlTagAttribute(
+                htmlTagAttribute: new HtmlTagAttribute(
+                    name: 'id',
+                    value: $optionsField->id . '_' . $key,
+                    valueIsEncodedForRendering: true
+                )
+            );
+            $inputTag->addHtmlTagAttribute(
+                htmlTagAttribute: new HtmlTagAttribute(
+                    name: 'value',
+                    value: $key,
+                    valueIsEncodedForRendering: true
+                )
+            );
+            $rawValue = $optionsField->getRawValue();
+            if ($this->acceptMultipleValues) {
+                if (
+                    is_array(value: $rawValue)
+                    && in_array(needle: $key, haystack: $rawValue)
+                ) {
+                    $inputTag->addHtmlTagAttribute(
+                        htmlTagAttribute: new HtmlTagAttribute(
+                            name: 'checked',
+                            value: null,
+                            valueIsEncodedForRendering: true
+                        )
+                    );
+                }
+            } elseif ($rawValue == $key) {
+                $inputTag->addHtmlTagAttribute(
+                    htmlTagAttribute: new HtmlTagAttribute(
+                        name: 'checked',
+                        value: null,
+                        valueIsEncodedForRendering: true
+                    )
+                );
+            }
+            $liTag->addTag(htmlTag: $inputTag);
+            $labelTag = new HtmlTag(
+                name: 'label',
+                selfClosing: false
+            );
+            $labelTag->addHtmlTagAttribute(
+                htmlTagAttribute: new HtmlTagAttribute(
+                    name: 'class',
+                    value: 'form-check-label',
+                    valueIsEncodedForRendering: true
+                )
+            );
+            $labelTag->addHtmlTagAttribute(
+                htmlTagAttribute: new HtmlTagAttribute(
+                    name: 'for',
+                    value: $optionsField->id . '_' . $key,
+                    valueIsEncodedForRendering: true
+                )
+            );
+            $labelTag->addText(htmlText: $htmlText);
+            $liTag->addTag(htmlTag: $labelTag);
         }
 
+        $this->setHtmlTag(htmlTag: $ulTag);
+    }
+
+    public static function createUlTag(OptionsField $optionsField): HtmlTag
+    {
         $listTagClasses = $optionsField->getListTagClasses();
         if ($optionsField->hasErrors(withChildElements: true)) {
             $listTagClasses[] = 'list-has-error';
         }
-
         $htmlTagAttributes = [];
-        if (count($listTagClasses) > 0) {
-            $htmlTagAttributes[] = new HtmlTagAttribute('class', implode(separator: ' ', array: $listTagClasses), true);
+        if (count(value: $listTagClasses) > 0) {
+            $htmlTagAttributes[] = new HtmlTagAttribute(
+                name: 'class',
+                value: implode(
+                    separator: ' ',
+                    array: $listTagClasses
+                ),
+                valueIsEncodedForRendering: true
+            );
         }
 
-        $ulTag = new HtmlTag('ul', false, $htmlTagAttributes);
-
-        foreach ($options as $key => $htmlText) {
-            $name = ($this->acceptMultipleValues) ? $optionsField->getName() . '[]' : $optionsField->getName();
-            $attributes = [
-                new HtmlTagAttribute('type', $this->inputFieldType, true),
-                new HtmlTagAttribute('name', $name, true),
-                new HtmlTagAttribute('id', $optionsField->getId() . '_' . $key, true),
-                new HtmlTagAttribute('value', $key, true),
-            ];
-
-            $rawValue = $optionsField->getRawValue();
-
-            if ($this->acceptMultipleValues) {
-                if (is_array($rawValue) && in_array($key, $rawValue)) {
-                    $attributes[] = new HtmlTagAttribute('checked', null, true);
-                }
-            } else {
-                if ($rawValue == $key) {
-                    $attributes[] = new HtmlTagAttribute('checked', null, true);
-                }
-            }
-
-            $inputTag = new HtmlTag('input', true, $attributes);
-
-            // Create inner "span-label":
-            $spanLabelTag = new HtmlTag('span', false, [new HtmlTagAttribute('class', 'label-text', true)]);
-            $spanLabelTag->addText($htmlText);
-
-            $labelTag = new HtmlTag('label', false);
-            $labelTag->addTag($inputTag);
-            $labelTag->addText(HtmlText::encoded(' ' . $spanLabelTag->render()));
-
-            $liTag = new HtmlTag('li', false);
-            $liTag->addTag($labelTag);
-            $ulTag->addTag($liTag);
-        }
-
-        $this->setHtmlTag($ulTag);
+        return new HtmlTag(
+            name: 'ul',
+            selfClosing: false,
+            htmlTagAttributes: $htmlTagAttributes
+        );
     }
 }
