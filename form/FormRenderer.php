@@ -24,14 +24,32 @@ abstract class FormRenderer
         if (!$formComponentWithErrors->hasErrors(withChildElements: false)) {
             return;
         }
-        $divTag = new HtmlTag(name: 'div', selfClosing: false, htmlTagAttributes: [
-            new HtmlTagAttribute(name: 'class', value: 'form-input-error', valueIsEncodedForRendering: true),
-            new HtmlTagAttribute(
-                name: 'id',
-                value: $formComponentWithErrors->getName() . '-error',
-                valueIsEncodedForRendering: true
-            ),
-        ]);
+        $divTag = new HtmlTag(
+            name: 'div',
+            selfClosing: false,
+            htmlTagAttributes: [
+                new HtmlTagAttribute(
+                    name: 'class',
+                    value: 'form-input-error',
+                    valueIsEncodedForRendering: true
+                ),
+                new HtmlTagAttribute(
+                    name: 'id',
+                    value: $formComponentWithErrors->name . '-error',
+                    valueIsEncodedForRendering: true
+                ),
+                new HtmlTagAttribute(
+                    name: 'role',
+                    value: 'alert',
+                    valueIsEncodedForRendering: true
+                ),
+                new HtmlTagAttribute(
+                    name: 'aria-live',
+                    value: 'assertive',
+                    valueIsEncodedForRendering: true
+                ),
+            ]
+        );
         $errorsHTML = [];
         foreach ($formComponentWithErrors->errorCollection->listErrors() as $htmlText) {
             $errorsHTML[] = $htmlText->render();
@@ -46,11 +64,11 @@ abstract class FormRenderer
             new HtmlTagAttribute(name: 'class', value: 'form-input-info', valueIsEncodedForRendering: true),
             new HtmlTagAttribute(
                 name: 'id',
-                value: $formFieldWithFieldInfo->getName() . '-info',
+                value: $formFieldWithFieldInfo->name . '-info',
                 valueIsEncodedForRendering: true
             ),
         ]);
-        $divTag->addText(htmlText: $formFieldWithFieldInfo->getFieldInfo());
+        $divTag->addText(htmlText: $formFieldWithFieldInfo->fieldInfo);
         $parentHtmlTag->addTag(htmlTag: $divTag);
     }
 
@@ -65,10 +83,10 @@ abstract class FormRenderer
                     valueIsEncodedForRendering: true
                 )
             );
-            $ariaDescribedBy[] = $formField->getName() . '-error';
+            $ariaDescribedBy[] = $formField->name . '-error';
         }
-        if (!is_null(value: $formField->getFieldInfo())) {
-            $ariaDescribedBy[] = $formField->getName() . '-info';
+        if (!is_null(value: $formField->fieldInfo)) {
+            $ariaDescribedBy[] = $formField->name . '-info';
         }
         if (count(value: $ariaDescribedBy) > 0) {
             $parentHtmlTag->addHtmlTagAttribute(
