@@ -20,23 +20,67 @@ class ImageResizer
         int $thumbnailHeight = 0,
         int $newImageQuality = 90,
         bool $cut = false,
-        bool $keepOriginal = true
+        bool $keepOriginal = true,
+        bool $autoRotate = true
     ): ImageResizerResult {
-        $destinationPath = $destinationDirectory . 'orig_' . $newImageName . '.' . $fileExtension;
+        $sourcePath = $destinationDirectory . 'orig_' . $newImageName . '.' . $fileExtension;
         if ($keepOriginal) {
-            copy(from: $temporaryPath, to: $destinationPath);
+            copy(
+                from: $temporaryPath,
+                to: $sourcePath
+            );
         } else {
-            $destinationPath = $temporaryPath;
+            $sourcePath = $temporaryPath;
         }
-        if (!file_exists(filename: $destinationPath)) {
+        if (!file_exists(filename: $sourcePath)) {
             return ImageResizerResult::MISSING_SOURCE_IMAGE;
         }
-        $originalImageSize = getimagesize(filename: $destinationPath);
-        if ($originalImageSize === false) {
-            return ImageResizerResult::INVALID_SOURCE_IMAGE;
+        $lowerCaseFileExtension = strtolower(string: $fileExtension);
+        try {
+            $originalImage = match ($lowerCaseFileExtension) {
+                'gif' => imagecreatefromgif(filename: $sourcePath),
+                'jpg', 'jpeg' => imagecreatefromjpeg(filename: $sourcePath),
+                'png' => imagecreatefrompng(filename: $sourcePath),
+                default => imagecreate(width: 100, height: 100),
+            };
+        } catch (Throwable) {
+            $originalImage = false;
         }
-        $originalWidth = (int)$originalImageSize[0];
-        $originalHeight = (int)$originalImageSize[1];
+        if ($originalImage === false) {
+            return ImageResizerResult::CREATE_ORIGINAL_FAILED;
+        }
+        if ($autoRotate) {
+            $exif = exif_read_data(file: $sourcePath);
+            if (
+                is_array(value: $exif)
+                && array_key_exists(
+                    key: 'Orientation',
+                    array: $exif
+                )
+            ) {
+                $orientation = $exif['Orientation'];
+                if (in_array(
+                    needle: $orientation,
+                    haystack: [
+                        3,
+                        6,
+                        8,
+                    ]
+                )) {
+                    $originalImage = imagerotate(
+                        image: $originalImage,
+                        angle: match ($orientation) {
+                            3 => 180,
+                            6 => -90,
+                            8 => 90
+                        },
+                        background_color: 0
+                    );
+                }
+            }
+        }
+        $originalWidth = imagesx(image: $originalImage);
+        $originalHeight = imagesy(image: $originalImage);
 
         $destinationPositionX = 0;
         $destinationPositionY = 0;
@@ -98,21 +142,7 @@ class ImageResizer
             $destinationPositionY = (int)round(num: ($thumbnailHeight - $newHeight) / 2);
         }
 
-        $lcFileExtension = strtolower(string: $fileExtension);
-        try {
-            $originalImage = match ($lcFileExtension) {
-                'gif' => imagecreatefromgif(filename: $destinationPath),
-                'jpg', 'jpeg' => imagecreatefromjpeg(filename: $destinationPath),
-                'png' => imagecreatefrompng(filename: $destinationPath),
-                default => imagecreate(width: 100, height: 100),
-            };
-        } catch (Throwable) {
-            $originalImage = false;
-        }
-        if ($originalImage === false) {
-            return ImageResizerResult::CREATE_ORIGINAL_FAILED;
-        }
-        $thumbnailImage = match ($lcFileExtension) {
+        $thumbnailImage = match ($lowerCaseFileExtension) {
             'jpg', 'jpeg', 'png' => imagecreatetruecolor(width: $thumbnailWidth, height: $thumbnailHeight),
             default => imagecreate(width: $thumbnailWidth, height: $thumbnailHeight),
         };
@@ -140,7 +170,7 @@ class ImageResizer
         imagedestroy(image: $originalImage);
 
         $newImage = $destinationDirectory . $newImageName . '.' . $fileExtension;
-        switch (strtolower(string: $fileExtension)) {
+        switch (strtolower(string: $lowerCaseFileExtension)) {
             case 'gif':
                 imagegif(image: $thumbnailImage, file: $newImage);
                 break;
