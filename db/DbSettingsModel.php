@@ -36,7 +36,7 @@ class DbSettingsModel
 
         $charset = trim(string: (string)$charset);
         if ($charset === '') {
-            $charset = 'utf8';
+            $charset = 'utf8mb4';
         }
         if (mb_strtolower(string: $charset) === 'utf-8') {
             throw new LogicException(message: 'Faulty charset setting string "utf-8". Must be "utf8" for PDO driver.');
