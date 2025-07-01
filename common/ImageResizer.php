@@ -50,7 +50,11 @@ class ImageResizer
             return ImageResizerResult::CREATE_ORIGINAL_FAILED;
         }
         if ($autoRotate) {
-            $exif = exif_read_data(file: $sourcePath);
+            try {
+                $exif = exif_read_data(file: $sourcePath);
+            } catch (Throwable) {
+                $exif = false;
+            }
             if (
                 is_array(value: $exif)
                 && array_key_exists(
