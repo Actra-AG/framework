@@ -85,7 +85,10 @@ class InputFieldRenderer extends FormRenderer
                 )
             );
         }
-        FormRenderer::addAriaAttributesToHtmlTag(formField: $formField, parentHtmlTag: $inputTag);
+        FormRenderer::addAriaAttributesToHtmlTag(
+            formField: $formField,
+            parentHtmlTag: $inputTag
+        );
         $this->setHtmlTag(htmlTag: $inputTag);
     }
 }

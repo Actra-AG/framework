@@ -14,15 +14,23 @@ use framework\html\HtmlText;
 class NumericField extends AmountField
 {
     public function __construct(
+        string $name,
+        HtmlText $label,
+        null|int|float $initialValue = null,
+        ?HtmlText $individualInvalidError = null,
+        ?HtmlText $requiredError = null,
+        ?string $placeholder = null,
         public readonly int $minLength,
-        ?int $maxLength
+        ?int $maxLength = null
     ) {
         parent::__construct(
-            name: 'token',
-            label: HtmlText::encoded(textContent: '6-stelliger Code'),
+            name: $name,
+            label: $label,
             valueIsFloat: false,
-            individualInvalidError: HtmlText::encoded(textContent: 'Der angegebene Wert ist ungültig.'),
-            requiredError: HtmlText::encoded(textContent: 'Bitte gib den 6-stelligen Code ein.'),
+            initialValue: $initialValue,
+            individualInvalidError: $individualInvalidError,
+            requiredError: $requiredError,
+            placeholder: $placeholder,
             maxLength: $maxLength
         );
     }
