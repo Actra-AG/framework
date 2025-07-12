@@ -20,7 +20,7 @@ class NumericField extends AmountField
         ?HtmlText $individualInvalidError = null,
         ?HtmlText $requiredError = null,
         ?string $placeholder = null,
-        public readonly int $minLength,
+        public readonly int $minLength = 0,
         ?int $maxLength = null
     ) {
         parent::__construct(
