@@ -129,7 +129,7 @@ class StringUtils
             characters: '-'
         );
         if ($separator !== '-') {
-            str_replace(
+            $string = str_replace(
                 search: '-',
                 replace: $separator,
                 subject: $string
