@@ -36,17 +36,16 @@ class DbResultTable extends SmartTable
     private ?int $filledAmount = null;
 
     public function __construct(
-        string $identifier, // Can be the name of main table, but must be unique per site
+        string $identifier, // Can be the name of the main table but must be unique per site
         public readonly FrameworkDB $db,
         public readonly DbQuery $dbQuery,
         private readonly ?TableFilter $tableFilter = null,
         ?TablePaginationRenderer $tablePaginationRenderer = null,
         ?SortableTableHeadRenderer $sortableTableHeadRenderer = null,
         private readonly int $itemsPerPage = 25,
-        // Max rows in table before pagination starts, if result is not limited to one page
-        private bool $limitToOnePage = false // Set to true to disable pagination
-    )
-    {
+        // Max rows in the table before pagination starts, if a result is not limited to one page
+        public bool $limitToOnePage = false
+    ) {
         if (is_null(value: $sortableTableHeadRenderer)) {
             $sortableTableHeadRenderer = new SortableTableHeadRenderer();
         }
@@ -57,7 +56,7 @@ class DbResultTable extends SmartTable
         );
         $this->setNoDataHtml(noDataHtml: DbResultTable::filter . $this->getNoDataHtml());
         $this->setFullHtml(
-            fullHtml: DbResultTable::filter . SmartTable::totalAmount . DbResultTable::pagination . '<div class="table-global-wrap">' . SmartTable::table . '</div>' . DbResultTable::pagination
+            fullHtml: DbResultTable::filter . '<div class="table-meta table-meta-header">' . SmartTable::totalAmount . DbResultTable::pagination . '</div><div class="table-global-wrap">' . SmartTable::table . '</div><div class="table-meta table-meta-footer">' . DbResultTable::pagination . '</div>'
         );
         $this->tablePaginationRenderer = is_null(value: $tablePaginationRenderer) ? new TablePaginationRenderer(
         ) : $tablePaginationRenderer;
@@ -273,6 +272,21 @@ class DbResultTable extends SmartTable
         );
     }
 
+    public function addAdditionalLinkParameter(string $key, string $value): void
+    {
+        $this->additionalLinkParameters[urlencode(string: $key)] = urlencode(string: $value);
+    }
+
+    public function getAdditionalLinkParameters(): array
+    {
+        return $this->additionalLinkParameters;
+    }
+
+    public function setLimitToOnePage(bool $limitToOnePage): void
+    {
+        $this->limitToOnePage = $limitToOnePage;
+    }
+
     public function getTotalAmount(): int
     {
         if (!is_null(value: $this->totalAmount)) {
@@ -287,20 +301,5 @@ class DbResultTable extends SmartTable
         }
 
         return $this->totalAmount = $this->dbQuery->getTotalAmount(db: $this->db);
-    }
-
-    public function addAdditionalLinkParameter(string $key, string $value): void
-    {
-        $this->additionalLinkParameters[urlencode(string: $key)] = urlencode(string: $value);
-    }
-
-    public function getAdditionalLinkParameters(): array
-    {
-        return $this->additionalLinkParameters;
-    }
-
-    public function setLimitToOnePage(bool $limitToOnePage): void
-    {
-        $this->limitToOnePage = $limitToOnePage;
     }
 }

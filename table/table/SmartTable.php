@@ -26,17 +26,17 @@ class SmartTable
     public const string amount = '[AMOUNT]';
     /** @var SmartTable[] */
     private static array $instances = [];
-    private string $noDataHtml = '<p class="no-entry">Es wurden keine Einträge gefunden.</p>';
-    private string $totalAmountHtml = '<p class="search-result">' . SmartTable::totalAmountMessagePlaceholder . '</p>';
-    private string $fullHtml = SmartTable::totalAmount . '<div class="table-global-wrap">' . SmartTable::table . '</div>';
-    private string $tableHtml = '<thead>' . SmartTable::tableHeader . '</thead><tbody>' . SmartTable::tableBody . '</tbody>';
-    private string $oddRowHtml = '<tr>' . SmartTable::cells . '</tr>';
-    private string $evenRowHtml = '<tr>' . SmartTable::cells . '</tr>';
-    private string $totalAmountMessage_oneResult = 'Es wurde <strong>1</strong> Resultat gefunden.';
-    private string $totalAmountMessage_numResults = 'Es wurden <strong>' . SmartTable::amount . '</strong> Resultate gefunden.';
-    private array $cssClasses = [];
+    public string $noDataHtml = '<p class="no-entry">Es wurden keine Einträge gefunden.</p>';
+    public string $totalAmountHtml = '<p class="search-result">' . SmartTable::totalAmountMessagePlaceholder . '</p>';
+    public string $fullHtml = '<div class="table-meta table-meta-header">' . SmartTable::totalAmount . '</div><div class="table-global-wrap">' . SmartTable::table . '</div>';
+    public string $tableHtml = '<thead>' . SmartTable::tableHeader . '</thead><tbody>' . SmartTable::tableBody . '</tbody>';
+    public string $oddRowHtml = '<tr>' . SmartTable::cells . '</tr>';
+    public string $evenRowHtml = '<tr>' . SmartTable::cells . '</tr>';
+    public string $totalAmountMessage_oneResult = 'Es wurde <strong>1</strong> Resultat gefunden.';
+    public string $totalAmountMessage_numResults = 'Es wurden <strong>' . SmartTable::amount . '</strong> Resultate gefunden.';
     /** @var AbstractTableColumn[] */
     private array $columns = [];
+    private array $cssClasses = [];
 
     public function __construct(
         public readonly string $identifier,
@@ -176,11 +176,17 @@ class SmartTable
                 replace: $totalAmountMessage,
                 subject: $this->totalAmountHtml
             ),
-            SmartTable::table => implode(separator: PHP_EOL, array: [
-                '<' . implode(separator: ' ', array: $tableAttributes) . '>',
-                $tableHtml,
-                '</table>',
-            ]),
+            SmartTable::table => implode(
+                separator: PHP_EOL,
+                array: [
+                    '<' . implode(
+                        separator: ' ',
+                        array: $tableAttributes
+                    ) . '>',
+                    $tableHtml,
+                    '</table>',
+                ]
+            ),
         ];
 
         $srcArr = array_keys(array: $placeholders);
