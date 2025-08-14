@@ -107,68 +107,44 @@ class StringUtils
         return explode($explodeStr, $strToExplode);
     }
 
-    /**
-     * @param string $str The string to urlify
-     * @param int $maxLength The max length of the urlified string. 0 is no length limit.
-     *
-     * @return string The urlified string
-     */
-    public static function urlify(string $str, int $maxLength = 0): string
+    public static function urlify(string $string, string $separator = '-', int $maxLength = 0): string
     {
-        $charMap = [
-            ' ' => '-',
-            '.' => '',
-            ':' => '',
-            ',' => '',
-            '?' => '',
-            '!' => '',
-            '´' => '',
-            '"' => '',
-            '(' => '',
-            ')' => '',
-            '[' => '',
-            ']' => '',
-            '{' => '',
-            '}' => '',
-            '\'' => '',
-
-            // German
-            'ä' => 'ae',
-            'ö' => 'oe',
-            'ü' => 'ue',
-
-            // Français
-            'é' => 'e',
-            'è' => 'e',
-            'ê' => 'e',
-            'à' => 'a',
-            'â' => 'a',
-            'ç' => 'c',
-            'ï' => '',
-            'î' => '',
-
-            // Español
-            'ñ' => 'n',
-            'ó' => 'o',
-            'ú' => 'u',
-            '¿' => '',
-            '¡' => '',
-        ];
-
-        $urlifiedStr = str_replace(array_keys($charMap), $charMap, mb_strtolower(trim(string: $str)));
-
-        // Replace multiple dashes
-        $urlifiedStr = preg_replace(
-            pattern: '/-{2,}/',
-            replacement: '-',
-            subject: $urlifiedStr
+        $string = iconv(
+            from_encoding: 'UTF-8',
+            to_encoding: 'ASCII//TRANSLIT',
+            string: $string
         );
-
-        if ($maxLength === 0) {
-            return $urlifiedStr;
+        $string = preg_replace(
+            pattern: '/[^a-zA-Z0-9\-.]/',
+            replacement: '-',
+            subject: $string
+        );
+        $string = preg_replace(
+            pattern: '/-+/',
+            replacement: '-',
+            subject: $string
+        );
+        $string = trim(
+            string: $string,
+            characters: '-'
+        );
+        if ($separator !== '-') {
+            str_replace(
+                search: '-',
+                replace: $separator,
+                subject: $string
+            );
         }
+        if ($string === '') {
+            $string = 'unbenannt';
+        }
+        $string = strtolower(string: $string);
 
-        return substr($urlifiedStr, 0, $maxLength);
+        return $maxLength === 0 ? $string : substr(
+            string: $string,
+            offset: 0,
+            length: $maxLength
+        );
     }
 
     public static function emptyToNull(string $string): ?string
