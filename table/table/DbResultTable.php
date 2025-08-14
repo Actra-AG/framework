@@ -36,14 +36,14 @@ class DbResultTable extends SmartTable
     private ?int $filledAmount = null;
 
     public function __construct(
-        string $identifier, // Can be the name of main table, but must be unique per site
+        string $identifier, // Can be the name of the main table but must be unique per site
         public readonly FrameworkDB $db,
         public readonly DbQuery $dbQuery,
         private readonly ?TableFilter $tableFilter = null,
         ?TablePaginationRenderer $tablePaginationRenderer = null,
         ?SortableTableHeadRenderer $sortableTableHeadRenderer = null,
         private readonly int $itemsPerPage = 25,
-        // Max rows in table before pagination starts, if result is not limited to one page
+        // Max rows in the table before pagination starts, if a result is not limited to one page
         public bool $limitToOnePage = false
     ) {
         if (is_null(value: $sortableTableHeadRenderer)) {
@@ -55,7 +55,7 @@ class DbResultTable extends SmartTable
             tableItemCollection: new TableItemCollection()
         );
         $this->noDataHtml = DbResultTable::filter . $this->noDataHtml;
-        $this->fullHtml = DbResultTable::filter . SmartTable::totalAmount . DbResultTable::pagination . '<div class="table-global-wrap">' . SmartTable::table . '</div>' . DbResultTable::pagination;
+        $this->fullHtml = DbResultTable::filter . '<div class="table-meta table-meta-header">' . SmartTable::totalAmount . DbResultTable::pagination . '</div><div class="table-global-wrap">' . SmartTable::table . '</div><div class="table-meta table-meta-footer">' . DbResultTable::pagination . '</div>';
         $this->tablePaginationRenderer = is_null(value: $tablePaginationRenderer) ? new TablePaginationRenderer(
         ) : $tablePaginationRenderer;
     }

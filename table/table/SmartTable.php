@@ -28,7 +28,7 @@ class SmartTable
     private static array $instances = [];
     public string $noDataHtml = '<p class="no-entry">Es wurden keine Einträge gefunden.</p>';
     public string $totalAmountHtml = '<p class="search-result">' . SmartTable::totalAmountMessagePlaceholder . '</p>';
-    public string $fullHtml = SmartTable::totalAmount . '<div class="table-global-wrap">' . SmartTable::table . '</div>';
+    public string $fullHtml = '<div class="table-meta table-meta-header">' . SmartTable::totalAmount . '</div><div class="table-global-wrap">' . SmartTable::table . '</div>';
     public string $tableHtml = '<thead>' . SmartTable::tableHeader . '</thead><tbody>' . SmartTable::tableBody . '</tbody>';
     public string $oddRowHtml = '<tr>' . SmartTable::cells . '</tr>';
     public string $evenRowHtml = '<tr>' . SmartTable::cells . '</tr>';
@@ -121,11 +121,17 @@ class SmartTable
                 replace: $totalAmountMessage,
                 subject: $this->totalAmountHtml
             ),
-            SmartTable::table => implode(separator: PHP_EOL, array: [
-                '<' . implode(separator: ' ', array: $tableAttributes) . '>',
-                $tableHtml,
-                '</table>',
-            ]),
+            SmartTable::table => implode(
+                separator: PHP_EOL,
+                array: [
+                    '<' . implode(
+                        separator: ' ',
+                        array: $tableAttributes
+                    ) . '>',
+                    $tableHtml,
+                    '</table>',
+                ]
+            ),
         ];
 
         $srcArr = array_keys(array: $placeholders);
