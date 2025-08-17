@@ -76,10 +76,8 @@ class HttpResponse
 
         if (!is_null(value: $this->contentString)) {
             echo $this->contentString;
-        } else {
-            if (!is_null(value: $this->contentFilePath)) {
-                readfile(filename: $this->contentFilePath);
-            }
+        } elseif (!is_null(value: $this->contentFilePath)) {
+            readfile(filename: $this->contentFilePath);
         }
         exit;
     }

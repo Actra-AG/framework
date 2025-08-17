@@ -31,13 +31,13 @@ abstract class AbstractMail
     public readonly MailerAddress $sender;
     public readonly MailerAddress $fromAddress;
     public readonly MailerAddressCollection $mailerAddressCollection;
+    private int $wordWrap = 0;
     private bool $isSent = false;
     private ?MailerAddress $confirmReadingToAddress = null;
     private string $body;
     private string $alternativeBody = '';
     private bool $isHtmlBody = false;
     private MailerAttachmentCollection $mailerAttachmentCollection;
-    private int $wordWrap = 0;
     private MailerHeaderCollection $customHeaders;
     private readonly string $subject;
 

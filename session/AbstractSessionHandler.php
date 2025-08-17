@@ -24,12 +24,12 @@ abstract class AbstractSessionHandler extends SessionHandler
     private const string LAST_ACTIVITY_INDICATOR = 'lastActivity';
     private const string PREFERRED_LANGUAGE_INDICATOR = 'preferredLanguage';
     private static null|false|AbstractSessionHandler $abstractSessionHandler = null;
+    private ?string $name = null;
+    private ?string $fingerprint = null;
     private int $currentTime;
     private ?string $ID = null;
-    private ?string $name = null;
     private string $clientRemoteAddress;
     private string $clientUserAgent;
-    private ?string $fingerprint = null;
 
     protected function __construct(private readonly SessionSettingsModel $sessionSettingsModel)
     {
@@ -63,21 +63,15 @@ abstract class AbstractSessionHandler extends SessionHandler
         }
         if (!$this->isSessionCreated()) {
             $this->initDefaultSessionData(destroyCurrentSessionData: false);
-        } else {
-            if ($this->getTrustedRemoteAddress() !== $this->clientRemoteAddress || $this->getTrustedUserAgent(
-                ) !== $this->clientUserAgent) {
-                $this->initDefaultSessionData(destroyCurrentSessionData: true);
-            } else {
-                if ($this->isSessionExpired()) {
-                    // Real session lifetime and regeneration after maxLifeTime
-                    // See: http://stackoverflow.com/questions/520237/how-do-i-expire-a-php-session-after-30-minutes/1270960#1270960
-                    $this->initDefaultSessionData(destroyCurrentSessionData: true);
-                } else {
-                    if ($this->isSessionOlderThan30Minutes()) {
-                        $this->regenerateID();
-                    }
-                }
-            }
+        } elseif ($this->getTrustedRemoteAddress() !== $this->clientRemoteAddress || $this->getTrustedUserAgent(
+            ) !== $this->clientUserAgent) {
+            $this->initDefaultSessionData(destroyCurrentSessionData: true);
+        } elseif ($this->isSessionExpired()) {
+            // Real session lifetime and regeneration after maxLifeTime
+            // See: http://stackoverflow.com/questions/520237/how-do-i-expire-a-php-session-after-30-minutes/1270960#1270960
+            $this->initDefaultSessionData(destroyCurrentSessionData: true);
+        } elseif ($this->isSessionOlderThan30Minutes()) {
+            $this->regenerateID();
         }
 
         $this->setLastAction();

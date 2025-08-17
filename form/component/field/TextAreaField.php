@@ -18,8 +18,8 @@ class TextAreaField extends FormField
 {
     private int $rows;
     private int $cols;
-    private ?string $placeholder = null;
     private array $cssClassesForRenderer = [];
+    private ?string $placeholder = null;
 
     public function __construct(
         string $name,

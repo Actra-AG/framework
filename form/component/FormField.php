@@ -20,24 +20,22 @@ use UnexpectedValueException;
 
 abstract class FormField extends FormComponent
 {
-    /** @var FormFieldListener[] */
-    protected array $listeners = [];
     protected ?HtmlText $fieldInfo = null;
     protected ?HtmlText $labelInfoText = null;
     protected ?HtmlText $additionalColumnContent = null;
     protected Form $topFormComponent;
     protected bool $renderRequiredAbbr = true;
+    /** @var FormFieldListener[] */
+    protected array $listeners = [];
     private string $id;
     private HtmlText $label;
+    private bool $renderLabel = true;
+    private bool $autoFocus = false;
     private mixed $value;
     private mixed $originalValue = null;
-
-    // Renderer options:
     /** @var FormRule[] */
     private array $rules = [];
-    private bool $renderLabel = true;
     private bool $acceptArrayAsValue = false;
-    private bool $autoFocus = false;
 
     /**
      * @param string $name The internal name for this formField which is also used by the renderer (name="")
@@ -169,20 +167,14 @@ abstract class FormField extends FormComponent
 
         if (is_scalar($this->value)) {
             return (strlen(string: trim(string: $this->value)) <= 0);
+        } elseif (is_array($this->value)) {
+            return (count(array_filter($this->value)) <= 0);
+        } elseif ($this->value instanceof ArrayObject) {
+            return (count(array_filter((array)$this->value)) <= 0);
+        } elseif ($this->value instanceof DateTime) {
+            return false;
         } else {
-            if (is_array($this->value)) {
-                return (count(array_filter($this->value)) <= 0);
-            } else {
-                if ($this->value instanceof ArrayObject) {
-                    return (count(array_filter((array)$this->value)) <= 0);
-                } else {
-                    if ($this->value instanceof DateTime) {
-                        return false;
-                    } else {
-                        throw new UnexpectedValueException('Could not check value against emptiness');
-                    }
-                }
-            }
+            throw new UnexpectedValueException('Could not check value against emptiness');
         }
     }
 

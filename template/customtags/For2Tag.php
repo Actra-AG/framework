@@ -49,10 +49,8 @@ class For2Tag extends TemplateTag implements TagNode
 
         if ($stepIncrement === null && $grabCount !== null) {
             $stepIncrement = $grabCount;
-        } else {
-            if ($stepIncrement === null) {
-                $stepIncrement = 1;
-            }
+        } elseif ($stepIncrement === null) {
+            $stepIncrement = 1;
         }
 
         if ($stepIncrement == 0) {

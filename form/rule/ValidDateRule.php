@@ -35,15 +35,13 @@ class ValidDateRule extends FormRule
                     $matches[1],
                 ]
             );
-        } else {
-            if (
-                preg_match(
-                    pattern: '/^\d{4}-\d{1,2}-\d{1,2}$/',
-                    subject: $value
-                ) !== 1
-            ) {
-                return false;
-            }
+        } elseif (
+            preg_match(
+                pattern: '/^\d{4}-\d{1,2}-\d{1,2}$/',
+                subject: $value
+            ) !== 1
+        ) {
+            return false;
         }
         try {
             $dateTime = new DateTimeImmutable(datetime: $value);

@@ -86,15 +86,13 @@ abstract class BaseView
                 errorCode: $errorCode,
                 additionalInfo: $additionalInfo
             );
+        } elseif ($contentType->isTxt() || $contentType->isCsv()) {
+            $httpErrorResponseContent = HttpErrorResponseContent::createTextResponseContent(
+                errorMessage: $errorMessage,
+                errorCode: $errorCode
+            );
         } else {
-            if ($contentType->isTxt() || $contentType->isCsv()) {
-                $httpErrorResponseContent = HttpErrorResponseContent::createTextResponseContent(
-                    errorMessage: $errorMessage,
-                    errorCode: $errorCode
-                );
-            } else {
-                throw new LogicException(message: 'Invalid contentType: ' . $contentType->type);
-            }
+            throw new LogicException(message: 'Invalid contentType: ' . $contentType->type);
         }
 
         $this->setContent(contentString: $httpErrorResponseContent->getContent());
@@ -180,14 +178,12 @@ abstract class BaseView
             $httpSuccessResponseContent = HttpSuccessResponseContent::createJsonResponseContent(
                 resultDataObject: $resultDataObject
             );
+        } elseif ($contentType->isTxt() || $contentType->isCsv()) {
+            $httpSuccessResponseContent = HttpSuccessResponseContent::createTextResponseContent(
+                resultDataObject: $resultDataObject
+            );
         } else {
-            if ($contentType->isTxt() || $contentType->isCsv()) {
-                $httpSuccessResponseContent = HttpSuccessResponseContent::createTextResponseContent(
-                    resultDataObject: $resultDataObject
-                );
-            } else {
-                throw new LogicException(message: 'Invalid contentType: ' . $contentType->type);
-            }
+            throw new LogicException(message: 'Invalid contentType: ' . $contentType->type);
         }
 
         $this->setContent(contentString: $httpSuccessResponseContent->getContent());

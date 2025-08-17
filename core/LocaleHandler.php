@@ -13,8 +13,8 @@ use LogicException;
 class LocaleHandler
 {
     private static ?LocaleHandler $registeredInstance = null;
-    private array $languageBlocks = [];
     private array $loadedLangFiles = [];
+    private array $languageBlocks = [];
 
     private function __construct()
     {

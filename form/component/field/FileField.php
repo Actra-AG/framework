@@ -58,9 +58,9 @@ class FileField extends FormField
         }
         $this->uniqueSessFileStorePointer = $this->sanitizeUniqueID(
             uid: uniqid(
-            prefix: $name . '__',
-            more_entropy: true
-        )
+                prefix: $name . '__',
+                more_entropy: true
+            )
         );
         $this->tooManyFilesErrMsg = is_null(value: $tooManyFilesErrMsg) ? HtmlText::encoded(
             textContent: 'Nur [max] Datei(en) möglich.'
@@ -254,10 +254,10 @@ class FileField extends FormField
         if ((count(value: $originalFileArray) + count(value: $convertedMultiFileArray)) > $this->maxFileUploadCount) {
             $this->addError(
                 errorMessage: str_replace(
-                search: '[max]',
-                replace: $this->maxFileUploadCount,
-                subject: $this->tooManyFilesErrMsg->render()
-            ),
+                    search: '[max]',
+                    replace: $this->maxFileUploadCount,
+                    subject: $this->tooManyFilesErrMsg->render()
+                ),
                 isEncodedForRendering: true
             );
 

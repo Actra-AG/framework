@@ -14,9 +14,9 @@ use LogicException;
 
 class OptionsFilterField extends AbstractTableFilterField
 {
+    private string $selectedValue = '';
     /** @var FilterOption[] */
     private readonly array $filterOptions;
-    private string $selectedValue = '';
 
     public function __construct(
         TableFilter $parentFilter,

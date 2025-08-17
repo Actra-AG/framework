@@ -25,55 +25,55 @@ class InputFieldRenderer extends FormRenderer
         $inputTag = new HtmlTag(name: 'input', selfClosing: true);
         $inputTag->addHtmlTagAttribute(
             htmlTagAttribute: new HtmlTagAttribute(
-            name: 'type',
-            value: $formField->inputType->value,
-            valueIsEncodedForRendering: true
-        )
+                name: 'type',
+                value: $formField->inputType->value,
+                valueIsEncodedForRendering: true
+            )
         );
         $inputTag->addHtmlTagAttribute(
             htmlTagAttribute: new HtmlTagAttribute(
-            name: 'name', value: $formField->getName(), valueIsEncodedForRendering: true
-        )
+                name: 'name', value: $formField->getName(), valueIsEncodedForRendering: true
+            )
         );
         $inputTag->addHtmlTagAttribute(
             htmlTagAttribute: new HtmlTagAttribute(
-            name: 'id',
-            value: $formField->getId(),
-            valueIsEncodedForRendering: true
-        )
+                name: 'id',
+                value: $formField->getId(),
+                valueIsEncodedForRendering: true
+            )
         );
         $inputTag->addHtmlTagAttribute(
             htmlTagAttribute: new HtmlTagAttribute(
-            name: 'value',
-            value: $formField->renderValue(),
-            valueIsEncodedForRendering: true
-        )
+                name: 'value',
+                value: $formField->renderValue(),
+                valueIsEncodedForRendering: true
+            )
         );
         if (!is_null(value: $formField->placeholder)) {
             $inputTag->addHtmlTagAttribute(
                 htmlTagAttribute: new HtmlTagAttribute(
-                name: 'placeholder',
-                value: $formField->placeholder,
-                valueIsEncodedForRendering: true
-            )
+                    name: 'placeholder',
+                    value: $formField->placeholder,
+                    valueIsEncodedForRendering: true
+                )
             );
         }
         if (!is_null(value: $formField->autoComplete)) {
             $inputTag->addHtmlTagAttribute(
                 htmlTagAttribute: new HtmlTagAttribute(
-                name: 'autocomplete',
-                value: $formField->autoComplete->value,
-                valueIsEncodedForRendering: true
-            )
+                    name: 'autocomplete',
+                    value: $formField->autoComplete->value,
+                    valueIsEncodedForRendering: true
+                )
             );
         }
         if ($formField->isAutoFocus()) {
             $inputTag->addHtmlTagAttribute(
                 htmlTagAttribute: new HtmlTagAttribute(
-                name: 'autofocus',
-                value: null,
-                valueIsEncodedForRendering: true
-            )
+                    name: 'autofocus',
+                    value: null,
+                    valueIsEncodedForRendering: true
+                )
             );
         }
         if (!is_null(value: $formField->maxLength)) {

@@ -20,11 +20,11 @@ class PhoneMetaData
     private ?PhoneDesc $generalDesc = null;
     private ?string $nationalPrefixForParsing = null;
     private ?string $nationalPrefixTransformRule = null;
+    private ?string $preferredExtnPrefix = null;
     /** @var PhoneFormat[] */
     private array $intlNumberFormat = [];
     /** @var PhoneFormat[] */
     private array $numberFormat = [];
-    private ?string $preferredExtnPrefix = null;
 
     private function __construct(string $fileName)
     {

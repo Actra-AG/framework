@@ -29,7 +29,7 @@ class FormControlRenderer extends FormRenderer
             new HtmlTagAttribute('type', 'submit', true),
             new HtmlTagAttribute('name', $formControl->getName(), true),
         ]);
-        $buttonTag->addText($formControl->getSubmitLabel());
+        $buttonTag->addText(htmlText: $formControl->getSubmitLabel());
 
         $divTag = new HtmlTag('div', false, [new HtmlTagAttribute('class', 'form-control', true)]);
         $divTag->addTag($buttonTag);

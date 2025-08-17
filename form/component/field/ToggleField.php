@@ -22,8 +22,8 @@ use LogicException;
 
 class ToggleField extends OptionsField
 {
-    private array $childrenByMainOption = [];
     private string $defaultChildFieldRenderer = DefinitionListRenderer::class;
+    private array $childrenByMainOption = [];
 
     public function __construct(
         string $name,
@@ -151,10 +151,8 @@ class ToggleField extends OptionsField
                 if (in_array($key, $this->getRawValue())) {
                     $inputAttributes[] = new HtmlTagAttribute('checked', null, true);
                 }
-            } else {
-                if ((string)$key === (string)$this->getRawValue()) {
-                    $inputAttributes[] = new HtmlTagAttribute('checked', null, true);
-                }
+            } elseif ((string)$key === (string)$this->getRawValue()) {
+                $inputAttributes[] = new HtmlTagAttribute('checked', null, true);
             }
             // Create the Toggle-<input>
             $input = new HtmlTag('input', true, $inputAttributes);
@@ -252,8 +250,8 @@ class ToggleField extends OptionsField
         if (!is_null(value: $listDescription)) {
             $fieldsetTag->addText(
                 htmlText: HtmlText::encoded(
-                textContent: '<div class="fieldset-info">' . $listDescription->render() . '</div>'
-            )
+                    textContent: '<div class="fieldset-info">' . $listDescription->render() . '</div>'
+                )
             );
         }
 
@@ -281,10 +279,8 @@ class ToggleField extends OptionsField
                 if (!in_array($mainOption, $valueAfterValidation)) {
                     continue;
                 }
-            } else {
-                if ($mainOption != $valueAfterValidation) {
-                    continue;
-                }
+            } elseif ($mainOption != $valueAfterValidation) {
+                continue;
             }
 
             /** @var FormField|FormComponent $formField */

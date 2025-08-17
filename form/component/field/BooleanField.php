@@ -37,9 +37,9 @@ class BooleanField extends CheckboxOptionsField
         if ($overwriteValue) {
             $this->setValue(
                 value: array_key_exists(
-                key: $this->getName(),
-                array: $inputData
-            ) ? $inputData[$this->getName()] : null
+                    key: $this->getName(),
+                    array: $inputData
+                ) ? $inputData[$this->getName()] : null
             );
         }
 

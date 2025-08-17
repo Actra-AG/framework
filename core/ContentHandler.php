@@ -18,9 +18,9 @@ class ContentHandler
     private static ?ContentHandler $registeredInstance = null;
 
     private HttpStatusCode $httpStatusCode = HttpStatusCode::HTTP_OK;
+    private bool $suppressCspHeader = false;
     private string $content = '';
     private ContentType $contentType;
-    private bool $suppressCspHeader = false;
 
     private function __construct()
     {

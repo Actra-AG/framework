@@ -38,10 +38,8 @@ class PrintTag extends TemplateTag implements TagNode, TagInline
 
         if ($data instanceof DateTime) {
             return $data->format('Y-m-d H:i:s');
-        } else {
-            if (is_scalar($data) === false) {
-                return print_r($data, true);
-            }
+        } elseif (is_scalar($data) === false) {
+            return print_r($data, true);
         }
 
         return $data;

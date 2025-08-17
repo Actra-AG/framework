@@ -15,18 +15,16 @@ use LogicException;
 
 class SortableTableHeadRenderer extends TableHeadRenderer
 {
-    private DbResultTable $dbResultTable;
-
     private string $sortableColumnClass = 'sort';
     private string $sortableColumnClassActiveAsc = 'sort sort-asc';
     private string $sortableColumnClassActiveDesc = 'sort sort-desc';
-
     private string $sortLinkClassActiveAsc = '';
     private string $sortLinkClassActiveDesc = '';
-
     private string $sortableColumnLabelAddition = '';
     private string $sortableColumnLabelAdditionActiveAsc = '';
     private string $sortableColumnLabelAdditionActiveDesc = '';
+    private DbResultTable $dbResultTable;
+
 
     public function setSortableColumnClass(string $sortableColumnClass): void
     {

@@ -157,19 +157,15 @@ class MailerFunctions
         if ($matchCount > strlen(string: $string) / 3) {
             // More than 1/3 of the content needs encoding, use B-encode.
             $encoding = 'B';
+        } elseif ($matchCount > 0) {
+            // Less than 1/3 of the content needs encoding, use Q-encode.
+            $encoding = 'Q';
+        } elseif (strlen(string: $string) > $maxLength) {
+            //No encoding needed, but value exceeds max line length, use Q-encode to prevent corruption.
+            $encoding = 'Q';
         } else {
-            if ($matchCount > 0) {
-                // Less than 1/3 of the content needs encoding, use Q-encode.
-                $encoding = 'Q';
-            } else {
-                if (strlen(string: $string) > $maxLength) {
-                    //No encoding needed, but value exceeds max line length, use Q-encode to prevent corruption.
-                    $encoding = 'Q';
-                } else {
-                    //No reformatting needed
-                    $encoding = false;
-                }
-            }
+            //No reformatting needed
+            $encoding = false;
         }
 
         switch ($encoding) {
@@ -388,16 +384,14 @@ class MailerFunctions
                         $maxLength -= $lookBack - $encodedCharPos;
                     }
                     $foundSplitPos = true;
+                } elseif ($dec >= 192) {
+                    // First byte of a multibyte character
+                    // Reduce maxLength to split at start of character
+                    $maxLength -= $lookBack - $encodedCharPos;
+                    $foundSplitPos = true;
                 } else {
-                    if ($dec >= 192) {
-                        // First byte of a multibyte character
-                        // Reduce maxLength to split at start of character
-                        $maxLength -= $lookBack - $encodedCharPos;
-                        $foundSplitPos = true;
-                    } else {
-                        //Middle byte of a multibyte character, look further back
-                        $lookBack += 3;
-                    }
+                    //Middle byte of a multibyte character, look further back
+                    $lookBack += 3;
                 }
             } else {
                 // No encoded character found

@@ -38,7 +38,7 @@ use Throwable;
 class TemplateEngine
 {
     public const int ERR_MISSING_TEMPLATEVARIABLE = 1;
-
+    protected ?TemplateTag $lastTplTag = null;
     protected ?HtmlDoc $htmlDoc = null;
     protected string $tplNsPrefix;
     protected ArrayObject $dataPool;
@@ -47,7 +47,6 @@ class TemplateEngine
     protected ?TemplateCacheEntry $cached = null;
     protected TemplateCacheStrategy $templateCacheInterface;
     protected string $currentTemplateFile = '';
-    protected ?TemplateTag $lastTplTag = null;
     protected array $getterMethodPrefixes = ['get', 'is', 'has'];
 
     /**
@@ -63,7 +62,6 @@ class TemplateEngine
         $this->templateCacheInterface = $templateCacheInterface;
         $this->tplNsPrefix = $tplNsPrefix;
         $this->customTags = array_merge(TemplateEngine::getDefaultCustomTags(), $customTags);
-
         $this->dataPool = new ArrayObject();
         $this->dataTable = new ArrayObject();
     }
@@ -127,7 +125,7 @@ class TemplateEngine
         }
 
         // PARSE IT NEW: No NodeList given? Okay! I'll load defaults for you
-        return $this->cache($tplFile);
+        return $this->cache(tplFile: $tplFile);
     }
 
     /**
@@ -143,18 +141,14 @@ class TemplateEngine
         if (stream_resolve_include_path($filePath) === false) {
             throw new Exception('Could not find template file: ' . $filePath);
         }
-
         $tplCacheEntry = $this->templateCacheInterface->getCachedTplFile($filePath);
-
         if ($tplCacheEntry === null) {
             return null;
         }
-
         $changeTime = @filemtime($filePath);
         if ($changeTime === false) {
             $changeTime = @filectime($filePath);
         }
-
         if (($tplCacheEntry->getSize() >= 0 && $tplCacheEntry->getSize() !== @filesize(
                     $filePath
                 )) || $tplCacheEntry->getChangeTime() < $changeTime) {
@@ -169,13 +163,10 @@ class TemplateEngine
         if (stream_resolve_include_path($tplFile) === false) {
             throw new Exception('Template file \'' . $tplFile . '\' does not exists');
         }
-
         $currentCacheEntry = $this->templateCacheInterface->getCachedTplFile($tplFile);
-
         // Render tpl
         $content = file_get_contents($tplFile);
         $this->htmlDoc = new HtmlDoc($content, $this->tplNsPrefix);
-
         foreach ($this->customTags as $customTag) {
             if (
                 !in_array(needle: TagNode::class, haystack: class_implements(object_or_class: $customTag))
@@ -199,13 +190,10 @@ class TemplateEngine
     {
         $this->lastTplTag = null;
         $this->htmlDoc->parse();
-
         $nodeList = $this->htmlDoc->getNodeTree()->childNodes;
-
         if (count($nodeList) === 0) {
             throw new Exception('Invalid template-file: ' . $this->currentTemplateFile);
         }
-
         try {
             $this->copyNodes($nodeList);
         } catch (Throwable $e) {

@@ -473,10 +473,8 @@ class PhoneParser
         foreach ($numberAsArray as $character) {
             if (array_key_exists(key: $character, array: $numericCharacters)) {
                 $normalizedDigits .= $numericCharacters[$character];
-            } else {
-                if (is_numeric(value: $character)) {
-                    $normalizedDigits .= $character;
-                }
+            } elseif (is_numeric(value: $character)) {
+                $normalizedDigits .= $character;
             }
         }
 

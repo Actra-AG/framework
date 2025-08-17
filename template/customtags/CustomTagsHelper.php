@@ -89,10 +89,10 @@ class CustomTagsHelper
         }
         $elementNode->addAttribute(
             htmlTagAttribute: new HtmlTagAttribute(
-            name: 'type',
-            value: $isRadio ? 'radio' : 'checkbox',
-            valueIsEncodedForRendering: true
-        )
+                name: 'type',
+                value: $isRadio ? 'radio' : 'checkbox',
+                valueIsEncodedForRendering: true
+            )
         );
     }
 }

@@ -47,10 +47,8 @@ class IfTag extends TemplateTag implements TagNode
         $phpCode = '<?php ';
         if (strlen(string: $againstAttr) === 0) {
             $againstAttr = "''";
-        } else {
-            if (!in_array(needle: strtolower(string: $againstAttr), haystack: ['null', 'true', 'false'])) {
-                $againstAttr = "'" . $againstAttr . "'";
-            }
+        } elseif (!in_array(needle: strtolower(string: $againstAttr), haystack: ['null', 'true', 'false'])) {
+            $againstAttr = "'" . $againstAttr . "'";
         }
         $phpCode .= 'if($this->getDataFromSelector(\'' . $compareAttr . '\') ' . match (strtolower(
                 string: $operatorAttr

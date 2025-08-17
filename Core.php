@@ -86,19 +86,19 @@ class Core
         require_once $frameworkDirectory . 'autoloader' . DIRECTORY_SEPARATOR . 'AutoloaderPathModel.php';
         $autoloader->addPath(
             autoloaderPathModel: new AutoloaderPathModel(
-            name: 'fw-logic',
-            path: $this->documentRoot,
-            mode: AutoloaderPathModel::MODE_NAMESPACE,
-            fileSuffixList: ['.class.php', '.php', '.interface.php'],
-            phpFilePathRemove: $frameworkFilePathRemove
-        )
+                name: 'fw-logic',
+                path: $this->documentRoot,
+                mode: AutoloaderPathModel::MODE_NAMESPACE,
+                fileSuffixList: ['.class.php', '.php', '.interface.php'],
+                phpFilePathRemove: $frameworkFilePathRemove
+            )
         );
         ErrorHandler::register();
         if (!HttpRequest::isSSL()) {
             HttpResponse::redirectAndExit(
                 relativeOrAbsoluteUri: HttpRequest::getURL(
-                protocol: HttpRequest::PROTOCOL_HTTPS
-            )
+                    protocol: HttpRequest::PROTOCOL_HTTPS
+                )
             );
         }
     }

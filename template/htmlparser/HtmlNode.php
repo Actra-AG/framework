@@ -73,6 +73,19 @@ abstract class HtmlNode
         $this->childNodes[$pos] = $replacementNode;
     }
 
+    private function findNodePosition(HtmlNode $findNode): ?int
+    {
+        $countChildren = count($this->childNodes);
+
+        for ($i = 0; $i < $countChildren; $i++) {
+            if ($this->childNodes[$i] === $findNode) {
+                return $i;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Inserts a node before another one
      *
@@ -90,19 +103,6 @@ abstract class HtmlNode
         array_splice($this->childNodes, $pos, 0, $nodesToInsert);
 
         $this->childNodes = array_values($this->childNodes);
-    }
-
-    private function findNodePosition(HtmlNode $findNode): ?int
-    {
-        $countChildren = count($this->childNodes);
-
-        for ($i = 0; $i < $countChildren; $i++) {
-            if ($this->childNodes[$i] === $findNode) {
-                return $i;
-            }
-        }
-
-        return null;
     }
 
     /**
