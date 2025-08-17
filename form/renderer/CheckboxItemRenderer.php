@@ -48,7 +48,7 @@ class CheckboxItemRenderer extends FormRenderer
         $labelTag->addHtmlTagAttribute(
             htmlTagAttribute: new HtmlTagAttribute(
                 name: 'for',
-                value: $this->checkboxOptionsField->id,
+                value: $this->checkboxOptionsField->getId(),
                 valueIsEncodedForRendering: true
             )
         );
@@ -59,9 +59,9 @@ class CheckboxItemRenderer extends FormRenderer
                 valueIsEncodedForRendering: true
             )
         );
-        $labelTag->addText(htmlText: $checkboxOptionsField->label);
+        $labelTag->addText(htmlText: $checkboxOptionsField->getLabel());
         $divFormCheck->addTag(htmlTag: $labelTag);
-        if (!is_null(value: $checkboxOptionsField->fieldInfo)) {
+        if (!is_null(value: $checkboxOptionsField->getFieldInfo())) {
             FormRenderer::addFieldInfoToParentHtmlTag(
                 formFieldWithFieldInfo: $checkboxOptionsField,
                 parentHtmlTag: $divFormCheck
@@ -90,18 +90,18 @@ class CheckboxItemRenderer extends FormRenderer
         $inputTag->addHtmlTagAttribute(
             htmlTagAttribute: new HtmlTagAttribute(
                 name: 'name',
-                value: $this->checkboxOptionsField->name,
+                value: $this->checkboxOptionsField->getName(),
                 valueIsEncodedForRendering: true
             )
         );
         $inputTag->addHtmlTagAttribute(
             htmlTagAttribute: new HtmlTagAttribute(
                 name: 'id',
-                value: $this->checkboxOptionsField->id,
+                value: $this->checkboxOptionsField->getId(),
                 valueIsEncodedForRendering: true
             )
         );
-        $options = $this->checkboxOptionsField->formOptions->data;
+        $options = $this->checkboxOptionsField->getFormOptions()->getData();
         $optionValue = key(array: $options);
         $inputTag->addHtmlTagAttribute(
             htmlTagAttribute: new HtmlTagAttribute(
@@ -132,10 +132,10 @@ class CheckboxItemRenderer extends FormRenderer
                     valueIsEncodedForRendering: true
                 )
             );
-            $ariaDescribedBy[] = $this->checkboxOptionsField->name . '-error';
+            $ariaDescribedBy[] = $this->checkboxOptionsField->getName() . '-error';
         }
-        if (!is_null(value: $this->checkboxOptionsField->fieldInfo)) {
-            $ariaDescribedBy[] = $this->checkboxOptionsField->name . '-info';
+        if (!is_null(value: $this->checkboxOptionsField->getFieldInfo())) {
+            $ariaDescribedBy[] = $this->checkboxOptionsField->getName() . '-info';
         }
         if (count(value: $ariaDescribedBy) > 0) {
             $inputTag->addHtmlTagAttribute(
