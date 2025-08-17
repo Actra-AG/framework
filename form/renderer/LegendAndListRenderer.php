@@ -24,7 +24,7 @@ class LegendAndListRenderer extends FormRenderer
         $optionsField = $this->optionsField;
         $fieldsetTag = LegendAndListRenderer::createFieldsetTag(optionsField: $optionsField);
         $fieldsetTag->addTag(htmlTag: LegendAndListRenderer::createLegendTag(optionsField: $optionsField));
-        $listDescription = $optionsField->listDescription;
+        $listDescription = $optionsField->getListDescription();
         if (!is_null(value: $listDescription)) {
             $fieldsetTag->addText(
                 htmlText: HtmlText::encoded(
@@ -39,7 +39,7 @@ class LegendAndListRenderer extends FormRenderer
             formComponentWithErrors: $optionsField,
             parentHtmlTag: $fieldsetTag
         );
-        if (!is_null(value: $optionsField->fieldInfo)) {
+        if (!is_null(value: $optionsField->getFieldInfo())) {
             FormRenderer::addFieldInfoToParentHtmlTag(
                 formFieldWithFieldInfo: $optionsField,
                 parentHtmlTag: $fieldsetTag
@@ -69,15 +69,15 @@ class LegendAndListRenderer extends FormRenderer
     public static function createLegendTag(OptionsField $optionsField): HtmlTag
     {
         $legendAttributes = [];
-        if (!$optionsField->renderLabel) {
+        if (!$optionsField->isRenderLabel()) {
             $legendAttributes[] = new HtmlTagAttribute(
                 name: 'class',
                 value: 'visuallyhidden',
                 valueIsEncodedForRendering: true
             );
         }
-        $labelText = $optionsField->label;
-        $labelInfoText = $optionsField->labelInfoText;
+        $labelText = $optionsField->getLabel();
+        $labelInfoText = $optionsField->getLabelInfoText();
         if (!is_null(value: $labelInfoText)) {
             // Add a space to separate it from the following labelInfo-Tag
             $labelText = HtmlText::encoded(textContent: ' ' . $labelText->render());
@@ -101,7 +101,7 @@ class LegendAndListRenderer extends FormRenderer
         }
         if (
             $optionsField->isRequired()
-            && $optionsField->renderRequiredAbbr
+            && $optionsField->isRenderRequiredAbbr()
         ) {
             $spanTag = new HtmlTag(
                 name: 'span',

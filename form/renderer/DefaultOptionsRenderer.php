@@ -25,7 +25,7 @@ abstract class DefaultOptionsRenderer extends FormRenderer
     public function prepare(): void
     {
         $optionsField = $this->optionsField;
-        $options = $optionsField->formOptions->data;
+        $options = $optionsField->getFormOptions()->getData();
         if (count(value: $options) === 0) {
             throw new LogicException(message: 'There must be at least one option!');
         }
@@ -57,14 +57,14 @@ abstract class DefaultOptionsRenderer extends FormRenderer
             $inputTag->addHtmlTagAttribute(
                 htmlTagAttribute: new HtmlTagAttribute(
                     name: 'name',
-                    value: ($this->acceptMultipleValues) ? $optionsField->name . '[]' : $optionsField->name,
+                    value: ($this->acceptMultipleValues) ? $optionsField->getName() . '[]' : $optionsField->getName(),
                     valueIsEncodedForRendering: true
                 )
             );
             $inputTag->addHtmlTagAttribute(
                 htmlTagAttribute: new HtmlTagAttribute(
                     name: 'id',
-                    value: $optionsField->id . '_' . $key,
+                    value: $optionsField->getId() . '_' . $key,
                     valueIsEncodedForRendering: true
                 )
             );
@@ -113,7 +113,7 @@ abstract class DefaultOptionsRenderer extends FormRenderer
             $labelTag->addHtmlTagAttribute(
                 htmlTagAttribute: new HtmlTagAttribute(
                     name: 'for',
-                    value: $optionsField->id . '_' . $key,
+                    value: $optionsField->getId() . '_' . $key,
                     valueIsEncodedForRendering: true
                 )
             );
