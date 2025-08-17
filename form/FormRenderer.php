@@ -35,7 +35,7 @@ abstract class FormRenderer
                 ),
                 new HtmlTagAttribute(
                     name: 'id',
-                    value: $formComponentWithErrors->name . '-error',
+                    value: $formComponentWithErrors->getName() . '-error',
                     valueIsEncodedForRendering: true
                 ),
                 new HtmlTagAttribute(
@@ -64,11 +64,11 @@ abstract class FormRenderer
             new HtmlTagAttribute(name: 'class', value: 'form-input-info', valueIsEncodedForRendering: true),
             new HtmlTagAttribute(
                 name: 'id',
-                value: $formFieldWithFieldInfo->name . '-info',
+                value: $formFieldWithFieldInfo->getName() . '-info',
                 valueIsEncodedForRendering: true
             ),
         ]);
-        $divTag->addText(htmlText: $formFieldWithFieldInfo->fieldInfo);
+        $divTag->addText(htmlText: $formFieldWithFieldInfo->getFieldInfo());
         $parentHtmlTag->addTag(htmlTag: $divTag);
     }
 
@@ -83,10 +83,10 @@ abstract class FormRenderer
                     valueIsEncodedForRendering: true
                 )
             );
-            $ariaDescribedBy[] = $formField->name . '-error';
+            $ariaDescribedBy[] = $formField->getName() . '-error';
         }
-        if (!is_null(value: $formField->fieldInfo)) {
-            $ariaDescribedBy[] = $formField->name . '-info';
+        if (!is_null(value: $formField->getFieldInfo())) {
+            $ariaDescribedBy[] = $formField->getName() . '-info';
         }
         if (count(value: $ariaDescribedBy) > 0) {
             $parentHtmlTag->addHtmlTagAttribute(
