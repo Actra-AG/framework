@@ -56,7 +56,7 @@ class DbResultTable extends SmartTable
         );
         $this->setNoDataHtml(noDataHtml: DbResultTable::filter . $this->getNoDataHtml());
         $this->setFullHtml(
-            fullHtml: DbResultTable::filter . '<div class="table-meta table-meta-header">' . SmartTable::totalAmount . DbResultTable::pagination . '</div><div class="table-global-wrap">' . SmartTable::table . '</div><div class="table-meta table-meta-footer">' . DbResultTable::pagination . '</div>'
+            fullHtml: DbResultTable::filter . '<div class="table-meta table-meta-header">' . SmartTable::totalAmount . DbResultTable::pagination . '</div><div class="table-wrap">' . SmartTable::table . '</div><div class="table-meta table-meta-footer">' . DbResultTable::pagination . '</div>'
         );
         $this->tablePaginationRenderer = is_null(value: $tablePaginationRenderer) ? new TablePaginationRenderer(
         ) : $tablePaginationRenderer;

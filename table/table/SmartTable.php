@@ -28,7 +28,7 @@ class SmartTable
     private static array $instances = [];
     public string $noDataHtml = '<p class="no-entry">Es wurden keine Einträge gefunden.</p>';
     public string $totalAmountHtml = '<p class="search-result">' . SmartTable::totalAmountMessagePlaceholder . '</p>';
-    public string $fullHtml = '<div class="table-meta table-meta-header">' . SmartTable::totalAmount . '</div><div class="table-global-wrap">' . SmartTable::table . '</div>';
+    public string $fullHtml = '<div class="table-meta table-meta-header">' . SmartTable::totalAmount . '</div><div class="table-wrap">' . SmartTable::table . '</div>';
     public string $tableHtml = '<thead>' . SmartTable::tableHeader . '</thead><tbody>' . SmartTable::tableBody . '</tbody>';
     public string $oddRowHtml = '<tr>' . SmartTable::cells . '</tr>';
     public string $evenRowHtml = '<tr>' . SmartTable::cells . '</tr>';
@@ -36,7 +36,7 @@ class SmartTable
     public string $totalAmountMessage_numResults = 'Es wurden <strong>' . SmartTable::amount . '</strong> Resultate gefunden.';
     /** @var AbstractTableColumn[] */
     private array $columns = [];
-    private array $cssClasses = [];
+    private array $cssClasses = ['table'];
 
     public function __construct(
         public readonly string $identifier,
