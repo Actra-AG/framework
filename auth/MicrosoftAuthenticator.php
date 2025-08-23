@@ -68,7 +68,10 @@ abstract class MicrosoftAuthenticator extends Authenticator
             return false;
         }
 
-        return $this->authWebTokenLogin(authWebToken: $authWebToken);
+        return $this->authWebTokenLogin(
+            authMethod: AuthMethod::MICROSOFT,
+            authWebToken: $authWebToken
+        );
     }
 
     private function logException(Throwable $throwable, string $ssoNonce, string $inputIdTokenString): void
