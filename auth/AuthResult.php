@@ -23,6 +23,8 @@ enum AuthResult: int
     case SUCCESSFUL_SSO_LOGIN = 10;
     case ERROR_NO_PASSWORD_LOGIN_ACTIVE = 11;
     case FAILED_SSO_LOGIN = 12;
+    case SUCCESSFUL_OTP_LOGIN = 13;
+    case SUCCESSFUL_MICROSOFT_LOGIN = 14;
 
     public function renderErrorMessage(): HtmlText
     {
@@ -61,6 +63,8 @@ enum AuthResult: int
             AuthResult::SUCCESSFUL_SSO_LOGIN => HtmlText::encoded(textContent: 'SSO-Anmeldung'),
             AuthResult::ERROR_NO_PASSWORD_LOGIN_ACTIVE => HtmlText::encoded(textContent: 'Passwort-Anmeldung inaktiv'),
             AuthResult::FAILED_SSO_LOGIN => HtmlText::encoded(textContent: 'SSO fehlgeschlagen'),
+            AuthResult::SUCCESSFUL_OTP_LOGIN => HtmlText::encoded(textContent: 'OTP-Anmeldung'),
+            AuthResult::SUCCESSFUL_MICROSOFT_LOGIN => HtmlText::encoded(textContent: 'Microsoft-Anmeldung'),
         })->render();
     }
 }

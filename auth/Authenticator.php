@@ -26,11 +26,18 @@ abstract class Authenticator
 
     public function passwordLogin(string $userName, string $inputPassword): bool
     {
-        return $this->doLogin(userName: $userName, passwordToCheck: $inputPassword);
+        return $this->doLogin(
+            authMethod: AuthMethod::PASSWORD,
+            userName: $userName,
+            passwordToCheck: $inputPassword
+        );
     }
 
-    protected function doLogin(string $userName, ?string $passwordToCheck): bool
-    {
+    protected function doLogin(
+        AuthMethod $authMethod,
+        string $userName,
+        ?string $passwordToCheck
+    ): bool {
         if ($this->authResult !== AuthResult::UNDEFINED) {
             throw new LogicException(message: 'It is not allowed to execute this method multiple times.');
         }
@@ -91,9 +98,7 @@ abstract class Authenticator
 
             return false;
         }
-        if (is_null(value: $passwordToCheck)) {
-            $this->authResult = AuthResult::SUCCESSFUL_SSO_LOGIN;
-        } else {
+        if (!is_null(value: $passwordToCheck)) {
             if (!$authUser->hasOneOfRights(
                 accessRightCollection: AccessRightCollection::createFromStringArray(
                     input: [AccessRightCollection::ACCESS_DO_PASSWORD_LOGIN]
@@ -124,8 +129,8 @@ abstract class Authenticator
 
                 return false;
             }
-            $this->authResult = AuthResult::SUCCESSFUL_PASSWORD_LOGIN;
         }
+        $this->authResult = $authMethod->getSuccessAuthResult();
         $this->logAuthResult(
             userID: $userID,
             sessionID: $sessionID,
@@ -150,8 +155,14 @@ abstract class Authenticator
 
     abstract protected function checkLoginCredentials(AuthUser $authUser): bool;
 
-    protected function authWebTokenLogin(AuthWebToken $authWebToken): bool
-    {
-        return $this->doLogin(userName: $authWebToken->getUserName(), passwordToCheck: null);
+    protected function authWebTokenLogin(
+        AuthMethod $authMethod,
+        AuthWebToken $authWebToken
+    ): bool {
+        return $this->doLogin(
+            authMethod: $authMethod,
+            userName: $authWebToken->getUserName(),
+            passwordToCheck: null
+        );
     }
 }
