@@ -63,7 +63,7 @@ abstract class AbstractSessionHandler extends SessionHandler
     {
         $sessionSettingsModel = $this->sessionSettingsModel;
         $this->setDefaultConfigurationOptions(
-            gcdivisor: $sessionSettingsModel->gcDivisor,
+            gcDivisor: $sessionSettingsModel->gcDivisor,
             maxLifeTime: $sessionSettingsModel->maxLifeTime,
             gcProbability: $sessionSettingsModel->gcProbability
         );
