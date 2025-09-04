@@ -62,7 +62,11 @@ abstract class AbstractSessionHandler extends SessionHandler
     private function start(): void
     {
         $sessionSettingsModel = $this->sessionSettingsModel;
-        $this->setDefaultConfigurationOptions(maxLifeTime: $sessionSettingsModel->maxLifeTime);
+        $this->setDefaultConfigurationOptions(
+            gcdivisor: $sessionSettingsModel->gcDivisor,
+            maxLifeTime: $sessionSettingsModel->maxLifeTime,
+            gcProbability: $sessionSettingsModel->gcProbability
+        );
         $this->setDefaultSecuritySettings(isSameSiteStrict: $sessionSettingsModel->isSameSiteStrict);
         $this->setSessionName(individualName: $sessionSettingsModel->individualName);
         $this->executePreStartActions();
@@ -96,16 +100,25 @@ abstract class AbstractSessionHandler extends SessionHandler
         $this->setLastAction();
     }
 
-    private function setDefaultConfigurationOptions(?int $maxLifeTime): void
-    {
+    private function setDefaultConfigurationOptions(
+        ?int $gcDivisor,
+        ?int $maxLifeTime,
+        ?int $gcProbability
+    ): void {
+        if (!is_null(value: $gcDivisor)) {
+            ini_set(option: 'session.gc_divisor', value: $gcDivisor);
+        }
         if (!is_null(value: $maxLifeTime)) {
-            @ini_set(option: 'session.gc_maxlifetime', value: $maxLifeTime);
+            ini_set(option: 'session.gc_maxlifetime', value: $maxLifeTime);
+        }
+        if (!is_null(value: $gcProbability)) {
+            ini_set(option: 'session.gc_probability', value: $gcProbability);
         }
     }
 
     private function setDefaultSecuritySettings(bool $isSameSiteStrict): void
     {
-        // Set security related configuration options,
+        // Set security-related configuration options,
         // See https://php.net/manual/en/session.configuration.php
         // -------------------------------------------
         // Send cookies only over HTTPS
@@ -115,7 +128,7 @@ abstract class AbstractSessionHandler extends SessionHandler
         // Prevent session fixation; very recommended
         ini_set(option: 'session.use_strict_mode', value: true);
 
-        // Prevent cross domain information leakage
+        // Prevent cross-domain information leakage
         // See https://www.thinktecture.com/de/identity/samesite/samesite-in-a-nutshell/ for further explanations
         ini_set(option: 'session.cookie_samesite', value: $isSameSiteStrict ? 'Strict' : 'Lax');
     }
@@ -135,7 +148,7 @@ abstract class AbstractSessionHandler extends SessionHandler
             session_name(name: $sessionName);
         }
 
-        // Just generate new session id, if current from cookie contains illegal characters
+        // Just generate a new session id if current from cookie contains illegal characters
         // Inspired from http://stackoverflow.com/questions/32898857/session-start-issues-regarding-illegal-characters-empty-session-id-and-failed
         $sessionName = session_name();
         if (isset($_COOKIE[$sessionName]) && $this->checkSessionIdAgainstSidBitsPerChar(
@@ -150,7 +163,7 @@ abstract class AbstractSessionHandler extends SessionHandler
      * Checks session id against valid characters based on the session.sid_bits_per_character ini setting
      * (http://php.net/manual/en/session.configuration.php#ini.session.sid-bits-per-character)
      *
-     * @param string $sessionId The session id to check (for example cookie or get value)
+     * @param string $sessionId The session id to check (for example, cookie or get value)
      * @param int $sidBitsPerChar The session.sid_bits_per_character value (4, 5 or 6)
      *
      * @return bool Returns true if session_id is valid or false if not
