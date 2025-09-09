@@ -68,12 +68,14 @@ class FileField extends FormField
         $this->alreadyExistsErrorMessage = is_null(value: $alreadyExistsErrorMessage) ? HtmlText::encoded(
             textContent: 'Es wurde bereits eine Datei mit dem Dateinamen "[fileName]" hochgeladen.'
         ) : $alreadyExistsErrorMessage;
-        // To always handle value internally as array we force an empty array on initialization
+        // To always handle value internally as an array, we force an empty array on initialization
         parent::__construct(
             name: $name,
             label: $label,
             value: [],
-            labelInfoText: HtmlText::encoded(textContent: '(max. ' . $this->maxFileUploadCount . ')')
+            labelInfoText: $this->maxFileUploadCount === 1 ? null : HtmlText::encoded(
+                textContent: '(max. ' . $this->maxFileUploadCount . ')'
+            )
         );
         if (!is_null(value: $requiredError)) {
             $this->addRule(formRule: new RequiredRule(defaultErrorMessage: $requiredError));
