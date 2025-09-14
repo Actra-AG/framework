@@ -223,6 +223,6 @@ class DbQuery
             haystack: $column,
             needle: '.'
         ) ? $column : '`' . $column . '`';
-        $this->orderParts[] = '`' . $column . '`' . (!$ascending ? ' ' . TableHelper::SORT_DESC : '');
+        $this->orderParts[] = $column . (!$ascending ? ' ' . TableHelper::SORT_DESC : '');
     }
 }
