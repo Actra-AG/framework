@@ -219,6 +219,6 @@ class DbQuery
 
     public function addOrderPart(string $column, bool $ascending = true): void
     {
-        $this->orderParts[] = $column . (!$ascending ? ' ' . TableHelper::SORT_DESC : '');
+        $this->orderParts[] = '`' . $column . '`' . (!$ascending ? ' ' . TableHelper::SORT_DESC : '');
     }
 }
