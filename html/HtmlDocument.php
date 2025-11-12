@@ -33,17 +33,38 @@ class HtmlDocument
         $environmentSettingsModel = EnvironmentSettingsModel::get();
 
         $replacements = $this->replacements;
-        $replacements->addEncodedText(identifier: 'bodyid', content: 'body_' . $fileTitle);
-        $replacements->addEncodedText(identifier: 'language', content: $request->language->code);
-        $replacements->addEncodedText(identifier: 'charset', content: 'UTF-8');
+        $replacements->addEncodedText(
+            identifier: 'bodyClassName',
+            content: 'body-' . $fileTitle
+        );
+        $replacements->addEncodedText(
+            identifier: 'language',
+            content: $request->language->code
+        );
+        $replacements->addEncodedText(
+            identifier: 'charset',
+            content: 'UTF-8'
+        );
         $replacements->addEncodedText(
             identifier: 'copyright',
             content: $environmentSettingsModel->renderCopyrightYear()
         );
-        $replacements->addEncodedText(identifier: 'robots', content: $environmentSettingsModel->robots);
-        $replacements->addEncodedText(identifier: 'scripts', content: '');
-        $replacements->addEncodedText(identifier: 'cspNonce', content: CspNonce::get());
-        $replacements->addEncodedText(identifier: 'csrfField', content: CsrfToken::renderAsHiddenPostField());
+        $replacements->addEncodedText(
+            identifier: 'robots',
+            content: $environmentSettingsModel->robots
+        );
+        $replacements->addEncodedText(
+            identifier: 'scripts',
+            content: ''
+        );
+        $replacements->addEncodedText(
+            identifier: 'cspNonce',
+            content: CspNonce::get()
+        );
+        $replacements->addEncodedText(
+            identifier: 'csrfField',
+            content: CsrfToken::renderAsHiddenPostField()
+        );
     }
 
     public static function get(): HtmlDocument
