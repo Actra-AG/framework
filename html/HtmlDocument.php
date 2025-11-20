@@ -115,6 +115,12 @@ class HtmlDocument
             ),
             tplNsPrefix: 'tst'
         );
+        if(count(value: $this->activeHtmlIds) === 0) {
+            $this->setActiveHtmlId(
+                key: 1,
+                val: $this->contentFileName
+            );
+        }
         $htmlAfterReplacements = $tplEngine->getResultAsHtml(
             tplFile: $templateFilePath,
             dataPool: $this->replacements->getArrayObject()
