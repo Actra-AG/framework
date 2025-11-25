@@ -27,6 +27,7 @@ use framework\template\customtags\OptionTag;
 use framework\template\customtags\PrintTag;
 use framework\template\customtags\RadioOptionsTag;
 use framework\template\customtags\RadioTag;
+use framework\template\customtags\SnippetTag;
 use framework\template\customtags\TextTag;
 use framework\template\htmlparser\CDataSectionNode;
 use framework\template\htmlparser\ElementNode;
@@ -54,9 +55,10 @@ class TemplateEngine
      */
     public function __construct(
         protected TemplateCacheStrategy $templateCacheInterface,
-        protected string $tplNsPrefix,
-        array $customTags = []
-    ) {
+        protected string                $tplNsPrefix,
+        array                           $customTags = []
+    )
+    {
         $this->customTags = array_merge(TemplateEngine::getDefaultCustomTags(), $customTags);
         $this->dataPool = new ArrayObject();
         $this->dataTable = new ArrayObject();
@@ -81,6 +83,7 @@ class TemplateEngine
             'option' => OptionTag::class,
             'radioOptions' => RadioOptionsTag::class,
             'radio' => RadioTag::class,
+            'snippet' => SnippetTag::class,
             'text' => TextTag::class,
             'print' => PrintTag::class,
             'formAddRemove' => FormAddRemoveTag::class,
@@ -166,7 +169,7 @@ class TemplateEngine
                 continue;
             }
 
-            $this->htmlDoc->addSelfClosingTag($this->tplNsPrefix . ':' . $customTag::getName());
+            $this->htmlDoc->addSelfClosingTag(tagName: $this->tplNsPrefix . ':' . $customTag::getName());
         }
 
         $this->load();
@@ -236,10 +239,9 @@ class TemplateEngine
             if (($tagInstance instanceof TemplateTag) === false) {
                 $this->templateCacheInterface->saveOnDestruct = false;
                 throw new Exception(
-                    'The class "' . $tagClassName . '" does not extend the abstract class "TemplateTag" and is so recognized as an illegal class for a custom tag."'
+                    message: 'The class "' . $tagClassName . '" does not extend the abstract class "TemplateTag" and is so recognized as an illegal class for a custom tag."'
                 );
             }
-
             try {
                 $tagInstance->replaceNode($this, $node);
             } catch (Throwable $e) {

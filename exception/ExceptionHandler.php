@@ -14,6 +14,8 @@ use framework\core\EnvironmentSettingsModel;
 use framework\core\HttpResponse;
 use framework\core\HttpStatusCode;
 use framework\core\Logger;
+use framework\html\HtmlReplacementCollection;
+use framework\html\HtmlSnippet;
 use framework\response\HttpErrorResponseContent;
 use framework\security\CspNonce;
 use framework\security\CsrfToken;
@@ -30,8 +32,7 @@ class ExceptionHandler
         if (!is_null(value: ExceptionHandler::$registeredInstance)) {
             throw new LogicException(message: 'ExceptionHandler is already registered.');
         }
-        ExceptionHandler::$registeredInstance = is_null(value: $individualExceptionHandler) ? new ExceptionHandler(
-        ) : $individualExceptionHandler;
+        ExceptionHandler::$registeredInstance = is_null(value: $individualExceptionHandler) ? new ExceptionHandler() : $individualExceptionHandler;
         set_exception_handler(callback: [
             ExceptionHandler::$registeredInstance,
             'handleException',
@@ -40,8 +41,7 @@ class ExceptionHandler
 
     final public function handleException(Throwable $throwable): void
     {
-        $this->contentType = ContentHandler::isRegistered() ? ContentHandler::get()->getContentType(
-        ) : ContentType::createHtml();
+        $this->contentType = ContentHandler::isRegistered() ? ContentHandler::get()->getContentType() : ContentType::createHtml();
         if (EnvironmentSettingsModel::get()->debug) {
             $this->sendDebugHttpResponseAndExit(throwable: $throwable);
         }
@@ -83,8 +83,7 @@ class ExceptionHandler
         $placeholders['errorFile'] = $realException->getFile();
         $placeholders['errorLine'] = $realException->getLine();
         $placeholders['errorCode'] = $realException->getCode();
-        $placeholders['backtrace'] = (!$this->contentType->isJson()) ? $realException->getTraceAsString(
-        ) : $realException->getTrace();
+        $placeholders['backtrace'] = (!$this->contentType->isJson()) ? $realException->getTraceAsString() : $realException->getTrace();
         $placeholders['vardump_get'] = isset($_GET) ? htmlentities(string: var_export(value: $_GET, return: true)) : '';
         $placeholders['vardump_post'] = isset($_POST) ? htmlentities(
             string: var_export(value: $_POST, return: true)
@@ -110,11 +109,12 @@ class ExceptionHandler
 
     final protected function sendHttpResponseAndExit(
         HttpStatusCode $httpStatusCode,
-        string $errorMessage,
-        string|int $errorCode,
-        string $htmlFileName,
-        array $placeholders
-    ): void {
+        string         $errorMessage,
+        string|int     $errorCode,
+        string         $htmlFileName,
+        array          $placeholders
+    ): void
+    {
         $environmentSettingsModel = EnvironmentSettingsModel::get();
         $placeholders['copyright'] = $environmentSettingsModel->renderCopyrightYear();
         $contentType = $this->contentType;
@@ -156,18 +156,26 @@ class ExceptionHandler
         if (!file_exists(filename: $contentPath)) {
             return 'Missing error html file ' . $contentPath;
         }
-        $placeholders['cspNonce'] = CspNonce::get();
-        $placeholders['csrfField'] = CsrfToken::renderAsHiddenPostField();
-        $srcArr = [];
-        $rplArr = [];
+        $replacements = new HtmlReplacementCollection();
         foreach ($placeholders as $key => $val) {
-            $srcArr[] = '{' . $key . '}';
-            $rplArr[] = $val;
+            $replacements->addEncodedText(
+                identifier: $key,
+                content: $val
+            );
         }
+        $replacements->addEncodedText(
+            identifier: 'cspNonce',
+            content: CspNonce::get()
+        );
+        $replacements->addEncodedText(
+            identifier: 'csrfField',
+            content: CsrfToken::renderAsHiddenPostField()
+        );
 
-        $content = file_get_contents(filename: $contentPath);
-
-        return str_replace(search: $srcArr, replace: $rplArr, subject: $content);
+        return new HtmlSnippet(
+            htmlSnippetFilePath: $contentPath,
+            replacements: $replacements
+        )->render();
     }
 
     protected function sendNotFoundHttpResponseAndExit(Throwable $throwable): void

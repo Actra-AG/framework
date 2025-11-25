@@ -8,6 +8,7 @@
 namespace framework\template\template;
 
 use Exception;
+use framework\template\htmlparser\ElementNode;
 
 abstract class TemplateTag
 {
@@ -21,4 +22,6 @@ abstract class TemplateTag
             );
         }
     }
+
+    abstract public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void;
 }

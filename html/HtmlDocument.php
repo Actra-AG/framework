@@ -111,7 +111,7 @@ class HtmlDocument
         $tplEngine = new TemplateEngine(
             templateCacheInterface: new DirectoryTemplateCache(
                 cachePath: $core->cacheDirectory,
-                templateBaseDirectory: $core->viewDirectory
+                templateBaseDirectory: $core->siteDirectory
             ),
             tplNsPrefix: 'tst'
         );

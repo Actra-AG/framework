@@ -7,8 +7,6 @@
 
 namespace framework\template\template;
 
-use framework\template\htmlparser\ElementNode;
-
 interface TagNode
 {
     public static function getName(): string;
@@ -16,12 +14,4 @@ interface TagNode
     public static function isElseCompatible(): bool;
 
     public static function isSelfClosing(): bool;
-
-    /**
-     * Replaces the custom tag as node
-     *
-     * @param TemplateEngine $tplEngine
-     * @param ElementNode $elementNode
-     */
-    public function replaceNode(TemplateEngine $tplEngine, ElementNode $elementNode): void;
 }
