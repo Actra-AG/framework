@@ -14,6 +14,7 @@ use framework\core\EnvironmentSettingsModel;
 use framework\core\HttpResponse;
 use framework\core\HttpStatusCode;
 use framework\core\Logger;
+use framework\core\RequestHandler;
 use framework\html\HtmlReplacementCollection;
 use framework\html\HtmlSnippet;
 use framework\response\HttpErrorResponseContent;
@@ -143,7 +144,10 @@ class ExceptionHandler
         }
         $httpResponse = HttpResponse::createHtmlResponse(
             httpStatusCode: $httpStatusCode,
-            htmlContent: $this->getHtmlContent(htmlFileName: $htmlFileName, placeholders: $placeholders),
+            htmlContent: $this->getHtmlContent(
+                htmlFileName: $htmlFileName,
+                placeholders: $placeholders
+            ),
             cspPolicySettingsModel: $environmentSettingsModel->cspPolicySettingsModel,
             nonce: CspNonce::get()
         );
@@ -163,6 +167,15 @@ class ExceptionHandler
                 content: $val
             );
         }
+        $request = RequestHandler::get();
+        $replacements->addEncodedText(
+            identifier: 'language',
+            content: $request->language->code
+        );
+        $replacements->addEncodedText(
+            identifier: 'charset',
+            content: 'UTF-8'
+        );
         $replacements->addEncodedText(
             identifier: 'cspNonce',
             content: CspNonce::get()
