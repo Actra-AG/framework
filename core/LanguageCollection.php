@@ -38,4 +38,9 @@ class LanguageCollection
     {
         return current(array: $this->languages);
     }
+
+    public function isMultiLang(): bool
+    {
+        return count(value: $this->languages) > 1;
+    }
 }

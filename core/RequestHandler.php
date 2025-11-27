@@ -109,9 +109,10 @@ class RequestHandler
     }
 
     private function initDefaultRoutes(
-        RouteCollection $allRoutes,
+        RouteCollection          $allRoutes,
         EnvironmentSettingsModel $environmentSettingsModel
-    ): RouteCollection {
+    ): RouteCollection
+    {
         $defaultRoutes = new RouteCollection();
         $usedLanguages = new LanguageCollection();
         foreach ($allRoutes->routes as $route) {
@@ -217,5 +218,15 @@ class RequestHandler
         $pathVars = $this->pathVars;
 
         return array_key_exists(key: $nr, array: $pathVars) ? trim(string: $pathVars[$nr]) : null;
+    }
+
+    public function getLanguageRoot(): string
+    {
+        foreach ($this->defaultRoutesByLanguage->routes as $route) {
+            if ($route->language === $this->language) {
+                return $route->path;
+            }
+        }
+        return '/';
     }
 }

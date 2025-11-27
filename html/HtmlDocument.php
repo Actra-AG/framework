@@ -26,8 +26,8 @@ class HtmlDocument
 
     private function __construct()
     {
-        $request = RequestHandler::get();
-        $fileTitle = $request->fileTitle;
+        $requestHandler = RequestHandler::get();
+        $fileTitle = $requestHandler->fileTitle;
         $this->contentFileName = $fileTitle;
         $this->replacements = new HtmlReplacementCollection();
         $environmentSettingsModel = EnvironmentSettingsModel::get();
@@ -39,7 +39,7 @@ class HtmlDocument
         );
         $replacements->addEncodedText(
             identifier: 'language',
-            content: $request->language->code
+            content: $requestHandler->language->code
         );
         $replacements->addEncodedText(
             identifier: 'charset',
@@ -64,6 +64,10 @@ class HtmlDocument
         $replacements->addEncodedText(
             identifier: 'csrfField',
             content: CsrfToken::renderAsHiddenPostField()
+        );
+        $replacements->addEncodedText(
+            identifier: 'requestedFileName',
+            content: $requestHandler->fileName
         );
     }
 

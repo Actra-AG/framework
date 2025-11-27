@@ -13,6 +13,7 @@ use framework\core\ContentType;
 use framework\core\EnvironmentSettingsModel;
 use framework\core\HttpResponse;
 use framework\core\HttpStatusCode;
+use framework\core\LocaleHandler;
 use framework\core\Logger;
 use framework\core\RequestHandler;
 use framework\html\HtmlReplacementCollection;
@@ -167,10 +168,14 @@ class ExceptionHandler
                 content: $val
             );
         }
-        $request = RequestHandler::get();
+        $requestHandler = RequestHandler::get();
         $replacements->addEncodedText(
             identifier: 'language',
-            content: $request->language->code
+            content: $requestHandler->language->code
+        );
+        $replacements->addEncodedText(
+            identifier: 'langRoot',
+            content: $requestHandler->getLanguageRoot()
         );
         $replacements->addEncodedText(
             identifier: 'charset',
@@ -184,11 +189,53 @@ class ExceptionHandler
             identifier: 'csrfField',
             content: CsrfToken::renderAsHiddenPostField()
         );
+        $replacements->addEncodedText(
+            identifier: 'robots',
+            content: 'noindex,nofollow'
+        );
+        $replacements->addEncodedText(
+            identifier: 'pageTitle',
+            content: array_key_exists(key: 'title', array: $placeholders) ? $placeholders['title'] : 'Error'
+        );
+        $replacements->addEncodedText(
+            identifier: 'bodyClassName',
+            content: 'body-' . pathinfo(path: $htmlFileName)['filename']
+        );
+        $replacements->addEncodedText(
+            identifier: 'requestedFileName',
+            content: $requestHandler->fileName
+        );
+        if (
+            EnvironmentSettingsModel::get()->availableLanguages->isMultiLang()
+            && !LocaleHandler::isRegistered()
+        ) {
+            $this->loadLocalizedText(requestHandler: $requestHandler);
+        }
 
         return new HtmlSnippet(
             htmlSnippetFilePath: $contentPath,
             replacements: $replacements
         )->render();
+    }
+
+    private function loadLocalizedText(
+        RequestHandler $requestHandler
+    ): void
+    {
+        $languageCode = $requestHandler->language->code;
+        LocaleHandler::register();
+        $defaultRouteForLanguage = $requestHandler->defaultRoutesByLanguage->getRouteForLanguage(
+            languageCode: $languageCode
+        );
+        $dir = $defaultRouteForLanguage->viewDirectory . 'language' . DIRECTORY_SEPARATOR . $languageCode . DIRECTORY_SEPARATOR;
+        if (!is_dir(filename: $dir)) {
+            return;
+        }
+        $langGlobal = $dir . 'global.lang.php';
+        $locale = LocaleHandler::get();
+        if (file_exists(filename: $langGlobal)) {
+            $locale->loadLanguageFile(filePath: $langGlobal);
+        }
     }
 
     protected function sendNotFoundHttpResponseAndExit(Throwable $throwable): void
