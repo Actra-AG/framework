@@ -65,8 +65,10 @@ abstract class AbstractCurlRequest
     public function __destruct()
     {
         unset(AbstractCurlRequest::$instances[$this->instanceIndex]);
-        if (count(AbstractCurlRequest::$instances) === 0 && !is_null(AbstractCurlRequest::$curlHandle)) {
-            curl_close(handle: AbstractCurlRequest::$curlHandle);
+        if (
+            count(value: AbstractCurlRequest::$instances) === 0
+            && !is_null(AbstractCurlRequest::$curlHandle)
+        ) {
             AbstractCurlRequest::$curlHandle = null;
         }
     }

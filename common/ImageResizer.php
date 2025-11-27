@@ -171,7 +171,6 @@ class ImageResizer
             src_width: $originalWidth,
             src_height: $originalHeight
         );
-        imagedestroy(image: $originalImage);
 
         $newImage = $destinationDirectory . $newImageName . '.' . $fileExtension;
         switch (strtolower(string: $lowerCaseFileExtension)) {
@@ -188,7 +187,6 @@ class ImageResizer
                 imagepng(image: $thumbnailImage, file: $newImage);
                 break;
         }
-        imagedestroy(image: $thumbnailImage);
 
         return file_exists(filename: $newImage) ? ImageResizerResult::SUCCESS : ImageResizerResult::CREATE_NEW_FAILED;
     }

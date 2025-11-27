@@ -160,10 +160,7 @@ class SMTPMailer extends AbstractMailer
         $endTime = time() + $commandTimeout;
         $selectRead = [$this->stream];
         $selectWrite = null;
-        while (
-            is_resource(value: $this->stream)
-            && !feof(stream: $this->stream)
-        ) {
+        while (!feof(stream: $this->stream)) {
             try {
                 stream_select(
                     read: $selectRead,
