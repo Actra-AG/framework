@@ -9,6 +9,7 @@ namespace framework\db;
 
 use LogicException;
 use PDO;
+use Pdo\Mysql;
 use PDOException;
 use PDOStatement;
 use ReturnTypeWillChange;
@@ -51,13 +52,13 @@ class FrameworkDB extends PDO
             ]
         );
 
-        // For following values, please see http://php.net/manual/de/ref.pdo-mysql.php
+        // For the following values, please see http://php.net/manual/de/ref.pdo-mysql.php
         $attributeOptions = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // All errors should throw an Exception
             PDO::ATTR_EMULATE_PREPARES => false, // Simulated "prepared statements" are NOT wanted
         ];
         if (count($initSetCommands) > 0) {
-            $attributeOptions[PDO::MYSQL_ATTR_INIT_COMMAND] = 'SET ' . implode(
+            $attributeOptions[Mysql::ATTR_INIT_COMMAND] = 'SET ' . implode(
                     separator: ', ',
                     array: $initSetCommands
                 );
