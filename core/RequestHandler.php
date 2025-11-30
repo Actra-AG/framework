@@ -20,7 +20,7 @@ class RequestHandler
     public readonly int $countPathParts;
     public readonly RouteCollection $defaultRoutesByLanguage;
     public readonly Route $route;
-    public readonly Language $language;
+    public Language $language;
     public readonly string $fileTitle;
     public readonly string $fileExtension;
     private(set) string $fileName;
@@ -35,6 +35,7 @@ class RequestHandler
         }
         RequestHandler::$instance = $this;
         $environmentSettingsModel = EnvironmentSettingsModel::get();
+        $this->language = $environmentSettingsModel->availableLanguages->getFirstLanguage();
         $this->checkDomain(allowedDomains: $environmentSettingsModel->allowedDomains);
         $this->pathParts = explode(separator: '/', string: HttpRequest::getPath());
         $this->countPathParts = count(value: $this->pathParts);
@@ -52,9 +53,9 @@ class RequestHandler
         if (!is_null(value: $forceFileName) && $forceFileName !== '') {
             $this->fileName = $forceFileName;
         }
-        $this->language = !is_null(
-            value: $this->route->language
-        ) ? $this->route->language : $environmentSettingsModel->availableLanguages->getFirstLanguage();
+        if (!is_null(value: $this->route->language)) {
+            $this->language = $this->route->language;
+        }
         if (AbstractSessionHandler::enabled()) {
             $sessionHandler = AbstractSessionHandler::getSessionHandler();
             $preferredLanguageCode = $sessionHandler->getPreferredLanguageCode();
@@ -201,7 +202,7 @@ class RequestHandler
                     HttpResponse::redirectAndExit(relativeOrAbsoluteUri: $routeForLanguage->path);
                 }
             }
-            // Redirect to first default route if none is available in accepted languages
+            // Redirect to the first default route if none is available in accepted languages
             HttpResponse::redirectAndExit(relativeOrAbsoluteUri: $defaultRoutesByLanguage->getFirstRoute()->path);
         }
 
