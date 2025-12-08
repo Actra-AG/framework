@@ -28,6 +28,7 @@ class ExceptionHandler
 {
     private static ?ExceptionHandler $registeredInstance = null;
     protected ContentType $contentType;
+    private array $placeholders = [];
 
     public static function register(?ExceptionHandler $individualExceptionHandler): void
     {
@@ -65,35 +66,28 @@ class ExceptionHandler
 
         if ($throwable instanceof NotFoundException) {
             $httpStatusCode = HttpStatusCode::HTTP_NOT_FOUND;
-            $placeholders = [
-                'title' => 'Page not found',
-            ];
+            $this->placeholders['title'] = 'Page not found';
         } elseif ($throwable instanceof UnauthorizedException) {
             $httpStatusCode = HttpStatusCode::HTTP_UNAUTHORIZED;
-            $placeholders = [
-                'title' => 'Unauthorized',
-            ];
+            $this->placeholders['title'] = 'Unauthorized';
         } else {
             $httpStatusCode = HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR;
-            $placeholders = [
-                'title' => 'Internal Server Error',
-            ];
+            $this->placeholders['title'] = 'Internal Server Error';
         }
-
-        $placeholders['errorType'] = get_class(object: $throwable);
-        $placeholders['errorMessage'] = $errorMessage;
-        $placeholders['errorFile'] = $realException->getFile();
-        $placeholders['errorLine'] = $realException->getLine();
-        $placeholders['errorCode'] = $realException->getCode();
-        $placeholders['backtrace'] = (!$this->contentType->isJson()) ? $realException->getTraceAsString() : $realException->getTrace();
-        $placeholders['vardump_get'] = isset($_GET) ? htmlentities(string: var_export(value: $_GET, return: true)) : '';
-        $placeholders['vardump_post'] = isset($_POST) ? htmlentities(
+        $this->placeholders['errorType'] = get_class(object: $throwable);
+        $this->placeholders['errorMessage'] = $errorMessage;
+        $this->placeholders['errorFile'] = $realException->getFile();
+        $this->placeholders['errorLine'] = $realException->getLine();
+        $this->placeholders['errorCode'] = $realException->getCode();
+        $this->placeholders['backtrace'] = (!$this->contentType->isJson()) ? $realException->getTraceAsString() : $realException->getTrace();
+        $this->placeholders['vardump_get'] = isset($_GET) ? htmlentities(string: var_export(value: $_GET, return: true)) : '';
+        $this->placeholders['vardump_post'] = isset($_POST) ? htmlentities(
             string: var_export(value: $_POST, return: true)
         ) : '';
-        $placeholders['vardump_file'] = isset($_FILE) ? htmlentities(
+        $this->placeholders['vardump_file'] = isset($_FILE) ? htmlentities(
             string: var_export(value: $_FILE, return: true)
         ) : '';
-        $placeholders['vardump_sess'] = isset($_SESSION) ? htmlentities(
+        $this->placeholders['vardump_sess'] = isset($_SESSION) ? htmlentities(
             string: var_export(
                 value: $_SESSION,
                 return: true
@@ -104,8 +98,7 @@ class ExceptionHandler
             httpStatusCode: $httpStatusCode,
             errorMessage: $errorMessage,
             errorCode: $errorCode,
-            htmlFileName: 'debug.html',
-            placeholders: $placeholders
+            htmlFileName: 'debug.html'
         );
     }
 
@@ -113,12 +106,11 @@ class ExceptionHandler
         HttpStatusCode $httpStatusCode,
         string         $errorMessage,
         string|int     $errorCode,
-        string         $htmlFileName,
-        array          $placeholders
+        string         $htmlFileName
     ): void
     {
         $environmentSettingsModel = EnvironmentSettingsModel::get();
-        $placeholders['copyright'] = $environmentSettingsModel->renderCopyrightYear();
+        $this->placeholders['copyright'] = $environmentSettingsModel->renderCopyrightYear();
         $contentType = $this->contentType;
         if ($contentType->isJson()) {
             $httpResponse = HttpResponse::createResponseFromString(
@@ -126,7 +118,7 @@ class ExceptionHandler
                 contentString: HttpErrorResponseContent::createJsonResponseContent(
                     errorMessage: $errorMessage,
                     errorCode: $errorCode,
-                    additionalInfo: (object)$placeholders
+                    additionalInfo: (object)$this->placeholders
                 )->content,
                 contentType: $contentType
             );
@@ -146,8 +138,7 @@ class ExceptionHandler
         $httpResponse = HttpResponse::createHtmlResponse(
             httpStatusCode: $httpStatusCode,
             htmlContent: $this->getHtmlContent(
-                htmlFileName: $htmlFileName,
-                placeholders: $placeholders
+                htmlFileName: $htmlFileName
             ),
             cspPolicySettingsModel: $environmentSettingsModel->cspPolicySettingsModel,
             nonce: CspNonce::get()
@@ -155,14 +146,14 @@ class ExceptionHandler
         $httpResponse->sendAndExit();
     }
 
-    private function getHtmlContent(string $htmlFileName, array $placeholders): string
+    private function getHtmlContent(string $htmlFileName): string
     {
         $contentPath = Core::get()->errorDocsDirectory . $htmlFileName;
         if (!file_exists(filename: $contentPath)) {
             return 'Missing error html file ' . $contentPath;
         }
         $replacements = new HtmlReplacementCollection();
-        foreach ($placeholders as $key => $val) {
+        foreach ($this->placeholders as $key => $val) {
             $replacements->addEncodedText(
                 identifier: $key,
                 content: $val
@@ -195,7 +186,10 @@ class ExceptionHandler
         );
         $replacements->addEncodedText(
             identifier: 'pageTitle',
-            content: array_key_exists(key: 'title', array: $placeholders) ? $placeholders['title'] : 'Error'
+            content: array_key_exists(
+                key: 'title',
+                array: $this->placeholders
+            ) ? $this->placeholders['title'] : 'Error'
         );
         $replacements->addEncodedText(
             identifier: 'bodyClassName',
@@ -240,40 +234,39 @@ class ExceptionHandler
 
     protected function sendNotFoundHttpResponseAndExit(Throwable $throwable): void
     {
+        $this->placeholders['title'] = 'Page not found';
         $this->sendHttpResponseAndExit(
             httpStatusCode: HttpStatusCode::HTTP_NOT_FOUND,
             errorMessage: $throwable->getMessage(),
             errorCode: $throwable->getCode(),
-            htmlFileName: 'notFound.html',
-            placeholders: [
-                'title' => 'Page not found',
-            ]
+            htmlFileName: 'notFound.html'
         );
     }
 
     protected function sendUnauthorizedHttpResponseAndExit(Throwable $throwable): void
     {
+        $this->placeholders['title'] = 'Unauthorized';
         $this->sendHttpResponseAndExit(
             httpStatusCode: HttpStatusCode::HTTP_UNAUTHORIZED,
             errorMessage: $throwable->getMessage(),
             errorCode: $throwable->getCode(),
-            htmlFileName: 'unauthorized.html',
-            placeholders: [
-                'title' => 'Unauthorized',
-            ]
+            htmlFileName: 'unauthorized.html'
         );
     }
 
     protected function sendDefaultHttpResponseAndExit(Throwable $throwable): void
     {
+        $this->placeholders['title'] = 'Internal Server Error';
         $this->sendHttpResponseAndExit(
             httpStatusCode: HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR,
             errorMessage: 'Internal Server Error',
             errorCode: $throwable->getCode(),
-            htmlFileName: 'default.html',
-            placeholders: [
-                'title' => 'Internal Server Error',
-            ]
+            htmlFileName: 'default.html'
         );
+    }
+
+    protected function addPlaceholder(string $key, string $value): void
+    {
+        $this->placeholders[$key] = $value;
     }
 }
