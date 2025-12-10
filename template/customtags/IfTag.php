@@ -12,6 +12,7 @@ use framework\template\htmlparser\TextNode;
 use framework\template\template\TagNode;
 use framework\template\template\TemplateEngine;
 use framework\template\template\TemplateTag;
+use LogicException;
 
 class IfTag extends TemplateTag implements TagNode
 {
@@ -43,23 +44,25 @@ class IfTag extends TemplateTag implements TagNode
         $compareAttr = $elementNode->getAttribute(name: 'compare')->value;
         $operatorAttr = $elementNode->getAttribute(name: 'operator')->value;
         $againstAttr = $elementNode->getAttribute(name: 'against')->value;
-
-        $phpCode = '<?php ';
         if (strlen(string: $againstAttr) === 0) {
             $againstAttr = "''";
         } elseif (!in_array(needle: strtolower(string: $againstAttr), haystack: ['null', 'true', 'false'])) {
             $againstAttr = "'" . $againstAttr . "'";
         }
-        $phpCode .= 'if($this->getDataFromSelector(\'' . $compareAttr . '\') ' . match (strtolower(
+        $phpCode = '<?php ';
+        $phpCode .= '$compareValue = $this->getDataFromSelector(\'' . $compareAttr . '\');';
+        $phpCode .= 'if(' . match (strtolower(
                 string: $operatorAttr
             )) {
-                'gt' => '>',
-                'ge' => '>=',
-                'lt' => '<',
-                'le' => '<=',
-                'ne' => '!=',
-                default => '=='
-            } . ' ' . $againstAttr . ') { ?>';
+                'gt' => '$compareValue > ' . $againstAttr,
+                'ge' => '$compareValue >= ' . $againstAttr,
+                'lt' => '$compareValue < ' . $againstAttr,
+                'le' => '$compareValue <= ' . $againstAttr,
+                'ne' => '$compareValue != ' . $againstAttr,
+                'eq' => '$compareValue == ' . $againstAttr,
+                'in' => 'in_array($compareValue, explode(\' \', '.$againstAttr.'))',
+                default => throw new LogicException(message: 'Unknown operator "'.$operatorAttr.'"')
+            } . ') { ?>';
         $phpCode .= $elementNode->getInnerHtml();
         if (!$tplEngine->isFollowedBy(elementNode: $elementNode, tagNames: ['else', 'elseif'])) {
             $phpCode .= '<?php } ?>';
