@@ -95,13 +95,15 @@ class HtmlDocument
         $request = RequestHandler::get();
         $viewDirectory = $request->route->viewDirectory;
         $contentFileDirectory = $viewDirectory . 'html/';
-        if (!is_null(value: $request->fileGroup)) {
-            $contentFileDirectory .= $request->fileGroup . '/';
+        $fileGroup = $request->fileGroup;
+        if (!is_null(value: $fileGroup)) {
+            $contentFileDirectory .= $fileGroup . '/';
         }
-        if ($this->contentFileName === '') {
+        $contentFileName = $this->contentFileName;
+        if ($contentFileName === '') {
             throw new NotFoundException();
         }
-        $fullContentFilePath = $contentFileDirectory . $this->contentFileName . '.html';
+        $fullContentFilePath = $contentFileDirectory . $contentFileName . '.html';
         if (!is_file(filename: $fullContentFilePath)) {
             throw new NotFoundException();
         }
@@ -119,10 +121,10 @@ class HtmlDocument
             ),
             tplNsPrefix: 'tst'
         );
-        if(count(value: $this->activeHtmlIds) === 0) {
+        if (count(value: $this->activeHtmlIds) === 0) {
             $this->setActiveHtmlId(
                 key: 1,
-                val: $this->contentFileName
+                val: is_null(value: $fileGroup) ? $contentFileName : $fileGroup . '-' . $contentFileName
             );
         }
         $htmlAfterReplacements = $tplEngine->getResultAsHtml(
