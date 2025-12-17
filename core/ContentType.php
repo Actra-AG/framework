@@ -22,12 +22,13 @@ class ContentType
     public const string MOV = 'mov';
 
     public function __construct(
-        public readonly string $type,
+        public readonly string   $type,
         public readonly MimeType $mimeType,
-        public readonly bool $forceDownloadByDefault,
-        public readonly ?string $charset,
-        public readonly ?string $languageCode
-    ) {
+        public readonly bool     $forceDownloadByDefault,
+        public readonly ?string  $charset,
+        public readonly ?string  $languageCode
+    )
+    {
     }
 
     public static function createFromFileExtension(string $extension): ContentType
@@ -116,13 +117,16 @@ class ContentType
         return new ContentType(
             type: $type,
             mimeType: MimeType::createByFileExtension(extension: $type),
-            forceDownloadByDefault: !in_array(needle: $type, haystack: [
-                ContentType::CSS => false,
-                ContentType::JPG => false,
-                ContentType::GIF => false,
-                ContentType::PNG => false,
-                ContentType::MOV => false,
-            ]),
+            forceDownloadByDefault: !in_array(
+                needle: $type,
+                haystack: [
+                    ContentType::CSS => false,
+                    ContentType::JPG => false,
+                    ContentType::GIF => false,
+                    ContentType::PNG => false,
+                    ContentType::MOV => false,
+                ]
+            ),
             charset: null,
             languageCode: null
         );

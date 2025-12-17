@@ -18,33 +18,60 @@ class HttpResponse
     private array $headers = [];
 
     private function __construct(
-        string $eTag,
-        int $lastModifiedTimeStamp,
-        private HttpStatusCode $httpStatusCode,
-        ?string $downloadFileName,
-        ContentType $contentType,
+        string                   $eTag,
+        int                      $lastModifiedTimeStamp,
+        private HttpStatusCode   $httpStatusCode,
+        ?string                  $downloadFileName,
+        ContentType              $contentType,
         private readonly ?string $contentString = null,
         private readonly ?string $contentFilePath = null,
-        int $maxAge = 31536000 // one year
+        int                      $maxAge = 31536000 // one year
     )
     {
-        $this->setHeader(key: 'Etag', val: $eTag);
-        $this->setHeader(key: 'Last-Modified', val: gmdate(format: 'r', timestamp: $lastModifiedTimeStamp));
-        $this->setHeader(key: 'Cache-Control', val: 'private, must-revalidate');
+        $this->setHeader(
+            key: 'Etag',
+            val: $eTag
+        );
+        $this->setHeader(
+            key: 'Last-Modified',
+            val: gmdate(format: 'r', timestamp: $lastModifiedTimeStamp)
+        );
+        $this->setHeader(
+            key: 'Cache-Control',
+            val: 'private, must-revalidate'
+        );
         if (!is_null(value: $downloadFileName)) {
-            $this->setHeader(key: 'Content-Description', val: 'File Transfer');
-            $this->setHeader(key: 'Content-Disposition', val: 'attachment; filename="' . $downloadFileName . '"');
+            $this->setHeader(
+                key: 'Content-Description',
+                val: 'File Transfer'
+            );
+            $this->setHeader(
+                key: 'Content-Disposition',
+                val: 'attachment; filename="' . $downloadFileName . '"'
+            );
         }
         if ($this->notModifiedCheck(eTag: $eTag, lastModifiedTimeStamp: $lastModifiedTimeStamp)) {
             $this->httpStatusCode = HttpStatusCode::HTTP_NOT_MODIFIED;
-            $this->setHeader(key: 'Connection', val: 'Close'); // Prevent keep-alive
+            $this->setHeader(
+                key: 'Connection',
+                val: 'Close'
+            ); // Prevent keep-alive
             $this->sendAndExit();
         }
-        $this->setHeader(key: 'Content-Type', val: $contentType->getHttpHeaderString());
+        $this->setHeader(
+            key: 'Content-Type',
+            val: $contentType->getHttpHeaderString()
+        );
         if (!is_null(value: $contentType->languageCode)) {
-            $this->setHeader(key: 'Content-Language', val: $contentType->languageCode);
+            $this->setHeader(
+                key: 'Content-Language',
+                val: $contentType->languageCode
+            );
         }
-        $this->setHeader(key: 'Strict-Transport-Security', val: 'max-age=' . $maxAge);
+        $this->setHeader(
+            key: 'Strict-Transport-Security',
+            val: 'max-age=' . $maxAge
+        );
     }
 
     public function setHeader(string $key, string $val): void
@@ -73,20 +100,39 @@ class HttpResponse
         foreach ($this->headers as $key => $val) {
             header(header: $key . ': ' . $val);
         }
-
         if (!is_null(value: $this->contentString)) {
             echo $this->contentString;
-        } elseif (!is_null(value: $this->contentFilePath)) {
-            readfile(filename: $this->contentFilePath);
+            exit;
         }
-        exit;
+        if (!is_null(value: $this->contentFilePath)) {
+            if (ob_get_level()) {
+                ob_end_clean();
+            }
+            $file = fopen(
+                filename: $this->contentFilePath,
+                mode: 'rb'
+            );
+            if ($file === false) {
+                exit;
+            }
+            while (!feof(stream: $file)) {
+                echo fread(
+                    stream: $file,
+                    length: 8192
+                );
+                flush();
+            }
+            fclose(stream: $file);
+            exit;
+        }
     }
 
     public static function redirectAndExit(
-        string $relativeOrAbsoluteUri,
+        string         $relativeOrAbsoluteUri,
         HttpStatusCode $httpStatusCode = HttpStatusCode::HTTP_SEE_OTHER,
-        bool $setSameSiteCookieTemporaryToLax = false
-    ): void {
+        bool           $setSameSiteCookieTemporaryToLax = false
+    ): void
+    {
         if ($setSameSiteCookieTemporaryToLax) {
             AbstractSessionHandler::getSessionHandler()->changeCookieSameSiteToLax();
         }
@@ -96,11 +142,12 @@ class HttpResponse
     }
 
     public static function createHtmlResponse(
-        HttpStatusCode $httpStatusCode,
-        string $htmlContent,
+        HttpStatusCode          $httpStatusCode,
+        string                  $htmlContent,
         ?CspPolicySettingsModel $cspPolicySettingsModel,
-        ?string $nonce
-    ): HttpResponse {
+        ?string                 $nonce
+    ): HttpResponse
+    {
         $httpResponse = new HttpResponse(
             eTag: md5($htmlContent),
             lastModifiedTimeStamp: time(),
@@ -122,9 +169,10 @@ class HttpResponse
 
     public static function createResponseFromString(
         HttpStatusCode $httpStatusCode,
-        string $contentString,
-        ContentType $contentType
-    ): HttpResponse {
+        string         $contentString,
+        ContentType    $contentType
+    ): HttpResponse
+    {
         if ($contentType->isHtml()) {
             throw new LogicException(message: 'Use HttpResponse::createHtmlResponse() instead');
         }
@@ -141,31 +189,34 @@ class HttpResponse
     }
 
     public static function createResponseFromFilePath(
-        string $absolutePathToFile,
-        ?bool $forceDownload,
+        string  $absolutePathToFile,
+        ?bool   $forceDownload,
         ?string $individualFileName,
-        int $maxAge
-    ): HttpResponse {
+        int     $maxAge
+    ): HttpResponse
+    {
         $realPath = realpath(path: $absolutePathToFile);
 
         if (!is_readable(filename: $realPath)) {
             header(header: HttpStatusCode::HTTP_FORBIDDEN->getStatusHeader());
             exit;
         }
-
-        if ($realPath === false || !is_file(filename: $realPath)) {
+        if (
+            $realPath === false
+            || !is_file(filename: $realPath)
+        ) {
             header(header: HttpStatusCode::HTTP_NOT_FOUND->getStatusHeader());
             exit;
         }
-
         $lastModifiedTimeStamp = filemtime(filename: $realPath);
         $fileName = is_null(value: $individualFileName) ? basename(path: $realPath) : $individualFileName;
 
-        $contentType = ContentType::createFromFileExtension(extension: FileHandler::getExtension(filename: $fileName));
+        $contentType = ContentType::createFromFileExtension(
+            extension: FileHandler::getExtension(filename: $fileName)
+        );
         if (is_null(value: $forceDownload)) {
             $forceDownload = $contentType->forceDownloadByDefault;
         }
-
         $httpResponse = new HttpResponse(
             eTag: md5(string: $lastModifiedTimeStamp . $realPath),
             lastModifiedTimeStamp: $lastModifiedTimeStamp,
@@ -176,8 +227,14 @@ class HttpResponse
             contentFilePath: $realPath,
             maxAge: $maxAge
         );
-        $httpResponse->setHeader(key: 'Content-Length', val: filesize(filename: $realPath));
-        $httpResponse->setHeader(key: 'Expires', val: gmdate(format: 'r', timestamp: time() + $maxAge));
+        $httpResponse->setHeader(
+            key: 'Content-Length',
+            val: filesize(filename: $realPath)
+        );
+        $httpResponse->setHeader(
+            key: 'Expires',
+            val: gmdate(format: 'r', timestamp: time() + $maxAge)
+        );
 
         return $httpResponse;
     }
