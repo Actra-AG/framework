@@ -7,6 +7,7 @@
 
 namespace framework\response;
 
+use ArrayObject;
 use framework\common\JsonUtils;
 use stdClass;
 
@@ -20,24 +21,28 @@ class HttpErrorResponseContent extends HttpResponseContent
     }
 
     public static function createJsonResponseContent(
-        string $errorMessage,
-        null|int|string $errorCode = null,
-        ?stdClass $additionalInfo = null
-    ): HttpResponseContent {
-        return new HttpErrorResponseContent(content: JsonUtils::convertToJsonString([
-            'status' => HttpErrorResponseContent::ERROR_STATUS,
-            'error' => [
-                'message' => $errorMessage,
-                'code' => $errorCode,
-                'additionalInfo' => $additionalInfo,
-            ],
-        ]));
+        string                    $errorMessage,
+        null|int|string           $errorCode = null,
+        null|stdClass|ArrayObject $additionalInfo = null
+    ): HttpResponseContent
+    {
+        return new HttpErrorResponseContent(content: JsonUtils::convertToJsonString(
+            valueToConvert: [
+                'status' => HttpErrorResponseContent::ERROR_STATUS,
+                'error' => [
+                    'message' => $errorMessage,
+                    'code' => $errorCode,
+                    'additionalInfo' => $additionalInfo,
+                ],
+            ]
+        ));
     }
 
     public static function createTextResponseContent(
-        string $errorMessage,
+        string          $errorMessage,
         null|int|string $errorCode = null
-    ): HttpResponseContent {
+    ): HttpResponseContent
+    {
         return new HttpErrorResponseContent(content: 'ERROR: ' . $errorMessage . ' (' . $errorCode . ')');
     }
 }

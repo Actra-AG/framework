@@ -19,6 +19,11 @@ class HtmlReplacementCollection
         return array_key_exists(key: $identifier, array: $this->replacements);
     }
 
+    public function get(string $identifier): ?HtmlReplacement
+    {
+        return $this->has(identifier: $identifier) ? $this->replacements[$identifier] : null;
+    }
+
     public function addEncodedText(string $identifier, ?string $content): void
     {
         $this->addHtmlText(
@@ -80,9 +85,10 @@ class HtmlReplacementCollection
     }
 
     public function addHtmlDataObjectCollection(
-        string $identifier,
+        string                    $identifier,
         ?HtmlDataObjectCollection $htmlDataObjectCollection
-    ): void {
+    ): void
+    {
         $this->set(
             identifier: $identifier,
             htmlReplacement: HtmlReplacement::htmlDataObjectCollection(
