@@ -28,6 +28,7 @@ class DbResultTable extends SmartTable
     protected const string sessionDataType = 'table';
     protected const string filter = '[filter]';
     protected const string pagination = '[pagination]';
+    protected const string TABLE_FOOTER = '[footer]';
     private(set) array $additionalLinkParameters = [];
     private ?int $totalAmount = null;
     private bool $filledDataBySelectQuery = false;
@@ -36,16 +37,17 @@ class DbResultTable extends SmartTable
     private ?int $filledAmount = null;
 
     public function __construct(
-        string $identifier, // Can be the name of the main table but must be unique per site
-        public readonly FrameworkDB $db,
-        public readonly DbQuery $dbQuery,
+        string                        $identifier, // Can be the name of the main table but must be unique per site
+        public readonly FrameworkDB   $db,
+        public readonly DbQuery       $dbQuery,
         private readonly ?TableFilter $tableFilter = null,
-        ?TablePaginationRenderer $tablePaginationRenderer = null,
-        ?SortableTableHeadRenderer $sortableTableHeadRenderer = null,
-        private readonly int $itemsPerPage = 25,
+        ?TablePaginationRenderer      $tablePaginationRenderer = null,
+        ?SortableTableHeadRenderer    $sortableTableHeadRenderer = null,
+        private readonly int          $itemsPerPage = 25,
         // Max rows in the table before pagination starts, if a result is not limited to one page
-        public bool $limitToOnePage = false
-    ) {
+        public bool                   $limitToOnePage = false
+    )
+    {
         if (is_null(value: $sortableTableHeadRenderer)) {
             $sortableTableHeadRenderer = new SortableTableHeadRenderer();
         }
@@ -55,9 +57,8 @@ class DbResultTable extends SmartTable
             tableItemCollection: new TableItemCollection()
         );
         $this->noDataHtml = DbResultTable::filter . $this->noDataHtml;
-        $this->fullHtml = DbResultTable::filter . '<div class="table-meta table-meta-header">' . SmartTable::totalAmount . DbResultTable::pagination . '</div><div class="table-wrap">' . SmartTable::table . '</div><div class="table-meta table-meta-footer">' . DbResultTable::pagination . '</div>';
-        $this->tablePaginationRenderer = is_null(value: $tablePaginationRenderer) ? new TablePaginationRenderer(
-        ) : $tablePaginationRenderer;
+        $this->fullHtml = DbResultTable::filter . '<div class="table-meta table-meta-header">' . SmartTable::totalAmount . DbResultTable::pagination . '</div><div class="table-wrap">' . SmartTable::table . '</div>' . DbResultTable::TABLE_FOOTER;
+        $this->tablePaginationRenderer = is_null(value: $tablePaginationRenderer) ? new TablePaginationRenderer() : $tablePaginationRenderer;
     }
 
     public function addColumn(AbstractTableColumn $abstractTableColumn, bool $isDefaultSortColumn = false): void
@@ -72,19 +73,20 @@ class DbResultTable extends SmartTable
     public function render(): string
     {
         $this->fillBySelectQuery();
-
-        $html = parent::render();
+        $pagination = $this->tablePaginationRenderer->render(
+            dbResultTable: $this,
+            entriesPerPage: $this->itemsPerPage
+        );
+        $placeholders = [
+            DbResultTable::filter => is_null(value: $this->tableFilter) ? '' : $this->tableFilter->render(),
+            DbResultTable::pagination => $pagination,
+            DbResultTable::TABLE_FOOTER => ($pagination === '') ? '' : '<div class="table-meta table-meta-footer">' . $pagination . '</div>'
+        ];
 
         return str_replace(
-            search: [
-                DbResultTable::filter,
-                DbResultTable::pagination,
-            ],
-            replace: [
-                is_null($this->tableFilter) ? '' : $this->tableFilter->render(),
-                $this->tablePaginationRenderer->render(dbResultTable: $this, entriesPerPage: $this->itemsPerPage),
-            ],
-            subject: $html
+            search: array_keys(array: $placeholders),
+            replace: array_values(array: $placeholders),
+            subject: parent::render()
         );
     }
 
@@ -283,8 +285,7 @@ class DbResultTable extends SmartTable
 
         $this->fillBySelectQuery();
 
-        if (($this->getCurrentPaginationPage(
-                ) === 1 && $this->filledAmount < $this->itemsPerPage) || $this->limitToOnePage) {
+        if (($this->getCurrentPaginationPage() === 1 && $this->filledAmount < $this->itemsPerPage) || $this->limitToOnePage) {
             return $this->totalAmount = $this->filledAmount;
         }
 
