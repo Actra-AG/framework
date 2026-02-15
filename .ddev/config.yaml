@@ -1,7 +1,7 @@
 name: bsv-buelach.ch
 type: php
 docroot: current
-php_version: "8.2"
+php_version: "8.5"
 webserver_type: apache-fpm
 xdebug_enabled: false
 additional_hostnames: []
