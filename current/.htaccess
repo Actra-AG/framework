@@ -1,182 +1,74 @@
-# author Christof Moser <christof.moser@actra.ch>
-# copyright Actra AG, Rümlang, Switzerland
-
-# ----------------------------------------------------------------------
-# Use modRewrite if active
-# ----------------------------------------------------------------------
+# author Christof Moser <contact@actra.ch>
+# copyright Actra AG, Embrach, Switzerland, www.actra.ch
 
 <IfModule mod_rewrite.c>
-	# Activate rewrite engine
-	RewriteEngine On
+  RewriteEngine On
+  RewriteBase /
 
-	# Set rewrite base
-	RewriteBase /
+  # Whitelist specific files.
+  RewriteRule ^(favicon\.ico|robots\.txt)$ - [L]
+  RewriteRule ^\.well-known/.*$ - [L]
 
-	# Deny direct access to blacklisted directories and files
-	RewriteRule ^framework/(.*) index.php [NC,L] # framework files
-	RewriteRule ^site/(.*) index.php [NC,L] # site files
-	RewriteRule ^src/(.*) index.php [NC,L] # src files
-	RewriteRule ^vendor/(.*) index.php [NC,L] # vendor files
-	RewriteRule ^\..+ - [NC,F,L] # hidden files
+  # Deny direct access to sensitive files and directories.
+  RewriteRule ^(framework|site|src|vendor)/.*|^\..+ - [NC,F,L]
 
-	# Whitelist specific root files
-	RewriteRule ^favicon\.ico$ - [L]
-	RewriteRule ^robots\.txt$ - [L]
-
-    # Send all requests for files in root directory to index.php
-    RewriteCond %{REQUEST_FILENAME} -f
-    RewriteRule ^[^/]+$ index.php [NC,L]
-
-	# Deliver directories and files if they exist
-	RewriteCond %{REQUEST_FILENAME} -f [OR]
-	RewriteCond %{REQUEST_FILENAME} -d
-	RewriteRule ^(.+) - [PT,L]
-
-	# Handle other requests by /index.php
-	RewriteRule ^(.*) index.php
+  # Redirect all not existing requests to index.php.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ index.php [L]
 </IfModule>
 
-# ----------------------------------------------------------------------
-# Better website experience for IE users
-# ----------------------------------------------------------------------
-
-# Force the latest IE version, in various cases when it may fall back to IE7 mode
-# github.com/rails/rails/commit/123eb25#commitcomment-118920
-# Use ChromeFrame if it's installed for a better experience for the poor IE folk
-
-<IfModule mod_headers.c>
-  Header set X-UA-Compatible "IE=Edge,chrome=1"
-  # mod_headers can't match by content-type, but we don't want to send this header on *everything*...
-  <FilesMatch "\.(js|css|gif|png|jpe?g|pdf|xml|oga|ogg|m4a|ogv|mp4|m4v|webm|svg|svgz|eot|ttf|otf|woff|ico|webp|appcache|manifest|htc|crx|oex|xpi|safariextz|vcf)$" >
-    Header unset X-UA-Compatible
-  </FilesMatch>
-</IfModule>
-
-# ----------------------------------------------------------------------
-# Gzip compression
-# ----------------------------------------------------------------------
-
+# Compress text, code, and SVG files using DEFLATE to reduce loading times.
 <IfModule mod_deflate.c>
-	# Force deflate for mangled headers developer.yahoo.com/blogs/ydn/posts/2010/12/pushing-beyond-gzipping/
-	<IfModule mod_setenvif.c>
-		<IfModule mod_headers.c>
-			SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
-			RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
-		</IfModule>
-	</IfModule>
-
-	# Compress all output labeled with one of the following MIME-types
-	<IfModule mod_filter.c>
-		AddOutputFilterByType DEFLATE application/atom+xml \
-			application/javascript \
-			application/json \
-			application/rss+xml \
-			application/vnd.ms-fontobject \
-			application/x-font-ttf \
-			application/xhtml+xml \
-			application/xml \
-			application/x-javascript \
-			font/opentype \
-			image/svg+xml \
-			image/x-icon \
-			text/css \
-			text/html \
-			text/plain \
-			text/x-component \
-			text/xml \
-            text/javascript
-	</IfModule>
+  <IfModule mod_filter.c>
+    AddOutputFilterByType DEFLATE       application/atom+xml       application/javascript       application/json       application/rss+xml       application/xml       application/xhtml+xml       image/svg+xml       text/css       text/html       text/plain       text/xml
+    </IfModule>
 </IfModule>
 
-# ----------------------------------------------------------------------
-# Prevent 404 errors for non-existing redirected folders
-# ----------------------------------------------------------------------
-
-# without -MultiViews, Apache will give a 404 for a rewrite if a folder of the
-# same name does not exist.
-# webmasterworld.com/apache/3808792.htm
+# Disable MultiViews to prevent conflicts with the central PHP routing logic.
 Options -MultiViews
 
-# ----------------------------------------------------------------------
-# UTF-8 encoding
-# ----------------------------------------------------------------------
-
-# Use UTF-8 encoding for anything served text/plain or text/html
+# Set UTF-8 as the default character set for all text-based content.
 AddDefaultCharset utf-8
 
-# Force UTF-8 for a number of file formats
-AddCharset utf-8 .atom .css .js .json .rss .vtt .xml
+# Force UTF-8 for a number of file formats.
+AddCharset utf-8 .atom .css .js .json .rss .vtt .xml .html .htm .txt .map .md .webmanifest .svg .svgz .woff .woff2 .ttf .otf
 
-# ----------------------------------------------------------------------
-# Prevent 406 error on file upload
-# ----------------------------------------------------------------------
-
-# Disable post buffering for multipart forms
-# https://shopplugin.net/kb/file-uploads-generate-http-error-406/
+# Disable post buffering for multipart forms to avoid HTTP 406 errors.
 <IfModule mod_security.c>
-	SetEnvIfNoCase Content-Type "^multipart/form-data;" "MODSEC_NOPOSTBUFFERING=Do not buffer file uploads"
+  SetEnvIfNoCase Content-Type "^multipart/form-data;" "MODSEC_NOPOSTBUFFERING=Do not buffer file uploads"
 </IfModule>
 
-# ----------------------------------------------------------------------
-# Don't let users browse your file system
-# ----------------------------------------------------------------------
-
-# "-Indexes" will have Apache block users from browsing folders without a
-# default document Usually you should leave this activated, because you
-# shouldn't allow everybody to surf through every folder on your server (which
-# includes rather private places like CMS system folders).
+# Disable directory browsing (directory listings).
 <IfModule mod_autoindex.c>
-	Options -Indexes
+  Options -Indexes
 </IfModule>
 
-# ----------------------------------------------------------------------
-# Block access to backup and source files
-# ----------------------------------------------------------------------
-
-# Block access to backup and source files. These files may be left by some
-# text/html editors and pose a great security danger, when anyone can access
-# them.
+# Deny all HTTP access to sensitive files.
 <FilesMatch "(\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)|~)$">
-	Order allow,deny
-	Deny from all
-	Satisfy All
+  Order allow,deny
+  Deny from all
+  Satisfy All
 </FilesMatch>
 
-# ----------------------------------------------------------------------
-# Increase cookie security
-# ----------------------------------------------------------------------
-
-<IfModule php5_module>
-	php_value session.cookie_httponly true
-</IfModule>
-
-# ----------------------------------------------------------------------
-# Security headers
-# ----------------------------------------------------------------------
-
-# Disable server signature
-# https://www.unixmen.com/how-to-disable-server-signature-using-htaccess-or-by-editing-apache/
+# Disable the Apache server signature.
 ServerSignature Off
 
+# Add security headers.
 <IfModule mod_headers.c>
-    Header always set X-XSS-Protection "1; mode=block"
-	Header always set Referrer-Policy "same-origin"
-    Header always set X-Content-Type-Options "nosniff"
-    Header always set X-Frame-Options "deny"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Referrer-Policy "same-origin"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "deny"
 </IfModule>
 
-# ----------------------------------------------------------------------
-# E-Tags / Expire date for content delivered directly by the webserver
-# ----------------------------------------------------------------------
-
+# Set aggressive caching for static assets.
 <IfModule mod_expires.c>
-	<FilesMatch "\.(jpg|gif|png|css|js|ico)$">
-		#Header unset Last-Modified
-		Header unset ETag
-		FileETag None
-
-		ExpiresActive on
-		ExpiresDefault "access plus 1 year"
-		Header set Cache-Control "public, max-age=31536000"
-	</FilesMatch>
+  <FilesMatch "\.(jpg|jpeg|gif|png|css|js|ico|woff|woff2|ttf|eot|svg|webp)$">
+    Header unset ETag
+    FileETag None
+    ExpiresActive on
+    ExpiresDefault "access plus 1 year"
+    Header set Cache-Control "public, max-age=31536000"
+  </FilesMatch>
 </IfModule>

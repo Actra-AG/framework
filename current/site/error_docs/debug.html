@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="{tst:text value='language'}">
+<head>
+	<meta charset="{tst:text value='charset'}">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<title>{tst:text value='title'} | {tst:snippet name='siteName.txt'}</title>
+	<meta name="author" content="Actra AG Webagentur">
+	<meta name="robots" content="noindex,nofollow">
+</head>
+<body class="{tst:text value='bodyClassName'}">
+<main>
+	<div class="debug">
+		<h2>{tst:text value='title'}</h2>
+		<h3>Information</h3>
+		<div class="debug-details">
+			<dl>
+				<dt>Type</dt>
+				<dd>{tst:text value='title'}</dd>
+			</dl>
+			<dl>
+				<dt>Message</dt>
+				<dd>{tst:text value='errorMessage'}</dd>
+			</dl>
+			<dl>
+				<dt>File</dt>
+				<dd>{tst:text value='errorFile'}</dd>
+			</dl>
+			<dl>
+				<dt>Line</dt>
+				<dd>{tst:text value='errorLine'}</dd>
+			</dl>
+			<dl>
+				<dt>Error</dt>
+				<dd>{tst:text value='errorCode'}</dd>
+			</dl>
+		</div>
+		<div class="debug-stacktrace">
+			<h3>Stack trace</h3>
+			<pre>{tst:text value='backtrace'}</pre>
+		</div>
+	</div>
+</main>
+</body>
+</html>

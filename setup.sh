@@ -7,4 +7,4 @@ ddev restart
 ddev import-db --file=local/schema.sql
 ddev import-db --file=local/data.sql --no-drop
 mkdir current/files
-cp local/EnvSettings.php current/settings/EnvSettings.php
+cp local/LocalEnvSettings.php.src current/site/settings/EnvSettings.php

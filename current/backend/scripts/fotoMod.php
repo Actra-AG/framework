@@ -128,7 +128,7 @@ class fotoMod extends pageClass
 			if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/galerie/tnfoto' . $tempID . '.' . $datenArr['typ'])) {
 				$imgArr = getimagesize($_SERVER['DOCUMENT_ROOT'] . '/galerie/tnfoto' . $tempID . '.' . $datenArr['typ']);
 				$src = "/galerie/tnfoto{$tempID}.{$datenArr['typ']}?time=" . time();
-				$foto = "<dl><dt>Aktuelles Foto</dt><dd><img src=\"{$src}\" {$imgArr[3]} alt=\"\" /> <!--<input type=\"submit\" class=\"submit\" name=\"fotoDel\" value=\"l&ouml;schen\" />--></dd>\n</dl>";
+				$foto = "<dl><dt>Aktuelles Foto</dt><dd><img src=\"{$src}\" {$imgArr[3]} alt=\"\" /> <!--<input type=\"submit\" class=\"submit\" name=\"fotoDel\" value=\"löschen\" />--></dd>\n</dl>";
 				$fototitel = 'Neues Foto';
 				$fotozusatz = " Lassen Sie dieses Feld leer, wenn Sie das bestehende Foto behalten möchten.";
 			}

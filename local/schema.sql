@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db:3306
--- Erstellungszeit: 18. Jan 2026 um 19:24
--- Server-Version: 10.11.14-MariaDB-ubu2204-log
+-- Erstellungszeit: 15. Feb 2026 um 19:41
+-- Server-Version: 10.11.15-MariaDB-ubu2204-log
 -- PHP-Version: 8.3.26
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -27,7 +27,7 @@ CREATE TABLE `alben` (
                          `titel` varchar(120) NOT NULL,
                          `typ` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
                          `pos` float(9,1) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -40,10 +40,10 @@ CREATE TABLE `benutzer` (
                             `vereinID` mediumint(8) UNSIGNED NOT NULL,
                             `registered_by` mediumint(8) UNSIGNED NOT NULL,
                             `registered` timestamp NOT NULL DEFAULT current_timestamp(),
-                            `lastlogin` datetime NOT NULL,
-                            `confirmed` datetime NOT NULL,
-                            `accepted` datetime NOT NULL,
-                            `denied` datetime NOT NULL,
+                            `lastlogin` datetime DEFAULT NULL,
+                            `confirmed` datetime DEFAULT NULL,
+                            `accepted` datetime DEFAULT NULL,
+                            `denied` datetime DEFAULT NULL,
                             `email` varchar(120) NOT NULL,
                             `passwort` char(32) NOT NULL,
                             `aktiv` tinyint(3) UNSIGNED NOT NULL DEFAULT 1,
@@ -55,8 +55,8 @@ CREATE TABLE `benutzer` (
                             `plz` varchar(20) NOT NULL DEFAULT '0',
                             `ort` varchar(60) NOT NULL,
                             `telefon` varchar(60) NOT NULL,
-                            `kommentar` mediumtext NOT NULL,
-                            `bemerkungen` mediumtext NOT NULL,
+                            `kommentar` longtext NOT NULL,
+                            `bemerkungen` longtext NOT NULL,
                             `geburtsdatum` date NOT NULL,
                             `ehren` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
                             `vorstand` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
@@ -66,7 +66,7 @@ CREATE TABLE `benutzer` (
                             `wronglogin` tinyint(3) UNSIGNED NOT NULL,
                             `visits` mediumint(8) UNSIGNED NOT NULL,
                             `ip` varchar(80) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -77,7 +77,7 @@ CREATE TABLE `benutzer` (
 CREATE TABLE `benutzervereine` (
                                    `benutzerID` mediumint(8) UNSIGNED NOT NULL,
                                    `vereinID` mediumint(8) UNSIGNED NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -90,7 +90,7 @@ CREATE TABLE `dateiformate` (
                                 `mimetype` varchar(120) NOT NULL,
                                 `extension` varchar(10) NOT NULL,
                                 `arten` set('foto','dokumente') NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -106,7 +106,7 @@ CREATE TABLE `dokumente` (
                              `dateiname` varchar(180) NOT NULL,
                              `type` varchar(120) NOT NULL,
                              `views` mediumint(8) UNSIGNED NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -118,11 +118,11 @@ CREATE TABLE `fotos` (
                          `ID` mediumint(8) UNSIGNED NOT NULL,
                          `albumID` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
                          `registered` datetime NOT NULL,
-                         `text` mediumtext NOT NULL,
+                         `text` longtext NOT NULL,
                          `pos` float(9,1) NOT NULL,
                          `typ` char(3) NOT NULL,
                          `timestamp` int(10) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -134,8 +134,8 @@ CREATE TABLE `jahresprogramm` (
                                   `ID` mediumint(8) UNSIGNED NOT NULL,
                                   `registered` timestamp NOT NULL DEFAULT current_timestamp(),
                                   `lastmod` datetime NOT NULL,
-                                  `confirmed` datetime NOT NULL,
-                                  `denied` datetime NOT NULL,
+                                  `confirmed` datetime DEFAULT NULL,
+                                  `denied` datetime DEFAULT NULL,
                                   `registered_by` mediumint(8) UNSIGNED NOT NULL,
                                   `vereinID` mediumint(8) UNSIGNED NOT NULL,
                                   `datumVon` date NOT NULL DEFAULT '0000-00-00',
@@ -143,7 +143,7 @@ CREATE TABLE `jahresprogramm` (
                                   `zeit` varchar(80) NOT NULL,
                                   `titel` varchar(120) NOT NULL DEFAULT '',
                                   `ort` varchar(120) NOT NULL,
-                                  `bemerkungen` mediumtext NOT NULL,
+                                  `bemerkungen` longtext NOT NULL,
                                   `gm300` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
                                   `gm50` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
                                   `gm25` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
@@ -165,7 +165,7 @@ CREATE TABLE `jahresprogramm` (
                                   `export` tinyint(3) UNSIGNED NOT NULL,
                                   `zeitVon` time NOT NULL,
                                   `zeitBis` time NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -178,11 +178,11 @@ CREATE TABLE `news` (
                         `registered_by` mediumint(8) UNSIGNED NOT NULL,
                         `datum` date NOT NULL DEFAULT '0000-00-00',
                         `titel` varchar(120) NOT NULL,
-                        `teaser` mediumtext NOT NULL,
-                        `text` mediumtext NOT NULL,
+                        `teaser` longtext NOT NULL,
+                        `text` longtext NOT NULL,
                         `archiv` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
                         `typ` tinyint(3) UNSIGNED NOT NULL DEFAULT 1
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -196,7 +196,7 @@ CREATE TABLE `resultate` (
                              `schuetzeID` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
                              `gruppenID` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
                              `punkte` mediumint(8) UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -210,9 +210,9 @@ CREATE TABLE `seiteninhalte` (
                                  `datum` timestamp NOT NULL DEFAULT current_timestamp(),
                                  `ort` enum('frontend','backend') NOT NULL,
                                  `seite` varchar(200) NOT NULL,
-                                 `inhalt` mediumtext NOT NULL,
-                                 `config` mediumtext NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+                                 `inhalt` longtext NOT NULL,
+                                 `config` longtext NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -224,7 +224,7 @@ CREATE TABLE `vereine` (
                            `ID` mediumint(8) UNSIGNED NOT NULL,
                            `registered_by` mediumint(8) UNSIGNED NOT NULL,
                            `name` varchar(120) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -237,7 +237,7 @@ CREATE TABLE `visits` (
                           `datum` timestamp NOT NULL DEFAULT current_timestamp(),
                           `sessionID` varchar(80) NOT NULL,
                           `ip` varchar(80) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indizes der exportierten Tabellen

@@ -36,7 +36,7 @@ class foto extends pageClass
 
 		if ($res['lastID'] != '') {
 			$href = "foto-{$albumID}-{$res['lastID']}.html";
-			$navi .= "<li><a href=\"{$href}\">&laquo; zur&uuml;ck</a></li>\n";
+			$navi .= "<li><a href=\"{$href}\">&laquo; zurück</a></li>\n";
 		}
 		if ($res['nextID'] != '') {
 			$href = "foto-{$albumID}-{$res['nextID']}.html";

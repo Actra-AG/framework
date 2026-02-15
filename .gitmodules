@@ -1,0 +1,3 @@
+[submodule "current/framework"]
+	path = current/framework
+	url = git@github.com:Actra-AG/framework.git

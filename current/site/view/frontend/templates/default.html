@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
+<head>
+    <title>{tst:text value='pageTitle'} | Bezirksschützenverband Bülach</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="author" content="Actra AG Webagentur"/>
+    <meta name="robots" content="index,follow"/>
+    <link rel="stylesheet" type="text/css" media="screen, projection" href="/styles/styles.css"/>
+    <!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" media="screen, projection" href="/styles/ie.css"><![endif]-->
+    <link rel="stylesheet" type="text/css" media="print" href="/styles/print.css"/>
+    <style nonce="{tst:text value='cspNonce'}">
+        #header {
+            background-image: url({tst:text value='randomHeaderImage'});
+        }
+    </style>
+</head>
+<body class="{tst:text value='bodyClassName'}">
+<p class="access"><a href="#content">direkt zum Inhalt</a></p>
+<div id="wrapper">
+    <div id="header">
+        <div id="logo"><h1><a href="start.html" title="zur Startseite">Bezirksschützenverband Bülach</a></h1></div>
+    </div>
+    <div id="outercontainer">
+        <div id="content">
+            <tst:loadSubTpl tplfile="{this}" />
+        </div>
+        <div id="sidebar">
+            <h2>Hauptnavigation</h2>
+            <ul>
+                <tst:for value="navigation" var="item">
+                    <li id="nav-{tst:text value='item.id'}"><a href="{tst:text value='item.href'}">{tst:text value='item.label'}</a>
+                        <tst:if compare="item.subNavigation" operator="NE" against="null">
+                            <ul>
+                                <tst:for value="item.subNavigation" var="subItem">
+                                    <li id="nav-{tst:text value='subItem.id'}"><a href="{tst:text value='subItem.href'}">{tst:text value='subItem.label'}</a>
+                                </tst:for>
+                            </ul>
+                        </tst:if>
+                    </li>
+                </tst:for>
+            </ul>
+            <div class="aside-logo">
+                <!--<a href="GMFINALZHSV.html"><img src="/images/banner-zhsv.jpg" title="ZHSV" alt="ZHSV" /></a>-->
+                <!-- <a href="http://www.rogenmoserag.ch" title="www.rogenmoserag.ch"><img src="/images/logo--rogenmoser.gif" width="228" height="162" alt=""/></a>-->
+            </div>
+        </div>
+        <div id="footer">
+            <div id="footnote"><p>Copyright &copy; {tst:text value='copyright'} <a href="/" title="www.bsv-buelach.ch">Bezirksschützenverband Bülach</a>
+                | <a href="impressum.html">Impressum</a> | <a href="sitemap.html">Sitemap</a></p>
+                <p>Webdesign &amp; Hosting bei <a href="http://www.actra.ch" title="www.actra.ch">Actra AG</a></p></div>
+        </div>
+        <p id="print"><a href="javascript:window.print()">Seite ausdrucken</a></p>
+    </div>
+    <div id="zusatznavi">
+        <h2>Zusatznavigation</h2>
+        <ul>
+            <li id="nav_reglemente"><a href="reglemente.html">Reglemente</a></li>
+            <li id="nav_kontakt"><a href="kontakt.html">Kontakt</a></li>
+            <li id="nav_sekretariat"><a href="sekretariat.html">Sekretariat</a></li>
+            <li id="nav_administratives"><a href="administratives.html">Administratives</a></li>
+            <li id="nav_links"><a href="links.html">Links</a></li>
+            <li id="nav_impressum"><a href="impressum.html">Impressum</a></li>
+            <li id="nav_intern"><a href="/backend/">Intern</a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

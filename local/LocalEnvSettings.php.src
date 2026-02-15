@@ -1,0 +1,30 @@
+<?php
+/**
+ * @author    Christof Moser <contact@actra.ch>
+ * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
+ */
+
+namespace site\settings;
+
+class EnvSettings
+{
+    public const array ALLOWED_DOMAINS = [
+        'bsv-buelach.ch.ddev.site',
+    ];
+    public const array IP_WHITELIST = [
+
+    ];
+    public const bool DEBUG = true;
+    public const string MAILER_HOSTNAME = 'localhost';
+    public const int MAILER_PORT = 1025;
+    public const string MAILER_USERNAME = '';
+    public const string MAILER_PASSWORD = '';
+    public const bool MAILER_TLS = false;
+
+    public const string DB_IDENTIFIER = 'db';
+    public const string DB_HOSTNAME = 'db';
+    public const string DB_USERNAME = 'db';
+    public const string DB_PASSWORD = 'db';
+    public const string DB_DATABASE = 'db';
+
+}

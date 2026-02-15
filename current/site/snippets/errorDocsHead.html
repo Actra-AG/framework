@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html class="no-js" lang="de">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{tst:text value='pageTitle'} | {tst:snippet name='siteName.txt'}</title>
+	<meta name="robots" content="noindex,nofollow">
+	<tst:snippet name="headPreloads.html" />
+	<tst:snippet name="headFavicons.html" />
+	<script nonce="{tst:text value='cspNonce'}">
+		document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+	</script>
+	<script nonce="{tst:text value='cspNonce'}" src="/js/scripts.min.js?v=20260215" defer></script>
+	<link rel="stylesheet" href="css/styles.min.css?v=20260215">
+</head>
+<body class="{tst:text value='bodyClassName'}">
