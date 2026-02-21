@@ -7,28 +7,25 @@
 namespace site\view\frontend\php;
 
 use framework\html\HtmlDocument;
-use site\libs\db\DbNewsRepository;
 use site\view\FrontendView;
 
-class start extends FrontendView
+class jstag extends FrontendView
 {
     protected function getActiveNavigationItems(): array
     {
         return [
-            1 => 'start'
+            1 => 'js',
+            2 => 'jstag'
         ];
     }
 
     protected function getPageTitle(): string
     {
-        return 'Startseite';
+        return 'Jungschützen/Nachwuchs Jungschützentag';
     }
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-        $htmlDocument->replacements->addHtmlDataObjectCollection(
-            identifier: 'news',
-            htmlDataObjectCollection: DbNewsRepository::listForStartPage()->render()
-        );
+
     }
 }

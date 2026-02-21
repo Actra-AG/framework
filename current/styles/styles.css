@@ -196,16 +196,16 @@ border-top: 1px solid #fff;
 border-bottom: 1px solid #B8B8B8;
 }
 
-#sidebar li.nav_current a {
+#sidebar li.active a {
 font-weight: bold;
 background: #E3E2F2; 
 }
-#sidebar li.nav_current ul a {
+#sidebar li.active ul a {
 font-weight: normal;
 background: #fff;
 }
-#sidebar li.nav_current ul a:hover {color: #ee1d3c;}
-#sidebar li.nav_current a:hover {color: #333;}
+#sidebar li.active ul a:hover {color: #ee1d3c;}
+#sidebar li.active a:hover {color: #333;}
 #sidebar ul ul {padding-bottom: 0;}
 
 #sidebar ul ul a {
@@ -216,7 +216,7 @@ background: #fff;
 }
 #sidebar ul ul a:hover {background: #fff;}
 #sidebar ul a:hover {background: #E3E2F2;}
-#sidebar ul ul li.nav_current a {color: #ee1d3c;}
+#sidebar ul ul li.active a {color: #ee1d3c;}
 
 
 /*--------- Print funktion ----------*/
@@ -296,14 +296,14 @@ border-width: 0;
 background: #E3E2F2;
 }
 #subnavi a:hover,
-#subnavi li.nav_current a {
+#subnavi li.active a {
 color: #333;
 border: 1px solid #B8B9CE;
 border-width: 0 0 0;
 background: #B8B9CE;
 }
-#subnavi li.nav_current a {font-weight: bold;}
-#subnavi li.nav_current a:hover {font-weight: bold;}
+#subnavi li.active a {font-weight: bold;}
+#subnavi li.active a:hover {font-weight: bold;}
 
 
 /* =Vereinsseiten *********/

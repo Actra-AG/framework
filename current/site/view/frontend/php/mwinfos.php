@@ -7,28 +7,25 @@
 namespace site\view\frontend\php;
 
 use framework\html\HtmlDocument;
-use site\libs\db\DbNewsRepository;
 use site\view\FrontendView;
 
-class start extends FrontendView
+class mwinfos extends FrontendView
 {
     protected function getActiveNavigationItems(): array
     {
         return [
-            1 => 'start'
+            1 => 'mwprog',
+            2 => 'mwinfos'
         ];
     }
 
     protected function getPageTitle(): string
     {
-        return 'Startseite';
+        return 'Matchwesen Information';
     }
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-        $htmlDocument->replacements->addHtmlDataObjectCollection(
-            identifier: 'news',
-            htmlDataObjectCollection: DbNewsRepository::listForStartPage()->render()
-        );
+
     }
 }

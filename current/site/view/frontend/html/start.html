@@ -1,2 +1,15 @@
 <h2>Willkommen beim Bezirksschützenverband Bülach</h2>
-{{NEWS}}
+
+<tst:if compare="news" operator="EQ" against="null">
+    <p>Zurzeit gibt es keine Neuigkeiten.</p>
+</tst:if>
+<tst:else>
+    <tst:for value="news" var="item">
+        <div class="startnews group"><h3>{tst:text value='item.title'}</h3>
+            {tst:text value='item.teaser'}
+            <tst:if compare="item.htmlContent" operator="NE" against="">
+                <p><a href="{tst:text value='item.href'}">weitere Informationen</a></p>
+            </tst:if>
+        </div>
+    </tst:for>
+</tst:else>

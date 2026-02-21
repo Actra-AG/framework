@@ -7,28 +7,24 @@
 namespace site\view\frontend\php;
 
 use framework\html\HtmlDocument;
-use site\libs\db\DbNewsRepository;
 use site\view\FrontendView;
 
-class start extends FrontendView
+class eidg07dokumente extends FrontendView
 {
     protected function getActiveNavigationItems(): array
     {
         return [
-            1 => 'start'
+            1 => 'eidg07dokumente'
         ];
     }
 
     protected function getPageTitle(): string
     {
-        return 'Startseite';
+        return 'Dokumente zum eidgenössischen Schützenfest 2007';
     }
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-        $htmlDocument->replacements->addHtmlDataObjectCollection(
-            identifier: 'news',
-            htmlDataObjectCollection: DbNewsRepository::listForStartPage()->render()
-        );
+
     }
 }

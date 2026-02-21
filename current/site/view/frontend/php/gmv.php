@@ -7,28 +7,25 @@
 namespace site\view\frontend\php;
 
 use framework\html\HtmlDocument;
-use site\libs\db\DbNewsRepository;
 use site\view\FrontendView;
 
-class start extends FrontendView
+class gmv extends FrontendView
 {
     protected function getActiveNavigationItems(): array
     {
         return [
-            1 => 'start'
+            1 => 'gm',
+            2 => 'gmv'
         ];
     }
 
     protected function getPageTitle(): string
     {
-        return 'Startseite';
+        return 'Gruppenmeisterschaft 2010';
     }
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-        $htmlDocument->replacements->addHtmlDataObjectCollection(
-            identifier: 'news',
-            htmlDataObjectCollection: DbNewsRepository::listForStartPage()->render()
-        );
+
     }
 }

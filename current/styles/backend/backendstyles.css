@@ -131,7 +131,7 @@ h1 {
 
 #nav-main li a:hover {background: #F3F3CC;}
 
-#nav-main li.nav_current a {
+#nav-main li.active a {
 	margin-bottom: -1px;
 	padding-bottom: 9px;
   background: #fff;
