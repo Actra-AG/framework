@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html class="no-js" lang="{tst:text value='language'}">
+<head>
+    <meta charset="{tst:text value='charset'}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{tst:text value='pageTitle'} | {tst:text value='backendName'}</title>
+    <meta name="author" content="Actra AG Webagentur" />
+    <meta name="robots" content="noindex,nofollow" />
+    <script nonce="{tst:text value='cspNonce'}">
+        document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+    </script>
+    <link rel="stylesheet" href="/css/backend/styles.min.css?v=20250825">
+</head>
+<body class="body-authentication">
+<header class="auth-header">
+    <div class="auth-logo">Actra <span>CMS</span></div>
+</header>
+<main class="auth-main | flow">
+    <tst:loadSubTpl tplfile="{this}" />
+</main>
+<footer class="auth-footer">
+    <a href="{tst:text value='frontendHref'}">{tst:text value='frontendName'}</a>
+</footer>
+</body>
+</html>

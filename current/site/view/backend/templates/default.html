@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html class="no-js" lang="{tst:text value='language'}">
+<head>
+    <meta charset="{tst:text value='charset'}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{tst:text value='pageTitle'} | {tst:text value='backendName'}</title>
+    <meta name="author" content="Actra AG Webagentur">
+    <meta name="robots" content="noindex,nofollow">
+    <script nonce="{tst:text value='cspNonce'}">document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';</script>
+    <script nonce="{tst:text value='cspNonce'}" src="/js/backend/scripts.min.js?v=20250808" defer></script>
+    <link rel="stylesheet" href="/css/backend/styles.min.css?v=20250923">
+</head>
+<body class="{tst:text value='bodyClassName'}">
+<a class="skip-link visuallyhidden" href="#content">Direkt zum Inhalt</a>
+<div class="page">
+    <header class="site-header">
+        <div class="site-header-inner">
+            <div class="logo">
+                <a href="{tst:text value='firstPageHref'}">Actra <span>CMS</span></a>
+            </div>
+            <tst:if compare="isLoggedIn" operator="EQ" against="true">
+                <tst:if compare="mainNavigation" operator="NE" against="null">
+                    <nav class="nav-main">
+                        <button class="nav-main-toggle" aria-expanded="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" role="img" data-icon-hamburger><title>Menü öffnen</title><path d="M3 4H21V6H3V4ZM3 11H21V13H3V11ZM3 18H21V20H3V18Z"></path></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" role="img" data-icon-close><title>Menü schliessen</title><path d="M10.5859 12L2.79297 4.20706L4.20718 2.79285L12.0001 10.5857L19.793 2.79285L21.2072 4.20706L13.4143 12L21.2072 19.7928L19.793 21.2071L12.0001 13.4142L4.20718 21.2071L2.79297 19.7928L10.5859 12Z"></path></svg>
+                        </button>
+
+                        <ul class="nav-main-list">
+                            <tst:for value="mainNavigation" var="mainNavigationItem">
+                                <li>
+                                    <tst:if compare="mainNavigationItem.subNavigation" operator="EQ" against="null">
+                                        <a href="{tst:text value='mainNavigationItem.href'}" id="nav-{tst:text value='mainNavigationItem.navKey'}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="{tst:text value='mainNavigationItem.svgPath'}"></path></svg>
+                                            <span>{tst:text value='mainNavigationItem.title'}</span>
+                                        </a>
+                                    </tst:if>
+                                    <tst:else>
+                                        <button class="{tst:text value='mainNavigationItem.buttonClass'}" aria-expanded="true">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="{tst:text value='mainNavigationItem.svgPath'}"></path></svg>
+                                            <span>{tst:text value='mainNavigationItem.title'}</span>
+                                        </button>
+                                        <ul class="nav-main-sub">
+                                            <tst:for value="mainNavigationItem.subNavigation" var="item">
+                                                <li><a href="{tst:text value='item.href'}" id="nav-{tst:text value='item.navKey'}">{tst:text value='item.title'}</a></li>
+                                            </tst:for>
+                                        </ul>
+                                    </tst:else>
+                                </li>
+                            </tst:for>
+                        </ul>
+                    </nav>
+                </tst:if>
+            </tst:if>
+        </div>
+    </header>
+
+    <div class="content-wrap">
+        <tst:if compare="isLoggedIn" operator="EQ" against="true">
+            <div class="section-top">
+                <div class="section-top-inner">
+                    <a href="{tst:text value='frontendHref'}" class="link-website">{tst:text value='frontendName'}</a>
+                    <nav class="nav-user">
+                        <ul class="nav-user-list">
+                            <li>
+                                <div data-dropdown="container" class="nav-user-dropdown">
+                                    <button type="button" data-dropdown="toggle" aria-expanded="false">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M4 22C4 17.5817 7.58172 14 12 14C16.4183 14 20 17.5817 20 22H18C18 18.6863 15.3137 16 12 16C8.68629 16 6 18.6863 6 22H4ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11Z"></path></svg>
+                                        {tst:text value='userName'}</button>
+                                    <div class="nav-user-dropdown-content" data-dropdown="content">
+                                        <ul>
+                                            <tst:if compare="cancelSessionChangeLink" operator="NE" against="">
+                                                <li>
+                                                    <a href="{tst:text value='cancelSessionChangeLink'}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M14 14.252V16.3414C13.3744 16.1203 12.7013 16 12 16C8.68629 16 6 18.6863 6 22H4C4 17.5817 7.58172 14 12 14C12.6906 14 13.3608 14.0875 14 14.252ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11ZM19 17.5858L21.1213 15.4645L22.5355 16.8787L20.4142 19L22.5355 21.1213L21.1213 22.5355L19 20.4142L16.8787 22.5355L15.4645 21.1213L17.5858 19L15.4645 16.8787L16.8787 15.4645L19 17.5858Z"></path></svg>
+                                                        Sitzungswechsel abbrechen</a>
+                                                </li>
+                                            </tst:if>
+                                            <li>
+                                                <a href="{tst:text value='logoutHref'}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M5 22C4.44772 22 4 21.5523 4 21V3C4 2.44772 4.44772 2 5 2H19C19.5523 2 20 2.44772 20 3V6H18V4H6V20H18V18H20V21C20 21.5523 19.5523 22 19 22H5ZM18 16V13H11V11H18V8L23 12L18 16Z"></path></svg>
+                                                    Abmelden</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </tst:if>
+        <main id="content">
+            {tst:text value='breadcrumb'}
+            <tst:loadSubTpl tplfile="{this}" />
+        </main>
+    </div>
+</div>
+
+<dialog id="altTextDialog" class="dialog">    
+    <form method="dialog" class="dialog-form">
+        <div class="dialog-form-item">
+            <label for="altInput">Alt Text</label>
+            <input type="text" id="altInput">
+        </div>
+        <div class="dialog-control">
+            <button class="dialog-cancel">Abbrechen</button>
+            <button class="dialog-submit-ok" id="saveAlt" value="default">Speichern</button>
+        </div>
+    </form>
+</dialog>
+
+<dialog id="dialog" class="dialog">
+    <p class="dialog-message">Wirklich löschen?</p>
+    <div class="dialog-control">
+        <button type="button" class="dialog-cancel" data-action="modal-cancel">Abbrechen</button>
+        <button type="button" class="dialog-submit" data-action="modal-submit">Ja, löschen</button>
+    </div>
+</dialog>
+<tst:if compare="useQuill" operator="EQ" against="true">
+    <script nonce="{tst:text value='cspNonce'}" src="/js/backend/quill.js"></script>
+    <script nonce="{tst:text value='cspNonce'}" src="/js/backend/QuillDeltaToHtmlConverter.bundle.js"></script>
+    <script nonce="{tst:text value='cspNonce'}" src="/js/backend/quill.config.js?v=20250822"></script>
+</tst:if>
+</body>
+</html>
