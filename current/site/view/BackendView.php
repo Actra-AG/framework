@@ -4,7 +4,7 @@
  * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
-namespace site\view;
+namespace site\view\backend;
 
 use framework\auth\AccessRightCollection;
 use framework\auth\AuthSession;
@@ -15,12 +15,18 @@ use framework\core\HttpRequest;
 use framework\core\HttpResponse;
 use framework\core\InputParameter;
 use framework\core\InputParameterCollection;
+use framework\core\RequestHandler;
 use framework\html\HtmlDocument;
 use framework\html\HtmlText;
 use site\libs\auth\db\DbAuthSession;
 use site\libs\auth\MyAuthUser;
+use site\libs\layout\BackendNavigation;
+use site\libs\layout\OldNavigator;
+use site\settings\AccessRightEnum;
 use site\settings\ProjectSettings;
 use site\view\backend\php\login;
+use site\view\backend\php\logout;
+use site\view\backend\php\textFiles;
 
 abstract class BackendView extends BaseView
 {
@@ -28,13 +34,13 @@ abstract class BackendView extends BaseView
 
     public function __construct(
         InputParameterCollection $inputParameterCollection = new InputParameterCollection(),
-        private readonly array   $activeHtmlIdList = [],
-        private readonly bool    $useNavigator = false,
-        private readonly bool    $resetNavigator = false,
-        bool                     $forceLogout = false,
-        int                      $maxAllowedPathVars = 0
-    )
-    {
+        private readonly array $activeHtmlIdList = [],
+        private readonly bool $useNavigator = false,
+        private readonly bool $resetNavigator = false,
+        bool $forceLogout = false,
+        private readonly bool $useTinyMCE = false,
+        int $maxAllowedPathVars = 0
+    ) {
         if ($forceLogout) {
             AuthSession::logOut();
         }
@@ -71,6 +77,15 @@ abstract class BackendView extends BaseView
         }
     }
 
+    abstract protected static function getRequiredAccessRights(): AccessRightCollection;
+
+    protected static function getAccessRightCollectionForLoggedInUser(): AccessRightCollection
+    {
+        return AccessRightCollection::createFromStringArray(input: [
+            AccessRightEnum::MANAGE_USERS->value,
+        ]);
+    }
+
     public function execute(): void
     {
         $htmlDocument = HtmlDocument::get();
@@ -104,9 +119,12 @@ abstract class BackendView extends BaseView
                 identifier: 'breadcrumb',
                 content: null
             );
+            $replacements->addBool(
+                identifier: 'useTinyMCE',
+                booleanValue: false
+            );
             return;
         }
-        /*
         $myAuthUser = MyAuthUser::get();
         $mainNavigation = BackendNavigation::get(myAuthUser: $myAuthUser);
         $replacements->addBool(
@@ -133,7 +151,7 @@ abstract class BackendView extends BaseView
         if ($myAuthUser->isSessionChange()) {
             $replacements->addEncodedText(
                 identifier: 'cancelSessionChangeLink',
-                content: overview::getCancelSessionChangePath()
+                content: textFiles::getCancelSessionChangePath()
             );
         } else {
             $replacements->addEncodedText(identifier: 'cancelSessionChangeLink', content: '');
@@ -160,13 +178,15 @@ abstract class BackendView extends BaseView
         }
 
         $replacements->addEncodedText(identifier: 'breadcrumb', content: $breadcrumb);
-        $replacements->addBool(identifier: 'useQuill', booleanValue: $this->useQuill);
-        */
+        if ($this->useTinyMCE) {
+            ContentHandler::get()->suppressCspHeader();
+            $replacements->addBool(identifier: 'useTinyMCE', booleanValue: true);
+        } else {
+            $replacements->addBool(identifier: 'useTinyMCE', booleanValue: false);
+        }
     }
 
-    abstract protected static function getRequiredAccessRights(): AccessRightCollection;
+    abstract protected function prepareHtmlDocument(HtmlDocument $htmlDocument): void;
 
     abstract protected function getPageTitle(): HtmlText;
-
-    abstract protected function prepareHtmlDocument(HtmlDocument $htmlDocument): void;
 }
