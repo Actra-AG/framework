@@ -7,8 +7,8 @@
 
 namespace site\libs\navigation;
 
-use framework\html\HtmlDataObject;
-use framework\html\HtmlDataObjectCollection;
+use actra\yuf\html\HtmlDataObject;
+use actra\yuf\html\HtmlDataObjectCollection;
 
 readonly class NavigationItem
 {

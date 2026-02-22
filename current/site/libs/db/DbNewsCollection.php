@@ -6,7 +6,7 @@
 
 namespace site\libs\db;
 
-use framework\html\HtmlDataObjectCollection;
+use actra\yuf\html\HtmlDataObjectCollection;
 
 class DbNewsCollection
 {

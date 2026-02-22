@@ -7,7 +7,7 @@
 
 namespace site\settings;
 
-use framework\html\HtmlDataObjectCollection;
+use actra\yuf\html\HtmlDataObjectCollection;
 use site\libs\navigation\NavigationItem;
 
 class Navigation

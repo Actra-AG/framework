@@ -7,8 +7,8 @@
 namespace site\libs\db;
 
 
+use actra\yuf\html\HtmlDataObject;
 use DateTimeImmutable;
-use framework\html\HtmlDataObject;
 use site\view\frontend\php\newsDetails;
 
 readonly class DbNews

@@ -6,11 +6,11 @@
 
 namespace site\view;
 
+use actra\yuf\auth\AccessRightCollection;
+use actra\yuf\core\BaseView;
+use actra\yuf\core\InputParameterCollection;
+use actra\yuf\html\HtmlDocument;
 use FilesystemIterator;
-use framework\auth\AccessRightCollection;
-use framework\core\BaseView;
-use framework\core\InputParameterCollection;
-use framework\html\HtmlDocument;
 use site\settings\Navigation;
 
 abstract class FrontendView extends BaseView

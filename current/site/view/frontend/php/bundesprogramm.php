@@ -6,7 +6,7 @@
 
 namespace site\view\frontend\php;
 
-use framework\html\HtmlDocument;
+use actra\yuf\html\HtmlDocument;
 use site\view\FrontendView;
 
 class bundesprogramm extends FrontendView

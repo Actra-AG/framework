@@ -6,8 +6,8 @@
 
 namespace site\libs\db;
 
-use framework\db\DbSettingsModel;
-use framework\db\FrameworkDB;
+use actra\yuf\db\DbSettingsModel;
+use actra\yuf\db\FrameworkDB;
 use site\settings\EnvSettings;
 
 class DB extends FrameworkDB
