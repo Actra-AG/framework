@@ -4,23 +4,106 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "62f9d06ea109880b743333618c89833a",
+    "content-hash": "a78e5ebafb257abe922751e078a980a6",
     "packages": [
         {
-            "name": "actra/yuf",
-            "version": "v0.1.0",
+            "name": "actra/autoloader",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Actra-AG/yuf",
-                "reference": "86d88585a9795d2cbc16f7de38f3e9e8f324277e"
+                "url": "https://github.com/Actra-AG/autoloader",
+                "reference": "577f796499a6559b78f67da63611c66b4eeaccc3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Actra-AG/yuf/zipball/86d88585a9795d2cbc16f7de38f3e9e8f324277e",
-                "reference": "86d88585a9795d2cbc16f7de38f3e9e8f324277e",
+                "url": "https://api.github.com/repos/Actra-AG/autoloader/zipball/577f796499a6559b78f67da63611c66b4eeaccc3",
+                "reference": "577f796499a6559b78f67da63611c66b4eeaccc3",
                 "shasum": ""
             },
             "require": {
+                "php": ">=8.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "actra\\autoloader\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Actra AG",
+                    "homepage": "https://www.actra.ch"
+                }
+            ],
+            "description": "A simple, lightweight, and efficient PHP Autoloader supporting PSR-4, PSR-0, and filesystem caching with OPcache support.",
+            "time": "2026-03-15T12:43:22+00:00"
+        },
+        {
+            "name": "actra/backend",
+            "version": "v0.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Actra-AG/backend",
+                "reference": "6a8c54ceb2348c09a1cfa4ed3b6ea4d22375699b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Actra-AG/backend/zipball/6a8c54ceb2348c09a1cfa4ed3b6ea4d22375699b",
+                "reference": "6a8c54ceb2348c09a1cfa4ed3b6ea4d22375699b",
+                "shasum": ""
+            },
+            "require": {
+                "actra/yuf": "*",
+                "php": ">=8.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "actra\\backend\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Actra AG",
+                    "homepage": "https://www.actra.ch"
+                }
+            ],
+            "description": "A backend management library for the YUF framework, providing user account management and one-time token authentication via email.",
+            "time": "2026-04-26T19:42:57+00:00"
+        },
+        {
+            "name": "actra/yuf",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Actra-AG/yuf",
+                "reference": "df3d101e896d87fbb54f54ce7f9174797de6df60"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Actra-AG/yuf/zipball/df3d101e896d87fbb54f54ce7f9174797de6df60",
+                "reference": "df3d101e896d87fbb54f54ce7f9174797de6df60",
+                "shasum": ""
+            },
+            "require": {
+                "actra/autoloader": "*",
+                "ext-bcmath": "*",
+                "ext-curl": "*",
+                "ext-dom": "*",
+                "ext-iconv": "*",
+                "ext-intl": "*",
+                "ext-mbstring": "*",
+                "ext-openssl": "*",
+                "ext-pdo": "*",
+                "ext-simplexml": "*",
                 "php": ">=8.5"
             },
             "type": "library",
@@ -28,8 +111,24 @@
             "license": [
                 "MIT"
             ],
-            "description": "yuf - (pronounced \"[jʌf]\" or \"[jʊf]\") - A smart, fast and lightweight php framework with zero dependencies.",
-            "time": "2026-02-22T21:07:43+00:00"
+            "authors": [
+                {
+                    "name": "Actra AG",
+                    "email": "info@actra.ch",
+                    "homepage": "https://www.actra.ch"
+                }
+            ],
+            "description": "yuf (pronounced \"[jʌf]\" or \"[jʊf]\") - A smart, fast and lightweight php framework with zero dependencies.",
+            "homepage": "https://github.com/Actra-AG/yuf",
+            "keywords": [
+                "actra",
+                "fast",
+                "framework",
+                "lightweight",
+                "php",
+                "smart"
+            ],
+            "time": "2026-04-25T21:56:45+00:00"
         }
     ],
     "packages-dev": [],

@@ -1,0 +1,67 @@
+# author Christof Moser <contact@actra.ch>
+# copyright Actra AG, Embrach, Switzerland, www.actra.ch
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Redirect all not existing requests to index.php.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ index.php [L]
+</IfModule>
+
+# Compress text, code, and SVG files using DEFLATE to reduce loading times.
+<IfModule mod_deflate.c>
+  <IfModule mod_filter.c>
+    AddOutputFilterByType DEFLATE       application/atom+xml       application/javascript       application/json       application/rss+xml       application/xml       application/xhtml+xml       image/svg+xml       text/css       text/html       text/plain       text/xml
+    </IfModule>
+</IfModule>
+
+# Disable MultiViews to prevent conflicts with the central PHP routing logic.
+Options -MultiViews
+
+# Set UTF-8 as the default character set for all text-based content.
+AddDefaultCharset utf-8
+
+# Force UTF-8 for a number of file formats.
+AddCharset utf-8 .atom .css .js .json .rss .vtt .xml .html .htm .txt .map .md .webmanifest .svg .svgz .woff .woff2 .ttf .otf
+
+# Disable post buffering for multipart forms to avoid HTTP 406 errors.
+<IfModule mod_security.c>
+  SetEnvIfNoCase Content-Type "^multipart/form-data;" "MODSEC_NOPOSTBUFFERING=Do not buffer file uploads"
+</IfModule>
+
+# Disable directory browsing (directory listings).
+<IfModule mod_autoindex.c>
+  Options -Indexes
+</IfModule>
+
+# Deny all HTTP access to sensitive files.
+<FilesMatch "(\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)|~)$">
+  Order allow,deny
+  Deny from all
+  Satisfy All
+</FilesMatch>
+
+# Disable the Apache server signature.
+ServerSignature Off
+
+# Add security headers.
+<IfModule mod_headers.c>
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Referrer-Policy "same-origin"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "deny"
+</IfModule>
+
+# Set aggressive caching for static assets.
+<IfModule mod_expires.c>
+  <FilesMatch "\.(jpg|jpeg|gif|png|css|js|ico|woff|woff2|ttf|eot|svg|webp)$">
+    Header unset ETag
+    FileETag None
+    ExpiresActive on
+    ExpiresDefault "access plus 1 year"
+    Header set Cache-Control "public, max-age=31536000"
+  </FilesMatch>
+</IfModule>

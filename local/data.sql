@@ -17,6 +17,38 @@ SET time_zone = "+00:00";
 --
 
 --
+-- Daten für Tabelle `auth_group`
+--
+
+INSERT INTO `auth_group` (`ID`, `title`) VALUES
+    (2, 'Vorstand'),
+    (3, 'Redaktor'),
+    (4, 'Mitglied');
+
+--
+-- Daten für Tabelle `auth_group_right`
+--
+
+INSERT INTO `auth_group_right` (`groupID`, `rightName`) VALUES
+    (1, 'backend_access'),
+    (1, 'board_member'),
+    (1, 'editor'),
+    (2, 'backend_access'),
+    (2, 'board_member'),
+    (3, 'backend_access'),
+    (3, 'editor'),
+    (4, 'backend_access');
+
+--
+-- Daten für Tabelle `auth_right`
+--
+
+INSERT INTO `auth_right` (`name`, `title`) VALUES
+    ('backend_access', 'Zugriff ins Backend'),
+    ('board_member', 'Vorstand'),
+    ('editor', 'Redaktor');
+
+--
 -- TRUNCATE Tabelle vor dem Einfügen `alben`
 --
 

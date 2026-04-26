@@ -1,0 +1,110 @@
+<div class="main-header">
+    <h1>{tst:text value='pageTitle'}</h1>
+</div>
+
+<div class="grid-half">
+    <div class="card | flow-layout-m">
+        <div class="card-header">
+            <h2>Willkommen</h2>
+        </div>
+        <p>Hier können Sie Anlässe auf der Homepage des BSVB hinzufügen und jederzeit ändern. Ebenso haben Sie die Möglichkeit, eine oder mehrere Einladungen (PDF) hochzuladen. Einladungen können auch zu einem späteren Zeitpunkt hochgeladen oder gelöscht werden.</p>
+
+        <p>Für Fragen wenden Sie sich bitte an den Webmaster: <a href="mailto:webmaster@bsv-buelach.ch">webmaster@bsv-buelach.ch</a>.</p>
+
+        <p>Freundliche Grüsse<br/>
+            <strong>Bezirksschützenverband Bülach</strong></p>
+        <tst:if compare="isBoard" operator="EQ" against="true">
+            <p>=&gt; <a href="https://ssv-vva.esport.ch/p2plus/ssv/login.asp?/p2plus/ssv/default.asp">Vereins- und Verbandsadministration</a></p>
+        </tst:if>
+    </div>
+    <div class="card | flow-layout-m">
+        <div class="card-header">
+            <h2>Abkürzungen für PDFs</h2>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <tbody>
+                <tr>
+                    <th>ra</th>
+                    <td>Ranglisten</td>
+                </tr>
+                <tr>
+                    <th>jp</th>
+                    <td>Jahresprogramm</td>
+                </tr>
+                <tr>
+                    <th>au</th>
+                    <td>Ausführungsbestimmungen</td>
+                </tr>
+                <tr>
+                    <th>re</th>
+                    <td>Reglemente</td>
+                </tr>
+                <tr>
+                    <th>be</th>
+                    <td>Bericht</td>
+                </tr>
+                <tr>
+                    <th>in</th>
+                    <td>Infos</td>
+                </tr>
+                <tr>
+                    <th>gr</th>
+                    <td>Gruppenmeisterschaft</td>
+                </tr>
+                <tr>
+                    <th>js</th>
+                    <td>Jungschützen</td>
+                </tr>
+                <tr>
+                    <th>jj</th>
+                    <td>Jugendliche</td>
+                </tr>
+                <tr>
+                    <th>ak</th>
+                    <td>Aktive</td>
+                </tr>
+                <tr>
+                    <th>ve</th>
+                    <td>Veteranen</td>
+                </tr>
+                <tr>
+                    <th>rp</th>
+                    <td>Rapporte</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<tst:if compare="isAdmin" operator="EQ" against="true">
+    <div class="grid-half">
+        <div class="card | flow-layout-m">
+            <h2>Unbestätigte Zugriffsanfragen</h2>
+            <tst:if compare="pendingRegistrationRequests" operator="EQ" against="null">
+                <p>Zurzeit gibt es keine unbestätigten Registrierungen.</p>
+            </tst:if>
+            <tst:else>
+                <ul>
+                    <tst:for value="pendingRegistrationRequests" var="item">
+                        <li><a href="{tst:text value='item.detailsHref'}">{tst:text value='item.firstName'} {tst:text value='item.firstName'}</a> [{tst:text value='item.registered'}]</li>
+                    </tst:for>
+                </ul>
+            </tst:else>
+        </div>
+        <div class="card | flow-layout-m">
+            <h2>Zu prüfende Anlässe</h2>
+            <tst:if compare="eventsToCheck" operator="EQ" against="null">
+                <p>Zurzeit gibt es keine zu prüfenden Anlässe.</p>
+            </tst:if>
+            <tst:else>
+                <ul>
+                    <tst:for value="eventsToCheck" var="item">
+                        <li><a href="{tst:text value='item.detailsHref'}">{tst:text value='item.title'}</a> [{tst:text value='item.registered'}]</li>
+                    </tst:for>
+                </ul>
+            </tst:else>
+        </div>
+    </div>
+</tst:if>

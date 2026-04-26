@@ -1,0 +1,22 @@
+<div class="main-header-action">
+    <h1>{tst:text value='pageTitle'}</h1>
+    <a class="btn btn-secondary" href="{tst:text value='addHref'}"><span>Eintrag hinzufügen</span></a>
+</div>
+
+<tst:if compare="removed" operator="EQ" against="true">
+    <p class="msg msg-success" role="status" aria-live="polite"><strong>Erfolgreich:</strong> Der Eintrag wurde gelöscht.
+    </p>
+</tst:if>
+
+<tst:if compare="added" operator="EQ" against="true">
+    <p class="msg msg-success" role="status" aria-live="polite"><strong>Erfolgreich:</strong> Der Eintrag wurde hinzugefügt.
+    </p>
+</tst:if>
+
+<tst:if compare="changed" operator="EQ" against="true">
+    <p class="msg msg-success" role="status" aria-live="polite"><strong>Erfolgreich:</strong> Die Änderungen wurden gespeichert.
+    </p>
+</tst:if>
+
+{tst:text value='searchForm'}
+{tst:text value='table'}

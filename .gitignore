@@ -1,10 +1,31 @@
-.ddev/addon-metadata/phpmyadmin/manifest.yaml
-.ddev/commands/host/phpmyadmin
-.ddev/docker-compose.phpmyadmin.yaml
-.ddev/docker-compose.phpmyadmin_norouter.yaml
-.env.php
-current/files/*
-current/site/cache/*
-current/site/logs/*
-current/site/settings/EnvSettings\.php
-vendor/*
+# Ignore everything
+*
+
+# Whitelist ddev config
+!/.ddev/
+!/.ddev/config.yaml
+
+# Whitelist core files
+!/gitignore
+!/composer.json
+!/composer.lock
+!/README.md
+!/setup.sh
+
+# Whitelist app
+!/app/
+!/app/**
+/app/cache/*
+/app/logs/*
+
+# Whitelist local data
+!/local/
+!/local/**
+
+# Whitelist public
+!/public/
+!/public/**
+
+# Whitelist src
+!/src/
+!/src/**

@@ -1,0 +1,119 @@
+<div class="main-header-action">
+    <h1>{tst:text value='pageTitle'}</h1>
+    <a href="{tst:text value='removeHref'}" class="btn btn-secondary btn-danger" data-action="confirm-deletion"
+       data-confirm="{tst:text value='pageTitle'} wirklich löschen?">Mitglied löschen</a>
+</div>
+
+<div class="grid-half">
+    <div class="card | flow-layout-m">
+        <div class="card-header-action">
+            <h2>Persönliche Daten</h2>
+            <a class="btn btn-secondary" href="{tst:text value='memberModHref'}"><span>Bearbeiten</span></a>
+        </div>
+        <div class="details">
+            <dl>
+                <dt>Verein</dt>
+                <dd>{tst:text value='member.clubName'}</dd>
+            </dl>
+            <dl>
+                <dt>Anrede</dt>
+                <dd>{tst:text value='member.gender'}</dd>
+            </dl>
+            <dl>
+                <dt>Vorname</dt>
+                <dd>{tst:text value='member.firstName'}</dd>
+            </dl>
+            <dl>
+                <dt>Nachname</dt>
+                <dd>{tst:text value='member.lastName'}</dd>
+            </dl>
+            <dl>
+                <dt>Strasse</dt>
+                <dd>{tst:text value='member.street'}</dd>
+            </dl>
+            <dl>
+                <dt>PLZ/Ort</dt>
+                <dd>{tst:text value='member.zip'} {tst:text value='member.city'}</dd>
+            </dl>
+            <dl>
+                <dt>Lizenznummer</dt>
+                <dd>{tst:text value='member.license'}</dd>
+            </dl>
+            <dl>
+                <dt>Telefon</dt>
+                <dd>{tst:text value='member.phone'}</dd>
+            </dl>
+            <dl>
+                <dt>E-Mail</dt>
+                <dd>{tst:text value='member.email'}</dd>
+            </dl>
+            <dl>
+                <dt>Geburstdatum</dt>
+                <dd>{tst:text value='member.birthDate'}</dd>
+            </dl>
+            <dl>
+                <dt>Kommentar</dt>
+                <dd>{tst:text value='member.comment'}</dd>
+            </dl>
+            <dl>
+                <dt>Interne Bemerkungen</dt>
+                <dd>{tst:text value='member.notes'}</dd>
+            </dl>
+            <dl>
+                <dt>Ehrenmitglied</dt>
+                <dd>
+                    {tst:text value='member.honorary'}
+                    <tst:if compare="member.honorary" operator="EQ" against="Ja">
+                        ({tst:text value='member.honored'})
+                    </tst:if>
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card | flow-layout-m">
+        <div class="card-header">
+            <h2>Zugriffseinstellungen</h2>
+        </div>
+        <div class="details">
+            <dl>
+                <dt>Registriert</dt>
+                <dd>{tst:text value='registered'}</dd>
+            </dl>
+            <dl>
+                <dt>Willkommens-E-Mail verschickt</dt>
+                <dd>{tst:text value='invitedDate'}</dd>
+            </dl>
+            <dl>
+                <dt>Letzte Anmeldung</dt>
+                <tst:if compare="lastLogin" operator="EQ" against="">
+                    <dd>noch nie</dd>
+                </tst:if>
+                <tst:else>
+                    <dd><a href="{tst:text value='visitsHref'}">{tst:text value='lastLogin'}</a></dd>
+                </tst:else>
+            </dl>
+            <dl>
+                <dt>Benutzergruppe(n)</dt>
+                <dd>
+                    <tst:if compare="userGroups" operator="NE" against="null">
+                        <ul class="user-group-list">
+                            <tst:for value="userGroups" var="userGroup">
+                                <li>{tst:text value='userGroup.name'}</li>
+                            </tst:for>
+                        </ul>
+                    </tst:if>
+                </dd>
+            </dl>
+            <dl>
+                <dt>Zugang aktiv?</dt>
+                <dd>{tst:text value='active'}</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<div class="card | flow-layout-m">
+    <h2>Erfasste Anlässe</h2>
+    {tst:text value='events'}
+</div>
