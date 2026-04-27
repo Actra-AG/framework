@@ -12,11 +12,13 @@ namespace app\libs\db;
 use actra\backend\libs\db\DbAuthUser;
 use actra\yuf\html\HtmlDataObject;
 use app\view\backend\php\member;
+use DateTimeImmutable;
 
 readonly class DbMember
 {
     public function __construct(
         public DbAuthUser $dbAuthUser,
+        public int $clubID,
         public string $clubName,
         public string $gender,
         public string $street,
@@ -24,12 +26,19 @@ readonly class DbMember
         public string $city,
         public int $license,
         public string $phone,
-        public string $birthDate,
+        public ?DateTimeImmutable $birthDate,
         public string $comment,
         public string $notes,
         public bool $honorary,
-        public int $honored
+        public int $honored,
+        public ?DateTimeImmutable $accepted,
+        public ?DateTimeImmutable $rejected
     ) {
+    }
+
+    public function isPendingRequest(): bool
+    {
+        return $this->accepted === null && $this->rejected === null;
     }
 
     public function render(): HtmlDataObject
@@ -90,9 +99,10 @@ readonly class DbMember
             content: $this->phone,
             isEncodedForRendering: false
         );
+        $birthDate = $this->birthDate;
         $htmlDataObject->addTextElement(
             propertyName: 'birthDate',
-            content: $this->birthDate,
+            content: $birthDate === null ? '' : $birthDate->format(format: 'd.m.Y'),
             isEncodedForRendering: false
         );
         $htmlDataObject->addTextElement(

@@ -43,13 +43,14 @@ $routeCollection->addRoute(
 );
 $routeCollection->addRoute(
     route: new Route(
-        path: '/dokumente/',
+        path: '/dokumente/${documentID}/${token}/${fileName}',
         viewGroup: 'documents',
-        defaultFileName: '',
+        defaultFileName: 'document',
         isDefaultForLanguage: false,
-        defaultContentType: ContentType::createJson(),
+        defaultContentType: ContentType::createHtml(),
         language: $deCH,
-        acceptedExtension: ''
+        acceptedExtension: null,
+        forceFileName: 'document'
     )
 );
 $routeCollection->addRoute(
@@ -95,7 +96,7 @@ ActraBackend::init(
         sqlSafeUpdates: true
     ),
     mailerSettings: new MailerSettings(
-        senderEmail: ProjectSettings::DEFAULT_SENDER_EMAIL,
+        senderEmail: ProjectSettings::WEBMASTER_EMAIL,
         hostname: EnvSettings::getMailerHostname(),
         username: EnvSettings::getMailerUsername(),
         password: EnvSettings::getMailerPassword(),

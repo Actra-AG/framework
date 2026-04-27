@@ -21,4 +21,21 @@ class DbMemberClubRepository
             parameters: [$memberID, $clubID]
         );
     }
+
+    public static function delete(
+        int $memberID,
+        int $clubID
+    ): void {
+        DB::get()->execute(
+            sql: '
+				DELETE FROM benutzervereine
+				WHERE benutzerID=?
+				  AND vereinID=?
+			',
+            parameters: [
+                $memberID,
+                $clubID,
+            ]
+        );
+    }
 }

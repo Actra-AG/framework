@@ -15,7 +15,7 @@ use actra\yuf\table\column\DateColumn;
 use actra\yuf\table\column\DefaultColumn;
 use actra\yuf\table\TableItemModel;
 use app\libs\db\DbEventRepository;
-use app\view\backend\php\anlassDet;
+use app\view\backend\php\event;
 
 class BoardEventTable extends AbstractTable
 {
@@ -30,7 +30,7 @@ class BoardEventTable extends AbstractTable
             ]
         );
         parent::__construct(
-            identifier: 'UserTable',
+            identifier: 'BoardEventTable-' . $selectedYear,
             db: DB::get(),
             dbQuery: $dbQuery,
             itemsPerPage: 100
@@ -64,7 +64,7 @@ class BoardEventTable extends AbstractTable
                 identifier: 'title',
                 label: 'Titel',
                 callbackFunction: function (TableItemModel $tableItemModel) {
-                    return '<a href="' . anlassDet::getPath(
+                    return '<a href="' . event::getPath(
                             ID: $tableItemModel->getRawValue(name: 'ID')
                         ) . '">' . $tableItemModel->renderValue(name: 'title') . '</a>';
                 }

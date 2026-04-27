@@ -70,4 +70,14 @@ class DbEventCollection
                 array: $jArr
             ) . '</p>';
     }
+
+    public function isEmpty(): bool
+    {
+        return $this->items === [];
+    }
+
+    public function first(): DbEvent
+    {
+        return current(array: $this->items);
+    }
 }

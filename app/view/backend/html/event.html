@@ -1,0 +1,135 @@
+<div class="main-header-action">
+    <h1>{tst:text value='pageTitle'}</h1>
+    <div class="btn-group">
+        <tst:if compare="modHref" operator="NE" against="">
+            <a class="btn btn-secondary" href="{tst:text value='modHref'}"><span>Bearbeiten</span></a>
+        </tst:if>
+        <tst:if compare="activateHref" operator="NE" against="">
+            <a class="btn btn-secondary" href="{tst:text value='activateHref'}"><span>Aktivieren</span></a>
+        </tst:if>
+        <tst:if compare="deactivateHref" operator="NE" against="">
+            <a class="btn btn-secondary" href="{tst:text value='deactivateHref'}"><span>Deaktivieren</span></a>
+        </tst:if>
+        <tst:if compare="removeHref" operator="NE" against="">
+            <a href="{tst:text value='removeHref'}" class="btn btn-secondary btn-danger" data-action="confirm-deletion"
+               data-confirm="{tst:text value='pageTitle'} wirklich löschen?">Löschen</a>
+        </tst:if>
+    </div>
+</div>
+
+<tst:if compare="added" operator="EQ" against="true">
+    <p class="msg msg-success" role="status" aria-live="polite"><strong>Erfolgreich:</strong> Der Eintrag wurde
+        hinzugefügt.</p>
+</tst:if>
+<tst:if compare="changed" operator="EQ" against="true">
+    <p class="msg msg-success" role="status" aria-live="polite"><strong>Erfolgreich:</strong> Die Änderungen wurden
+        gespeichert.</p>
+</tst:if>
+
+<tst:if compare="isAccepted" operator="EQ" against="true">
+    <p>Dieser Anlass wurde durch einen Administrator geprüft und veröffentlicht.</p>
+</tst:if>
+<tst:else>
+    <tst:if compare="isRejected" operator="EQ" against="true">
+        <p>Dieser Anlass wurde durch einen Administrator abgelehnt.</p>
+    </tst:if>
+    <tst:else>
+        <p>Dieser Anlass muss noch durch einen Administrator geprüft und veröffentlicht werden.</p>
+    </tst:else>
+</tst:else>
+
+<div class="grid-half">
+    <div class="card | flow-layout-m">
+        <div class="card-header">
+            <h2>Grunddaten</h2>
+        </div>
+        <div class="details">
+            <dl>
+                <dt>Verein</dt>
+                <dd>{tst:text value='event.clubName'}</dd>
+            </dl>
+
+            <dl>
+                <dt>Datum</dt>
+                <dd>{tst:text value='event.date'}</dd>
+            </dl>
+
+            <dl>
+                <dt>Titel/Anlass</dt>
+                <dd>{tst:text value='event.title'}</dd>
+            </dl>
+
+            <dl>
+                <dt>Ort/Schiessplatz</dt>
+                <dd>{tst:text value='event.location'}</dd>
+            </dl>
+
+            <dl>
+                <dt>Kategorie(n)</dt>
+                <dd>
+                    <tst:if compare="event.categories" operator="NE" against="null">
+                        <ul class="event-category-list">
+                            <tst:for value="event.categories" var="category">
+                                <li>{tst:text value='category.title'}</li>
+                            </tst:for>
+                        </ul>
+                    </tst:if>
+                    <tst:else>
+                        <span class="text-muted">Keine Kategorie</span>
+                    </tst:else>
+                </dd>
+            </dl>
+
+            <dl>
+                <dt>Kalenderexport</dt>
+                <dd>{tst:text value='event.calendarExport'}</dd>
+            </dl>
+        </div>
+    </div>
+    <div class="card | flow-layout-m">
+        <div class="card-header">
+            <h2>Weitere Angaben</h2>
+        </div>
+        <div class="details">
+            <dl>
+                <dt>Zeit (Export)</dt>
+                <dd>{tst:text value='event.timeFrom'} - {tst:text value='event.timeTo'}</dd>
+            </dl>
+
+            <dl>
+                <dt>Zeit (Website)</dt>
+                <dd>{tst:text value='event.time'}</dd>
+            </dl>
+
+            <dl>
+                <dt>Bemerkungen</dt>
+                <dd>{tst:text value='event.notes'}</dd>
+            </dl>
+
+            <dl>
+                <dt>Erfasst</dt>
+                <dd>{tst:text value='event.registered'} von {tst:text value='event.registeredByName'}</dd>
+            </dl>
+
+            <dl>
+                <dt>Letzte Änderung</dt>
+                <dd>{tst:text value='event.lastModified'}</dd>
+            </dl>
+
+            <dl>
+                <dt>Status</dt>
+                <dd>{tst:text value='event.status'}</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<div class="card | flow-layout-m">
+    <div class="card-header-action">
+        <h2>PDF-Dokumente</h2>
+        <tst:if compare="addDocumentHref" operator="NE" against="">
+            <a class="btn btn-secondary" href="{tst:text value='addDocumentHref'}"><span>Dokument hochladen</span></a>
+        </tst:if>
+    </div>
+    {tst:text value='documents'}
+</div>

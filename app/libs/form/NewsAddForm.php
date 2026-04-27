@@ -70,7 +70,7 @@ class NewsAddForm extends Form
         $this->addComponent(
             formComponent: new FormControl(
                 name: 'save',
-                submitLabel: HtmlText::encoded(textContent: 'speichern'),
+                submitLabel: HtmlText::encoded(textContent: 'Speichern'),
                 cancelLink: news::getPath()
             )
         );

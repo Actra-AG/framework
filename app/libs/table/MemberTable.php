@@ -16,6 +16,7 @@ use actra\yuf\table\column\DefaultColumn;
 use actra\yuf\table\TableItemModel;
 use app\libs\db\DbMemberRepository;
 use app\libs\form\MemberSearchForm;
+use app\view\backend\php\member;
 
 class MemberTable extends AbstractTable
 {
@@ -42,7 +43,7 @@ class MemberTable extends AbstractTable
         if ($searchQuery !== '') {
             $dbQuery->addWherePart(
                 wherePart: $memberSearchForm->searchHelper->getBooleanQuery(
-                    spaceSeparatedFieldNames: 'member.vorname member.nachname member.email',
+                    spaceSeparatedFieldNames: 'firstName lastName email',
                     query_text: $searchQuery
                 ),
                 parameters: []
@@ -59,7 +60,9 @@ class MemberTable extends AbstractTable
                 identifier: 'fullName',
                 label: 'Name',
                 callbackFunction: function (TableItemModel $tableItemModel) {
-                    return '<a href="">' . $tableItemModel->renderValue(name: 'fullName') . '</a>';
+                    return '<a href="' . member::getPath(
+                            ID: $tableItemModel->getRawValue(name: 'ID')
+                        ) . '">' . $tableItemModel->renderValue(name: 'fullName') . '</a>';
                 },
                 isSortable: true
             ),

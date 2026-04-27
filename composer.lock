@@ -44,16 +44,16 @@
         },
         {
             "name": "actra/backend",
-            "version": "v0.3.2",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Actra-AG/backend",
-                "reference": "6a8c54ceb2348c09a1cfa4ed3b6ea4d22375699b"
+                "reference": "3d6de58778a3be4234a0f60773c9ff186ac5c5cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Actra-AG/backend/zipball/6a8c54ceb2348c09a1cfa4ed3b6ea4d22375699b",
-                "reference": "6a8c54ceb2348c09a1cfa4ed3b6ea4d22375699b",
+                "url": "https://api.github.com/repos/Actra-AG/backend/zipball/3d6de58778a3be4234a0f60773c9ff186ac5c5cb",
+                "reference": "3d6de58778a3be4234a0f60773c9ff186ac5c5cb",
                 "shasum": ""
             },
             "require": {
@@ -77,20 +77,20 @@
                 }
             ],
             "description": "A backend management library for the YUF framework, providing user account management and one-time token authentication via email.",
-            "time": "2026-04-26T19:42:57+00:00"
+            "time": "2026-04-27T12:39:41+00:00"
         },
         {
             "name": "actra/yuf",
-            "version": "v1.0.0",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Actra-AG/yuf",
-                "reference": "df3d101e896d87fbb54f54ce7f9174797de6df60"
+                "reference": "2e979a46a5ce0fd3346f4e15bbfdf6fe2797233a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Actra-AG/yuf/zipball/df3d101e896d87fbb54f54ce7f9174797de6df60",
-                "reference": "df3d101e896d87fbb54f54ce7f9174797de6df60",
+                "url": "https://api.github.com/repos/Actra-AG/yuf/zipball/2e979a46a5ce0fd3346f4e15bbfdf6fe2797233a",
+                "reference": "2e979a46a5ce0fd3346f4e15bbfdf6fe2797233a",
                 "shasum": ""
             },
             "require": {
@@ -128,7 +128,7 @@
                 "php",
                 "smart"
             ],
-            "time": "2026-04-25T21:56:45+00:00"
+            "time": "2026-04-27T18:54:27+00:00"
         }
     ],
     "packages-dev": [],

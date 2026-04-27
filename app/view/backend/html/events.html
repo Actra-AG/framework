@@ -1,0 +1,14 @@
+<div class="main-header-action">
+    <h1>{tst:text value='pageTitle'}</h1>
+    <a class="btn btn-secondary" href="{tst:text value='addHref'}"><span>Eintrag hinzufügen</span></a>
+</div>
+
+<tst:if compare="removed" operator="EQ" against="true">
+    <p class="msg msg-success" role="status" aria-live="polite"><strong>Erfolgreich:</strong> Der Eintrag wurde gelöscht.
+    </p>
+</tst:if>
+
+<p>Folgend werden alle Anlässe aufgelistet, die Sie selbst erfasst haben!</p>
+
+{tst:text value='searchForm'}
+{tst:text value='table'}

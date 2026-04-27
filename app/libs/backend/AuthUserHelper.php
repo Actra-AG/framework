@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace app\libs\backend;
 
+use actra\backend\ActraBackend;
 use actra\backend\libs\auth\MyAuthUser;
 use app\settings\AuthRightEnum;
 
@@ -29,6 +30,8 @@ class AuthUserHelper
 
     public static function isAdmin(): bool
     {
-        return (MyAuthUser::get()->canManageUsers());
+        return MyAuthUser::get()->dbAuthUser->accessRightCollection->hasAccessRight(
+            accessRight: ActraBackend::RIGHT_MANAGE_USERS
+        );
     }
 }

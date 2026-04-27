@@ -1,14 +1,29 @@
 <div class="main-header-action">
     <h1>{tst:text value='pageTitle'}</h1>
-    <a href="{tst:text value='removeHref'}" class="btn btn-secondary btn-danger" data-action="confirm-deletion"
-       data-confirm="{tst:text value='pageTitle'} wirklich löschen?">Mitglied löschen</a>
+    <div class="btn-group">
+        <a class="btn btn-secondary" href="{tst:text value='memberModHref'}"><span>Bearbeiten</span></a>
+        <a href="{tst:text value='removeHref'}" class="btn btn-secondary btn-danger" data-action="confirm-deletion"
+           data-confirm="{tst:text value='pageTitle'} wirklich löschen?">Mitglied löschen</a>
+    </div>
 </div>
+
+<tst:if compare="isPendingRequest" operator="EQ" against="true">
+    <p class="msg msg-note">Dieser Antrag ist noch offen! <a href="{tst:text value='acceptHref'}">akzeptieren</a> | <a href="{tst:text value='denyHref'}">ablehnen</a></p>
+</tst:if>
+
+<tst:if compare="added" operator="EQ" against="true">
+    <p class="msg msg-success" role="status" aria-live="polite"><strong>Erfolgreich:</strong> Der Eintrag wurde
+        hinzugefügt.</p>
+</tst:if>
+<tst:if compare="changed" operator="EQ" against="true">
+    <p class="msg msg-success" role="status" aria-live="polite"><strong>Erfolgreich:</strong> Die Änderungen wurden
+        gespeichert.</p>
+</tst:if>
 
 <div class="grid-half">
     <div class="card | flow-layout-m">
-        <div class="card-header-action">
+        <div class="card-header">
             <h2>Persönliche Daten</h2>
-            <a class="btn btn-secondary" href="{tst:text value='memberModHref'}"><span>Bearbeiten</span></a>
         </div>
         <div class="details">
             <dl>
@@ -108,6 +123,18 @@
             <dl>
                 <dt>Zugang aktiv?</dt>
                 <dd>{tst:text value='active'}</dd>
+            </dl>
+            <dl>
+                <dt>Jahresprogramm</dt>
+                <dd>
+                    <tst:if compare="clubAccess" operator="NE" against="null">
+                        <ul>
+                            <tst:for value="clubAccess" var="item">
+                                <li>{tst:text value='item.name'}</li>
+                            </tst:for>
+                        </ul>
+                    </tst:if>
+                </dd>
             </dl>
         </div>
     </div>

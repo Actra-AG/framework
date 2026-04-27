@@ -41,7 +41,7 @@ class MemberAddForm extends Form
     private readonly TextField $streetField;
     private readonly TextField $zipField;
     private readonly TextField $cityField;
-    private readonly TextField $licenseField;
+    private readonly AmountField $licenseField;
     private readonly PhoneNumberField $phoneField;
     private readonly EmailField $emailField;
     private readonly DateField $dateOfBirthField;
@@ -120,9 +120,10 @@ class MemberAddForm extends Form
             )
         );
         $this->addField(
-            formField: $this->licenseField = new TextField(
+            formField: $this->licenseField = new AmountField(
                 name: 'license',
-                label: HtmlText::encoded(textContent: 'Lizenznummer')
+                label: HtmlText::encoded(textContent: 'Lizenznummer'),
+                valueIsFloat: false
             )
         );
         $this->addField(

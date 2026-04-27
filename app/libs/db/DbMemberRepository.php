@@ -22,6 +22,7 @@ class DbMemberRepository
         return DbQuery::createFromSqlQuery(
             query: '
                 SELECT member.ID,
+                       member.vereinID AS clubID,
                        member.ehren AS honorary,
                        member.accepted,
                        member.denied,
@@ -35,6 +36,8 @@ class DbMemberRepository
                        member.bemerkungen as notes,
                        member.geburtsdatum as birthdate,
                        member.ernannt as honored,
+                       member.accepted,
+                       member.denied,
                        CONCAT_WS(\' \', auth_user.firstName, auth_user.lastName) AS fullName,
                        auth_user.ID,
                        auth_user.registered,
@@ -72,6 +75,7 @@ class DbMemberRepository
                 firstName: $data->firstName,
                 lastName: $data->lastName
             ),
+            clubID: $data->clubID,
             clubName: (string)$data->clubName,
             gender: $data->gender,
             street: $data->street,
@@ -79,11 +83,13 @@ class DbMemberRepository
             city: $data->city,
             license: $data->license,
             phone: $data->phone,
-            birthDate: $data->birthdate,
+            birthDate: $data->birthdate === null ? null : new DateTimeImmutable(datetime: $data->birthdate),
             comment: $data->comment,
             notes: $data->notes,
             honorary: ($data->honorary === 1),
-            honored: $data->honored
+            honored: $data->honored,
+            accepted: $data->accepted === null ? null : new DateTimeImmutable(datetime: $data->accepted),
+            rejected: $data->denied === null ? null : new DateTimeImmutable(datetime: $data->denied)
         );
     }
 
@@ -183,6 +189,121 @@ class DbMemberRepository
                 $birthdate?->format(format: 'Y-m-d'),
                 $honorary,
                 $honored
+            ]
+        );
+    }
+
+    public static function update(
+        int $ID,
+        int $clubID,
+        ?DateTimeImmutable $accepted,
+        int $licence,
+        string $gender,
+        string $street,
+        string $zip,
+        string $city,
+        string $phone,
+        string $comment,
+        string $notes,
+        ?DateTimeImmutable $birthdate,
+        bool $honorary,
+        int $honored
+    ): void {
+        DB::get()->execute(
+            sql: '
+                UPDATE benutzer
+                SET vereinID=?,
+                    accepted=?,
+                    lizenz=?,
+                    anrede=?,
+                    strasse=?,
+                    plz=?,
+                    ort=?,
+                    telefon=?,
+                    kommentar=?,
+                    bemerkungen=?,
+                    geburtsdatum=?,
+                    ehren=?,
+                    ernannt=?
+                WHERE ID=?
+            ',
+            parameters: [
+                $clubID,
+                $accepted?->format(format: 'Y-m-d H:i:s'),
+                $licence,
+                $gender,
+                $street,
+                $zip,
+                $city,
+                $phone,
+                $comment,
+                $notes,
+                $birthdate?->format(format: 'Y-m-d'),
+                $honorary ? 1 : 0,
+                $honored,
+                $ID,
+            ]
+        );
+    }
+
+    public static function delete(int $ID): void
+    {
+        DB::get()->execute(
+            sql: 'DELETE FROM benutzer WHERE ID=?',
+            parameters: [
+                $ID,
+            ]
+        );
+    }
+
+    public static function accept(int $ID): void
+    {
+        $db = DB::get();
+        $db->execute(
+            sql: '
+                UPDATE benutzer
+                SET accepted=NOW(),
+                    denied=NULL
+                WHERE ID=?
+            ',
+            parameters: [
+                $ID,
+            ]
+        );
+        $db->execute(
+            sql: '
+                UPDATE auth_user
+                SET active=1
+                WHERE ID=?
+            ',
+            parameters: [
+                $ID,
+            ]
+        );
+    }
+
+    public static function deny(int $ID): void
+    {
+        $db = DB::get();
+        $db->execute(
+            sql: '
+                UPDATE benutzer
+                SET denied=NOW(),
+                    accepted=NULL
+                WHERE ID=?
+            ',
+            parameters: [
+                $ID,
+            ]
+        );
+        $db->execute(
+            sql: '
+                UPDATE auth_user
+                SET active=0
+                WHERE ID=?
+            ',
+            parameters: [
+                $ID,
             ]
         );
     }

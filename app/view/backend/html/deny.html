@@ -1,22 +1,8 @@
-<h2>Zugriff verweigern</h2>
-
-<!-- NOTUG_ADMIN START -->
-<p>Sie besitzen keine Rechte um den Inhalt dieser Seite anzuzeigen.</p>
-<!-- NOTUG_ADMIN ENDE -->
-
-<tst:if compare="isAdmin" operator="EQ" against="true">
-
-{{STATUS}}
-
-<form method="post" action="deny-{{ID}}.html?send=1" class="form-edit">
-
-<fieldset>
-<dl>
-  <dt><label for="mitteilung">Mitteilung</label></dt>
-  <dd><textarea cols="40" rows="10" id="mitteilung" name="mitteilung">{{MITTEILUNG}}</textarea></dd>
-</dl>
-</fieldset>
-
-<fieldset class="submit"><input type="submit" name="save" value="verweigern" /></fieldset>
-</form>
-</tst:if>
+<div class="wrapper-sm flow-layout-m">
+    <div class="main-header | flow">
+        <h1>{tst:text value='pageTitle'}</h1>
+    </div>
+    <div class="divider-m"></div>
+    <div>Empfänger: {tst:text value='recipient'}</div>
+    {tst:text value='form'}
+</div>

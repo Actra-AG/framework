@@ -11,6 +11,7 @@
 !/composer.lock
 !/README.md
 !/setup.sh
+!/patch.sql
 
 # Whitelist app
 !/app/
