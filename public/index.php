@@ -14,6 +14,7 @@ use actra\yuf\core\Language;
 use actra\yuf\core\Route;
 use actra\yuf\core\RouteCollection;
 use actra\yuf\db\DbSettingsModel;
+use actra\yuf\security\CspPolicySettingsModel;
 use app\libs\backend\BackendNavigationItemCollection;
 use app\settings\EnvSettings;
 use app\settings\ProjectSettings;
@@ -108,4 +109,9 @@ ActraBackend::init(
     frontendHref: ProjectSettings::FRONTEND_HREF,
     frontendName: ProjectSettings::FRONTEND_NAME
 );
-$core->prepareHttpResponse(routeCollection: $routeCollection)->sendAndExit();
+$core->prepareHttpResponse(
+    routeCollection: $routeCollection,
+    cspPolicySettingsModel: new CspPolicySettingsModel(
+        styleSrc: "'self' 'unsafe-inline'",
+    )
+)->sendAndExit();
