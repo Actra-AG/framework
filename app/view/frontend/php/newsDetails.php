@@ -22,36 +22,26 @@ class newsDetails extends FrontendView
 
     protected function getPageTitle(): string
     {
-        return 'Startseite';
+        return 'News';
     }
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-    }
+        $ID = (int)($this->getPathVar(nr: 1) ?? 0);
 
-    public function oldExecute()
-    {
-        $ID = (isset($this->showPage->arrVars[1])) ? $this->showPage->arrVars[1] : 0;
-
-        $sql = "SELECT titel, teaser, text FROM news WHERE ID='{$ID}'";
-        $qry = $this->db->prepareAndExecute($sql);
-        if ($qry->rowCount() != 1) {
-            $this->showPage->redirect("newsArchiv.html");
+        $sql = "SELECT *, DATE_FORMAT(datum, '%d.%m.%Y') AS datumD FROM news WHERE ID=?";
+        $qry = $this->db->prepareAndExecute($sql, [$ID]);
+        if ($qry->rowCount() == 0) {
+            $this->redirect("start.html");
+            return;
         }
-        $res = $qry->fetch(PDO::FETCH_ASSOC);
+        $res = $qry->fetchObject();
 
-        $news = "<div class=\"startnews group\"><h3>{$res['titel']}</h3>{$res['teaser']}{$res['text']}</div>\n";
+        $news = "<h4><em>{$res->datumD}</em></h4>\n{$res->htmlContent}";
+        $news .= "<p class=\"backlink\">&laquo; <a href=\"javascript:history.back();\">zurück</a></p>";
 
-        $titel = $res['titel'];
-        $this->showPage->pageArr['platzhalter']['title'] = $titel;
-        $this->showPage->pageArr['grundkonf']['navigator']['title'] = $titel;
-
-        $this->placeholders['titel'] = $titel;
-        $this->placeholders['news'] = $news;
-    }
-
-    public static function getPath(int $ID): string
-    {
-        return 'newsDetails-' . $ID . '.html';
+        $replacements = $htmlDocument->replacements;
+        $replacements->addEncodedText(identifier: 'titel', content: $res->titel);
+        $replacements->addEncodedText(identifier: 'news', content: $news);
     }
 }

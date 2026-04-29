@@ -16,91 +16,45 @@ class newsArchiv extends FrontendView
     protected function getActiveNavigationItems(): array
     {
         return [
-            1 => 'start',
-            2 => 'newsarchiv'
+            1 => 'newsArchiv'
         ];
     }
 
     protected function getPageTitle(): string
     {
-        return 'Neuigkeiten-Archiv';
+        return 'News-Archiv';
     }
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-    }
+        $year = $this->getPathVar(nr: 1) ?? date("Y");
 
-    public function oldExecute()
-    {
-        $news = '';
+        $sql = "SELECT DISTINCT YEAR(datum) AS jahr FROM news ORDER BY jahr DESC";
+        $qry = $this->db->prepareAndExecute($sql);
+        $yearsArr = $qry->fetchAll(\PDO::FETCH_COLUMN);
 
-        $cond = "n.archiv=? AND n.typ=?";
-        $paramsArr[] = 1;
-        $paramsArr[] = 1;
-
-        $pos = 0;
-
-        $fn = "newsfilter1";
-
-        if (isset($_GET['filter']) && $_GET['filter'] == 'reset' && isset($_SESSION[$fn])) {
-            unset($_SESSION[$fn]);
-        }
-        if (isset($_GET['pos'])) {
-            $_SESSION[$fn]['pos'] = (is_numeric($_GET['pos'])) ? $_GET['pos'] : 0;
-        }
-        if (isset($_SESSION[$fn]['pos'])) {
-            $pos = (int)$_SESSION[$fn]['pos'];
-        }
-        if ($pos < 0) {
-            $pos = 0;
-        }
-
-        $sql = "
-SELECT
-  COUNT(n.ID) AS anz
-  
-FROM
-  news n
-  
-WHERE
-  {$cond}
-";
-        $qry = $this->db->prepareAndExecute($sql, $paramsArr);
-        $res = $qry->fetchObject();
-        if ($res->anz == 0) {
-            $news = "<p>Es gibt keine archivierten Neuigkeiten.</p>";
-        } else {
-            $pagination = $this->showPage->getPagenavi("newsArchiv", $res->anz, $pos);
-            $news .= $pagination;
-            $entriesPerPage = (int)$this->showPage->config['lists']['entriesPerPage'];
-            $sql = "
-  SELECT
-    n.ID, n.titel, n.teaser, n.text
- 
-  FROM
-    news n
-  ";
-            $sql .= "WHERE
-    {$cond}
-  
-  ORDER BY
-    n.datum DESC
-
-  LIMIT
-    {$pos}, {$entriesPerPage}";
-
-            $qry = $this->db->prepareAndExecute($sql, $paramsArr);
-            while ($res = $qry->fetchObject()) {
-                $news .= "<div class=\"startnews group\"><h3>{$res-> titel}</h3>{$res -> teaser}";
-                if ($res->text != "") {
-                    $href = "newsDetails-{$res -> ID}.html";
-                    $news .= "<p><a href=\"{$href}\">weitere Informationen</a></p>";
-                }
-                $news .= "</div>\n";
+        $news = '<ul class="jahresnavi group">';
+        foreach ($yearsArr as $val) {
+            $news .= "<li><a href=\"newsArchiv-{$val}.html\"";
+            if ($val == $year) {
+                $news .= ' class="active"';
             }
-            $news .= $pagination;
+            $news .= ">{$val}</a></li>\n";
+        }
+        $news .= "</ul>\n";
+
+        $sql = "SELECT *, DATE_FORMAT(datum, '%d.%m.%Y') AS datumD FROM news WHERE YEAR(datum)=? ORDER BY datum DESC, ID DESC";
+        $paramsArr = [$year];
+        $qry = $this->db->prepareAndExecute($sql, $paramsArr);
+
+        while ($res = $qry->fetch(\PDO::FETCH_ASSOC)) {
+            $news .= "<div class=\"eidgnews group\"><h4>{$res['titel']} <em>{$res['datumD']}</em></h4>\n{$res['teaser']}";
+            if ($res['htmlContent'] != '') {
+                $news .= "<p><a href=\"newsDetails-{$res['ID']}.html\">weitere Informationen</a></p>";
+            }
+            $news .= "</div>\n";
         }
 
-        $this->placeholders['news'] = $news;
+        $htmlDocument->replacements->addEncodedText(identifier: 'news', content: $news);
     }
 }

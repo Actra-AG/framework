@@ -7,7 +7,7 @@
 <!-- UG_VISITOR START -->
 <p>Wenn Sie sich für einen Zugang registrieren möchten, füllen Sie bitte untenstehende Felder aus.</p>
 
-{{STATUS}}
+{tst:text value='status'}
 
 <form action="register.html?send=1" method="post" class="form-edit">
 
@@ -15,52 +15,52 @@
 <h3>Registrierung</h3>
 <dl>
   <dt><label for="vereinID">Verein<em>*</em></label></dt>
-  <dd><select name="vereinID" id="vereinID">{{VEREINE}}</select></dd>
+  <dd><select name="vereinID" id="vereinID">{tst:text value='vereine'}</select></dd>
 </dl>
 
 <dl>
   <dt>Anrede<em>*</em></dt>
-  <dd><input type="radio" class="radio" name="anrede" id="Frau" value="Frau"{{FRAU}} /><label for="Frau">Frau</label> <input type="radio" class="radio" name="anrede" id="Herr" value="Herr"{{HERR}} /><label for="Herr">Herr</label></dd>
+  <dd><input type="radio" class="radio" name="anrede" id="Frau" value="Frau"{tst:text value='frau'} /><label for="Frau">Frau</label> <input type="radio" class="radio" name="anrede" id="Herr" value="Herr"{tst:text value='herr'} /><label for="Herr">Herr</label></dd>
 </dl>
 
 <dl>
   <dt><label for="vorname">Vorname<em>*</em></label></dt>
-  <dd><input type="text" class="text" name="vorname" id="vorname" value="{{VORNAME}}"  /></dd>
+  <dd><input type="text" class="text" name="vorname" id="vorname" value="{tst:text value='vorname'}"  /></dd>
 </dl>
 
 <dl>
   <dt><label for="nachname">Nachname<em>*</em></label></dt>
-  <dd><input type="text" class="text" name="nachname" id="nachname" value="{{NACHNAME}}"  /></dd>
+  <dd><input type="text" class="text" name="nachname" id="nachname" value="{tst:text value='nachname'}"  /></dd>
 </dl>
 
 <dl>
   <dt><label for="strasse">Strasse<em>*</em></label></dt>
-  <dd><input type="text" class="text" name="strasse" id="strasse" value="{{STRASSE}}"  /></dd>
+  <dd><input type="text" class="text" name="strasse" id="strasse" value="{tst:text value='strasse'}"  /></dd>
 </dl>
 
 <dl>
   <dt><label for="plz">PLZ<em>*</em></label></dt>
-  <dd><input type="text" class="text" name="plz" id="plz" value="{{PLZ}}"  /></dd>
+  <dd><input type="text" class="text" name="plz" id="plz" value="{tst:text value='plz'}"  /></dd>
 </dl>
 
 <dl>
   <dt><label for="ort">Ort<em>*</em></label></dt>
-  <dd><input type="text" class="text" name="ort" id="ort" value="{{ORT}}"  /></dd>
+  <dd><input type="text" class="text" name="ort" id="ort" value="{tst:text value='ort'}"  /></dd>
 </dl>
 
 <dl>
   <dt><label for="lizenz">Lizenznummer</label></dt>
-  <dd><input type="text" class="text" name="lizenz" id="lizenz" value="{{LIZENZ}}"  /></dd>
+  <dd><input type="text" class="text" name="lizenz" id="lizenz" value="{tst:text value='lizenz'}"  /></dd>
 </dl>
 
 <dl>
   <dt><label for="telefon">Telefon</label></dt>
-  <dd><input type="text" class="text" name="telefon" id="telefon" value="{{TELEFON}}"  /></dd>
+  <dd><input type="text" class="text" name="telefon" id="telefon" value="{tst:text value='telefon'}"  /></dd>
 </dl>
 
 <dl>
   <dt><label for="email">E-Mail<em>*</em></label></dt>
-  <dd><input type="text" class="text" name="email" id="email" value="{{EMAIL}}"  /></dd>
+  <dd><input type="text" class="text" name="email" id="email" value="{tst:text value='email'}"  /></dd>
 </dl>
 
 <dl>
@@ -75,7 +75,7 @@
 
 <dl>
   <dt><label for="kommentar">Kommentar</label></dt>
-  <dd><textarea cols="40" rows="10" id="kommentar" name="kommentar">{{KOMMENTAR}}</textarea></dd>
+  <dd><textarea cols="40" rows="10" id="kommentar" name="kommentar">{tst:text value='kommentar'}</textarea></dd>
 </dl>
 </fieldset>
 

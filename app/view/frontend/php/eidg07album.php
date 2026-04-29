@@ -28,19 +28,18 @@ class eidg07album extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-    }
-
-    public function oldExecute()
-    {
         $eidgalbum = '';
 
         $sql = "SELECT * FROM alben WHERE typ=2 ORDER BY titel";
         $qry = $this->db->prepareAndExecute($sql);
-        while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
+        while ($res = $qry->fetch(\PDO::FETCH_ASSOC)) {
             $href = "eidg07fotos-{$res['ID']}.html";
             $eidgalbum .= "<li><a href=\"{$href}\">{$res['titel']}</a></li>\n";
         }
 
-        $this->placeholders['eidgalbum'] = $eidgalbum;
+        $htmlDocument->replacements->addEncodedText(
+            identifier: 'eidgalbum',
+            content: $eidgalbum
+        );
     }
 }

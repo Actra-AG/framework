@@ -27,44 +27,37 @@ class anlass extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-    }
-
-    public function oldExecute()
-    {
         $bsvb = new bsvb();
 
         $dokumente = '';
 
-        if ($this->showPage->arrVars[1] == 'all') {
-            $year = (isset($this->showPage->arrVars[2])) ? $this->showPage->arrVars[2] : 0;
-            $month = (isset($this->showPage->arrVars[3])) ? $this->showPage->arrVars[3] : 0;
+        if ($this->getPathVar(nr: 1) == 'all') {
+            $year = $this->getPathVar(nr: 2) ?? 0;
+            $month = $this->getPathVar(nr: 3) ?? 0;
 
             $backlink = "jpAll-{$year}-{$month}.html";
-            $this->showPage->pageArr['navistufe'][2] = "jpAll";
         } else {
             $jpArr = $bsvb->getJahresprogramm();
 
-            $gruppe = (isset($this->showPage->arrVars[1]) && array_key_exists(
-                    $this->showPage->arrVars[1],
+            $gruppe = ($this->getPathVar(nr: 1) !== null && array_key_exists(
+                    (string)$this->getPathVar(nr: 1),
                     $jpArr['gruppen']
-                )) ? $this->showPage->arrVars[1] : 'sa';
+                )) ? (string)$this->getPathVar(nr: 1) : 'sa';
 
             if (count($jpArr['gruppen'][$gruppe]) == 0) {
                 $typ = $gruppe;
             } else {
-                $typ = (isset($this->showPage->arrVars[2]) && in_array(
-                        $this->showPage->arrVars[2],
+                $typ = ($this->getPathVar(nr: 2) !== null && in_array(
+                        $this->getPathVar(nr: 2),
                         $jpArr['gruppen'][$gruppe]
-                    )) ? $this->showPage->arrVars[2] : current($jpArr['gruppen'][$gruppe]);
+                    )) ? (string)$this->getPathVar(nr: 2) : (string)current($jpArr['gruppen'][$gruppe]);
             }
 
-            $this->showPage->pageArr['navistufe'][2] = "jp{$gruppe}";
-
-            $jahr = (isset($this->showPage->arrVars[3])) ? $this->showPage->arrVars[3] : date("Y");
+            $jahr = $this->getPathVar(nr: 3) ?? date("Y");
 
             $backlink = "jp-{$gruppe}-{$typ}-{$jahr}.html";
         }
-        $ID = (isset($this->showPage->arrVars[4])) ? $this->showPage->arrVars[4] : 0;
+        $ID = (int)($this->getPathVar(nr: 4) ?? 0);
 
         $sql = "
 SELECT
@@ -79,20 +72,22 @@ WHERE
 ";
         $qry = $this->db->prepareAndExecute($sql, [$ID]);
         if ($qry->rowCount() == 0) {
-            $this->showPage->redirect("jp.html");
+            $this->redirect("jp.html");
+            return;
         }
         $res = $qry->fetchObject();
 
-        $this->showPage->pageArr['platzhalter']['title'] = $res->titel;
+        $replacements = $htmlDocument->replacements;
+        $replacements->addEncodedText(identifier: 'title', content: $res->titel);
         $verein = ($res->verein == '') ? 'unbekannt' : $res->verein;
-        $datum = ($res->datumVon == $res->datumBis) ? $res->datumVon : "{$res -> datumVon} - {$res -> datumBis}";
+        $datum = ($res->datumVon == $res->datumBis) ? $res->datumVon : "{$res->datumVon} - {$res->datumBis}";
         $zeit = $res->zeit;
         $ort = $res->ort;
-        $bemerkungen = ($res->bemerkungen == '' || $res->vorstand == 1) ? '' : "<dl class=\"group\"><dt>Bemerkungen:</dt><dd>" . nl2br(
+        $bemerkungen = ($res->bemerkungen == '' || $res->vorstand == 1) ? '' : "<dl class="group"><dt>Bemerkungen:</dt><dd>" . nl2br(
                 $res->bemerkungen
             ) . "</dd></dl>";
         $href = "/calendar/{$ID}/event.ics";
-        $export = ($res->export == 0) ? '' : "<dl class=\"group\"><dt>Kalenderexport:</dt><dd><a href=\"{$href}\" title=\"In Kalender übernehmen\"><img src=\"/images/calendar_add.png\" alt=\"\" /></a></dd></dl>";
+        $export = ($res->export == 0) ? '' : "<dl class="group"><dt>Kalenderexport:</dt><dd><a href="{$href}" title="In Kalender übernehmen"><img src="/images/calendar_add.png" alt="" /></a></dd></dl>";
 
         $pdfArr = [];
 
@@ -112,32 +107,32 @@ WHERE
   			titel
   		";
             $qry = $this->db->prepareAndExecute($sql, [$ID]);
-            while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
+            while ($res = $qry->fetch(\PDO::FETCH_ASSOC)) {
                 if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/dokumente/' . $res['ID'] . '.' . $res['extension'])) {
                     $key = md5("aasmdsjtk{$res['ID']}asujdt3?nz34g");
 
                     $doktitel = ($res['titel'] == '') ? 'ohne Titel' : $res['titel'];
-                    $pdfArr[] = "<li><a href=\"/dokumente/{$res['ID']}/{$key}/" . urlencode(
+                    $pdfArr[] = "<li><a href="/dokumente/{$res['ID']}/{$key}/" . urlencode(
                             $res['dateiname']
-                        ) . "\">{$doktitel}</a></li>\n";
+                        ) . "">{$doktitel}</a></li>\n";
                 }
             }
 
             if (count($pdfArr) != 0) {
-                $dokumente = "<dl class=\"group\"><dt>Dokument(e):</dt><dd><ul class=\"pdflink\">\n" . implode(
+                $dokumente = "<dl class="group"><dt>Dokument(e):</dt><dd><ul class="pdflink">\n" . implode(
                         "\n",
                         $pdfArr
                     ) . "</ul></dd></dl>";
             }
         }
 
-        $this->placeholders['backlink'] = $backlink;
-        $this->placeholders['verein'] = $verein;
-        $this->placeholders['datum'] = $datum;
-        $this->placeholders['zeit'] = $zeit;
-        $this->placeholders['ort'] = $ort;
-        $this->placeholders['bemerkungen'] = $bemerkungen;
-        $this->placeholders['dokumente'] = $dokumente;
-        $this->placeholders['export'] = $export;
+        $replacements->addEncodedText(identifier: 'backlink', content: $backlink);
+        $replacements->addEncodedText(identifier: 'verein', content: $verein);
+        $replacements->addEncodedText(identifier: 'datum', content: $datum);
+        $replacements->addEncodedText(identifier: 'zeit', content: $zeit);
+        $replacements->addEncodedText(identifier: 'ort', content: $ort);
+        $replacements->addEncodedText(identifier: 'bemerkungen', content: $bemerkungen);
+        $replacements->addEncodedText(identifier: 'dokumente', content: $dokumente);
+        $replacements->addEncodedText(identifier: 'export', content: $export);
     }
 }

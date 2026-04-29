@@ -1,17 +1,35 @@
 <?php
+/**
+ * @copyright Actra AG - https://www.actra.ch
+ * @license   MIT
+ */
+
+declare(strict_types=1);
 
 namespace app\view\frontend\php;
 
+use actra\yuf\html\HtmlDocument;
+use app\view\FrontendView;
 use classes\bsvb;
 use classes\FormMailer;
-use classes\pageClass;
 use framework\form\component\field\EmailField;
 use framework\html\HtmlText;
-use PDO;
 
-class register extends pageClass
+class register extends FrontendView
 {
-    public function execute()
+    protected function getActiveNavigationItems(): array
+    {
+        return [
+            1 => 'start'
+        ];
+    }
+
+    protected function getPageTitle(): string
+    {
+        return 'Registrieren';
+    }
+
+    public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
         $bsvb = new bsvb();
 
@@ -36,132 +54,132 @@ class register extends pageClass
         $fehlerArr = [];
 
         $vArr = [];
-        if (!$this->showPage->checkAccess()) {
-            $vArr[0] = 'keiner';
-            $sql = "SELECT ID, name FROM vereine ORDER BY name";
-            $qry = $this->db->prepareAndExecute($sql);
-            while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
-                $vArr[$res['ID']] = $res['name'];
+        $vArr[0] = 'keiner';
+        $sql = "SELECT ID, name FROM vereine ORDER BY name";
+        $qry = $this->db->prepareAndExecute($sql);
+        while ($res = $qry->fetch(\PDO::FETCH_ASSOC)) {
+            $vArr[$res['ID']] = $res['name'];
+        }
+
+        if (isset($_GET['send'])) {
+            if (!isset($_POST['vereinID']) || !isset($vArr[$_POST['vereinID']])) {
+                $fehlerArr[] = "Wählen Sie einen Verein aus";
+            } else {
+                $datenArr['vereinID'] = $_POST['vereinID'];
             }
 
-            if (isset($_GET['send'])) {
-                if (!isset($_POST['vereinID']) || !isset($vArr[$_POST['vereinID']])) {
-                    $fehlerArr[] = "Wählen Sie einen Verein aus";
-                } else {
-                    $datenArr['vereinID'] = $_POST['vereinID'];
-                }
-
-                if (!isset($_POST['anrede'])) {
+            if (!isset($_POST['anrede'])) {
+                $fehlerArr[] = 'Bitte wählen Sie eine Anrede aus.';
+            } else {
+                if ($_POST['anrede'] != 'Herr' && $_POST['anrede'] != 'Frau') {
                     $fehlerArr[] = 'Bitte wählen Sie eine Anrede aus.';
                 } else {
-                    if ($_POST['anrede'] != 'Herr' && $_POST['anrede'] != 'Frau') {
-                        $fehlerArr[] = 'Bitte wählen Sie eine Anrede aus.';
-                    } else {
-                        $datenArr['anrede'] = $_POST['anrede'];
-                    }
+                    $datenArr['anrede'] = $_POST['anrede'];
                 }
+            }
 
-                if (!isset($_POST['vorname']) || trim($_POST['vorname']) == '') {
-                    $fehlerArr[] = "Geben Sie bitte Ihren Vornamen an.";
+            if (!isset($_POST['vorname']) || trim($_POST['vorname']) == '') {
+                $fehlerArr[] = "Geben Sie bitte Ihren Vornamen an.";
+            } else {
+                $datenArr['vorname'] = $_POST['vorname'];
+            }
+
+            if (!isset($_POST['nachname']) || trim($_POST['nachname']) == '') {
+                $fehlerArr[] = "Geben Sie bitte Ihren Nachnamen an.";
+            } else {
+                $datenArr['nachname'] = $_POST['nachname'];
+            }
+
+            if (!isset($_POST['strasse']) || trim($_POST['strasse']) == '') {
+                $fehlerArr[] = "Geben Sie bitte Ihre Strasse an.";
+            } else {
+                $datenArr['strasse'] = $_POST['strasse'];
+            }
+
+            if (!isset($_POST['plz']) || trim($_POST['plz']) == '') {
+                $fehlerArr[] = "Geben Sie bitte die PLZ an.";
+            } else {
+                $datenArr['plz'] = $_POST['plz'];
+            }
+
+            if (!isset($_POST['ort']) || trim($_POST['ort']) == '') {
+                $fehlerArr[] = "Geben Sie bitte den Ort an.";
+            } else {
+                $datenArr['ort'] = $_POST['ort'];
+            }
+
+            if (isset($_POST['lizenz'])) {
+                $datenArr['lizenz'] = $_POST['lizenz'];
+            }
+            if (isset($_POST['telefon'])) {
+                $datenArr['telefon'] = $_POST['telefon'];
+            }
+
+            $emailField = new EmailField(
+                name: 'email',
+                label: HtmlText::encoded(textContent: 'E-Mail'),
+                value: null,
+                invalidError: HtmlText::encoded(textContent: 'Geben Sie bitte eine gültige E-Mail-Adresse an.'),
+                requiredError: HtmlText::encoded(textContent: 'Geben Sie bitte eine E-Mail-Adresse an.')
+            );
+            if (!$emailField->validate(inputData: $_POST)) {
+                $fehlerArr[] = $emailField->getErrorsAsHtmlTextObjects()[0]->render();
+            } else {
+                $datenArr['email'] = $emailField->getRawValue();
+                $sql = "SELECT COUNT(*) AS anz FROM benutzer WHERE email=?";
+                $qry = $this->db->prepareAndExecute($sql, [$datenArr['email']]);
+                $res = $qry->fetch(\PDO::FETCH_ASSOC);
+                if ($res['anz'] != 0) {
+                    $fehlerArr[] = 'Die eingegebene E-Mail-Adresse ist bereits registriert. Geben Sie bitte eine andere ein.';
+                }
+            }
+
+            if (isset($_POST['kommentar'])) {
+                $datenArr['kommentar'] = $_POST['kommentar'];
+            }
+
+            if (!isset($_POST['passwort']) || $_POST['passwort'] == '') {
+                $fehlerArr[] = 'Sie haben kein Passwort eingegeben.';
+            } else {
+                if (!isset($_POST['passwort_confirm']) || $_POST['passwort'] != $_POST['passwort_confirm']) {
+                    $fehlerArr[] = 'Geben Sie bitte zweimal dasselbe Passwort ein.';
                 } else {
-                    $datenArr['vorname'] = $_POST['vorname'];
+                    $datenArr['passwort'] = $_POST['passwort'];
                 }
+            }
 
-                if (!isset($_POST['nachname']) || trim($_POST['nachname']) == '') {
-                    $fehlerArr[] = "Geben Sie bitte Ihren Nachnamen an.";
-                } else {
-                    $datenArr['nachname'] = $_POST['nachname'];
+            if (count($fehlerArr) == 0) {
+                $datenArr['ip'] = '';
+                if (isset($_SERVER['REMOTE_ADDR'])) {
+                    $datenArr['ip'] = $_SERVER['REMOTE_ADDR'];
                 }
+                $datenArr['passwort'] = md5($datenArr['passwort']);
 
-                if (!isset($_POST['strasse']) || trim($_POST['strasse']) == '') {
-                    $fehlerArr[] = "Geben Sie bitte Ihre Strasse an.";
-                } else {
-                    $datenArr['strasse'] = $_POST['strasse'];
-                }
+                $ID = $bsvb->insertEntry('benutzer', $datenArr);
 
-                if (!isset($_POST['plz']) || trim($_POST['plz']) == '') {
-                    $fehlerArr[] = "Geben Sie bitte die PLZ an.";
-                } else {
-                    $datenArr['plz'] = $_POST['plz'];
-                }
+                $to = $_POST['email'];
+                $toName = $_POST['email'];
+                $from = "webmaster@bsv-buelach.ch";
+                $fromName = "webmaster@bsv-buelach.ch";
+                $subject = "Ihre Registrierung bei {$_SERVER['SERVER_NAME']}";
 
-                if (!isset($_POST['ort']) || trim($_POST['ort']) == '') {
-                    $fehlerArr[] = "Geben Sie bitte den Ort an.";
-                } else {
-                    $datenArr['ort'] = $_POST['ort'];
-                }
+                $code = md5("bsvregister{$ID}buelach");
+                $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
 
-                if (isset($_POST['lizenz'])) {
-                    $datenArr['lizenz'] = $_POST['lizenz'];
-                }
-                if (isset($_POST['telefon'])) {
-                    $datenArr['telefon'] = $_POST['telefon'];
-                }
+                $text = "Grüezi\n\nSie haben sich bei {$_SERVER['SERVER_NAME']} registriert. Bitte klicken Sie auf den folgenden Link, um dies zu bestätigen:\n\n{$protocol}://{$_SERVER['SERVER_NAME']}/backend/confirm-{$ID}-{$code}.html\n\nWenn Sie sich nicht registriert haben, ignorieren Sie diese E-Mail und klicken Sie nicht auf den obigen Link!\n\nFreundliche Grüsse\n\nBezirksschützenverband Bülach";
 
-                $emailField = new EmailField(
-                    name: 'email',
-                    label: HtmlText::encoded(textContent: 'E-Mail'),
-                    value: null,
-                    invalidError: HtmlText::encoded(textContent: 'Geben Sie bitte eine gültige E-Mail-Adresse an.'),
-                    requiredError: HtmlText::encoded(textContent: 'Geben Sie bitte eine E-Mail-Adresse an.')
-                );
-                if (!$emailField->validate(inputData: $_POST)) {
-                    $fehlerArr[] = $emailField->getErrorsAsHtmlTextObjects()[0]->render();
-                } else {
-                    $datenArr['email'] = $emailField->getRawValue();
-                    $sql = "SELECT COUNT(*) AS anz FROM benutzer WHERE email=?";
-                    $qry = $this->db->prepareAndExecute($sql, [$datenArr['email']]);
-                    $res = $qry->fetch(PDO::FETCH_ASSOC);
-                    if ($res['anz'] != 0) {
-                        $fehlerArr[] = 'Die eingegebene E-Mail-Adresse ist bereits registriert. Geben Sie bitte eine andere ein.';
-                    }
-                }
+                (new FormMailer())->send($to, $toName, $from, $fromName, $subject, $text);
 
-                if (isset($_POST['kommentar'])) {
-                    $datenArr['kommentar'] = $_POST['kommentar'];
-                }
+                $to = "webmaster@bsv-buelach.ch";
+                $toName = "webmaster@bsv-buelach.ch";
+                $subject = "Neue Registrierung bei {$_SERVER['SERVER_NAME']}";
 
-                if (!isset($_POST['passwort']) || $_POST['passwort'] == '') {
-                    $fehlerArr[] = 'Sie haben kein Passwort eingegeben.';
-                } else {
-                    if (!isset($_POST['passwort_confirm']) || $_POST['passwort'] != $_POST['passwort_confirm']) {
-                        $fehlerArr[] = 'Geben Sie bitte zweimal dasselbe Passwort ein.';
-                    } else {
-                        $datenArr['passwort'] = $_POST['passwort'];
-                    }
-                }
+                $text = "Grüezi\n\nEs gibt eine neue Registrierung bei {$_SERVER['SERVER_NAME']}. Bitte prüfen Sie diese und akzeptieren oder verweigern Sie den Zugriff.\n\nFreundliche Grüsse\n\nBezirksschützenverband Bülach";
 
-                if (count($fehlerArr) == 0) {
-                    $datenArr['ip'] = '';
-                    if (isset($_SERVER['REMOTE_ADDR'])) {
-                        $datenArr['ip'] = $_SERVER['REMOTE_ADDR'];
-                    }
-                    $datenArr['passwort'] = md5($datenArr['passwort']);
+                (new FormMailer())->send($to, $toName, $from, $fromName, $subject, $text);
 
-                    $ID = $bsvb->insertEntry('benutzer', $datenArr);
-
-                    $to = $_POST['email'];
-                    $toName = $_POST['email'];
-                    $from = "webmaster@bsv-buelach.ch";
-                    $fromName = "webmaster@bsv-buelach.ch";
-                    $subject = "Ihre Registrierung bei {$_SERVER['SERVER_NAME']}";
-
-                    $code = md5("bsvregister{$ID}buelach");
-
-                    $text = "Grüezi\n\nSie haben sich bei {$_SERVER['SERVER_NAME']} registriert. Bitte klicken Sie auf den folgenden Link, um dies zu bestätigen:\n\n{$this->showPage -> config['protocol']}://{$_SERVER['SERVER_NAME']}/backend/confirm-{$ID}-{$code}.html\n\nWenn Sie sich nicht registriert haben, ignorieren Sie diese E-Mail und klicken Sie nicht auf den obigen Link!\n\nFreundliche Grüsse\n\nBezirksschützenverband Bülach";
-
-                    (new FormMailer())->send($to, $toName, $from, $fromName, $subject, $text);
-
-                    $to = "webmaster@bsv-buelach.ch";
-                    $toName = "webmaster@bsv-buelach.ch";
-                    $subject = "Neue Registrierung bei {$_SERVER['SERVER_NAME']}";
-
-                    $text = "Grüezi\n\nEs gibt eine neue Registrierung bei {$_SERVER['SERVER_NAME']}. Bitte prüfen Sie diese und akzeptieren oder verweigern Sie den Zugriff.\n\nFreundliche Grüsse\n\nBezirksschützenverband Bülach";
-
-                    (new FormMailer())->send($to, $toName, $from, $fromName, $subject, $text);
-
-                    $this->showPage->redirect("registerRes.html");
-                }
+                $this->redirect("registerRes.html");
+                return;
             }
         }
 
@@ -173,11 +191,13 @@ class register extends pageClass
             $status .= '</ul></div>';
         }
 
+        $replacements = $htmlDocument->replacements;
         foreach ($datenArr as $key => $val) {
             if ($key == 'anrede') {
-                $$val = ' checked="checked"';
+                if ($val == 'Herr') $Herr = ' checked="checked"';
+                if ($val == 'Frau') $Frau = ' checked="checked"';
             } else {
-                $this->placeholders[$key] = $val;
+                $replacements->addEncodedText(identifier: $key, content: (string)$val);
             }
         }
 
@@ -189,9 +209,9 @@ class register extends pageClass
             $vereine .= ">{$val}</option>\n";
         }
 
-        $this->placeholders['status'] = $status;
-        $this->placeholders['Herr'] = $Herr;
-        $this->placeholders['Frau'] = $Frau;
-        $this->placeholders['vereine'] = $vereine;
+        $replacements->addEncodedText(identifier: 'status', content: $status);
+        $replacements->addEncodedText(identifier: 'herr', content: $Herr);
+        $replacements->addEncodedText(identifier: 'frau', content: $Frau);
+        $replacements->addEncodedText(identifier: 'vereine', content: $vereine);
     }
 }

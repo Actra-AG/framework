@@ -26,20 +26,19 @@ class ehrenmitglieder extends FrontendView
         return 'Ehrenmitglieder';
     }
 
-    public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
-    {
-    }
-
-    public function oldExecute()
+    public function prepareHtmlDocument(HtmlDocument ): void
     {
         $ehren = '';
 
         $sql = "SELECT * FROM benutzer WHERE ehren=1 ORDER BY ernannt, nachname, vorname";
         $qry = $this->db->prepareAndExecute($sql);
-        while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
+        while ($res = $qry->fetch(\PDO::FETCH_ASSOC)) {
             $ehren .= "<tr><td>{$res['nachname']}</td><td>{$res['vorname']}</td><td>{$res['plz']} {$res['ort']}</td><td>{$res['ernannt']}</td></tr>\n";
         }
 
-        $this->placeholders['ehren'] = $ehren;
+        $htmlDocument->replacements->addEncodedText(
+            identifier: 'ehren',
+            content: $ehren
+        );
     }
 }

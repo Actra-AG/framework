@@ -23,42 +23,30 @@ class eidg07foto extends FrontendView
 
     protected function getPageTitle(): string
     {
-        return 'Eidgenössisches 2007';
+        return 'Foto';
     }
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-    }
-
-    public function oldExecute()
-    {
-        $imgsize = '';
-        $text = '';
-
-        $katID = (isset($this->showPage->arrVars[1])) ? $this->showPage->arrVars[1] : 0;
-        $fotoID = (isset($this->showPage->arrVars[2])) ? $this->showPage->arrVars[2] : 0;
-
-        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/galerie/foto' . $fotoID . '.jpg')) {
-            $imgArr = getimagesize($_SERVER['DOCUMENT_ROOT'] . '/galerie/foto' . $fotoID . '.jpg');
-            $imgsize = $imgArr[3];
-        }
+        $katID = (int)($this->getPathVar(nr: 1) ?? 0);
+        $fotoID = (int)($this->getPathVar(nr: 2) ?? 0);
 
         $sql = "SELECT titel FROM alben WHERE ID=?";
         $qry = $this->db->prepareAndExecute($sql, [$katID]);
-        $res = $qry->fetch(PDO::FETCH_ASSOC);
-        $title = $res['titel'];
+        $res = $qry->fetchObject();
+        
+        $replacements = $htmlDocument->replacements;
+        $replacements->addEncodedText(identifier: 'title', content: $res->titel);
 
-        $sql = "SELECT text FROM fotos WHERE ID =?";
+        $sql = "SELECT * FROM fotos WHERE ID=?";
         $qry = $this->db->prepareAndExecute($sql, [$fotoID]);
-        $res = $qry->fetch(PDO::FETCH_ASSOC);
-        if ($res['text'] != '') {
-            $text = '<p>' . nl2br($res['text']) . '</p>';
-        }
+        $res = $qry->fetchObject();
 
-        $this->placeholders['title'] = $title;
-        $this->placeholders['katID'] = $katID;
-        $this->placeholders['fotoID'] = $fotoID;
-        $this->placeholders['imgsize'] = $imgsize;
-        $this->placeholders['text'] = $text;
+        $size = getimagesize($_SERVER['DOCUMENT_ROOT'] . "/galerie/foto{$fotoID}.jpg");
+
+        $replacements->addEncodedText(identifier: 'katid', content: (string)$katID);
+        $replacements->addEncodedText(identifier: 'fotoid', content: (string)$fotoID);
+        $replacements->addEncodedText(identifier: 'imgsize', content: $size[3]);
+        $replacements->addEncodedText(identifier: 'text', content: nl2br($res->text));
     }
 }

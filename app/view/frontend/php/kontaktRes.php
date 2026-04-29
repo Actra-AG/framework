@@ -16,7 +16,8 @@ class kontaktRes extends FrontendView
     protected function getActiveNavigationItems(): array
     {
         return [
-            1 => 'kontakt'
+            1 => 'ueberuns',
+            2 => 'vorstand'
         ];
     }
 
@@ -27,28 +28,16 @@ class kontaktRes extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-    }
+        $toID = (int)($this->getPathVar(nr: 1) ?? 1);
 
-    public function oldExecute()
-    {
-        $toID = (isset($this->showPage->arrVars[1])) ? $this->showPage->arrVars[1] : 0;
-
-        $this->showPage->pageArr['platzhalter']['title'] = 'BSVB kontaktieren';
-
-        $sql = "
-SELECT
-  vorname, nachname, email
-  
-FROM
-  benutzer
-  
-WHERE
-  ID=?
-";
+        $sql = "SELECT vorname, nachname FROM benutzer WHERE ID=? AND kontakt=1";
         $qry = $this->db->prepareAndExecute($sql, [$toID]);
-        if ($qry->rowCount() == 1) {
-            $res = $qry->fetch(PDO::FETCH_ASSOC);
-            $this->showPage->pageArr['platzhalter']['title'] = "{$res['vorname']} {$res['nachname']} kontaktieren";
+        if ($qry->rowCount() == 0) {
+            $this->redirect("vorstand.html");
+            return;
         }
+        $res = $qry->fetchObject();
+
+        $htmlDocument->replacements->addEncodedText(identifier: 'title', content: "Kontakt zu {$res->vorname} {$res->nachname}");
     }
 }

@@ -1,42 +1,42 @@
-<h2>{{TITLE}}</h2>
+<h2>{tst:text value='title'}</h2>
 
-{{STATUS}}
+{tst:text value='status'}
 
-<form action="kontakt-{{TOID}}.html?send=1" method="post" id="kontaktformular">
+<form action="kontakt-{tst:text value='toid'}.html?send=1" method="post" id="kontaktformular">
 <fieldset>
 <dl>
   <dt><label for="firma">Firma</label></dt>
-  <dd><input type="text" name="firma" id="firma" value="{{FIRMA}}" /></dd>
+  <dd><input type="text" name="firma" id="firma" value="{tst:text value='firma'}" /></dd>
 </dl>
 
 <dl>
   <dt><label for="vorname">Vorname</label></dt>
-  <dd><input type="text" name="vorname" id="vorname" value="{{VORNAME}}" /></dd>
+  <dd><input type="text" name="vorname" id="vorname" value="{tst:text value='vorname'}" /></dd>
 </dl>
 
 <dl>
   <dt><label for="nachname">Nachname</label></dt>
-  <dd><input type="text" name="nachname" id="nachname" value="{{NACHNAME}}" /></dd>
+  <dd><input type="text" name="nachname" id="nachname" value="{tst:text value='nachname'}" /></dd>
 </dl>
 
 <dl>
   <dt><label for="email">E-Mail</label></dt>
-  <dd><input type="text" name="email" id="email" value="{{EMAIL}}" /></dd>
+  <dd><input type="text" name="email" id="email" value="{tst:text value='email'}" /></dd>
 </dl>
 
 <dl>
   <dt><label for="telefon">Telefon</label></dt>
-  <dd><input type="text" name="telefon" id="telefon" value="{{TELEFON}}" /></dd>
+  <dd><input type="text" name="telefon" id="telefon" value="{tst:text value='telefon'}" /></dd>
 </dl>
 
 <dl>
   <dt><label for="betreff">Betreff</label></dt>
-  <dd><input type="text" name="betreff" id="betreff" value="{{BETREFF}}" /></dd>
+  <dd><input type="text" name="betreff" id="betreff" value="{tst:text value='betreff'}" /></dd>
 </dl>
 
 <dl>
   <dt><label for="mitteilung">Mitteilung</label></dt>
-  <dd><textarea name="mitteilung" id="mitteilung" cols="40" rows="10">{{MITTEILUNG}}</textarea></dd>
+  <dd><textarea name="mitteilung" id="mitteilung" cols="40" rows="10">{tst:text value='mitteilung'}</textarea></dd>
 </dl>
 
 <div class="byebye">
