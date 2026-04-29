@@ -1,13 +1,15 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @copyright Actra AG - https://www.actra.ch
+ * @license   MIT
  */
 
-namespace site\view\frontend\php;
+declare(strict_types=1);
+
+namespace app\view\frontend\php;
 
 use actra\yuf\html\HtmlDocument;
-use site\view\FrontendView;
+use app\view\FrontendView;
 
 class jp extends FrontendView
 {
@@ -25,7 +27,6 @@ class jp extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-
     }
 
     public function oldExecute()
@@ -37,7 +38,10 @@ class jp extends FrontendView
 
         $jpArr = $bsvb->getJahresprogramm();
 
-        $gruppe = (isset($this->showPage->arrVars[1]) && array_key_exists($this->showPage->arrVars[1], $jpArr['gruppen']) && $this->showPage->arrVars[1] != 'vorstand') ? $this->showPage->arrVars[1] : '';
+        $gruppe = (isset($this->showPage->arrVars[1]) && array_key_exists(
+                $this->showPage->arrVars[1],
+                $jpArr['gruppen']
+            ) && $this->showPage->arrVars[1] != 'vorstand') ? $this->showPage->arrVars[1] : '';
         if (!isset($jpArr['gruppen'][$gruppe])) {
             $this->showPage->redirect("jpAll.html");
         }
@@ -45,7 +49,10 @@ class jp extends FrontendView
         if (count($jpArr['gruppen'][$gruppe]) == 0) {
             $typ = $gruppe;
         } else {
-            $typ = (isset($this->showPage->arrVars[2]) && in_array($this->showPage->arrVars[2], $jpArr['gruppen'][$gruppe])) ? $this->showPage->arrVars[2] : current($jpArr['gruppen'][$gruppe]);
+            $typ = (isset($this->showPage->arrVars[2]) && in_array(
+                    $this->showPage->arrVars[2],
+                    $jpArr['gruppen'][$gruppe]
+                )) ? $this->showPage->arrVars[2] : current($jpArr['gruppen'][$gruppe]);
 
             $gruppen = "<div id=\"nav-content\" class=\"group\"><ul>\n";
             foreach ($jpArr['gruppen'][$gruppe] as $val) {
@@ -60,17 +67,28 @@ class jp extends FrontendView
 
         $intro = (isset($jpArr['typen'][$typ]['intro'])) ? $jpArr['typen'][$typ]['intro'] : '';
         $cond = " WHERE p.{$typ}=1 AND p.confirmed!='0000-00-00 00:00:00'";
-        $addCond = (count($jpArr['typen'][$typ]['conditions']) == 0) ? "" : " AND " . implode(" AND ", $jpArr['typen'][$typ]['conditions']);
+        $addCond = (count($jpArr['typen'][$typ]['conditions']) == 0) ? "" : " AND " . implode(
+                " AND ",
+                $jpArr['typen'][$typ]['conditions']
+            );
 
-        $qry = $this->db->prepareAndExecute(sql: "SELECT DATE_FORMAT(MAX(p.lastmod), '%d.%m.%Y %T') AS lastmod FROM jahresprogramm p" . $cond);
+        $qry = $this->db->prepareAndExecute(
+            sql: "SELECT DATE_FORMAT(MAX(p.lastmod), '%d.%m.%Y %T') AS lastmod FROM jahresprogramm p" . $cond
+        );
         $res = $qry->fetch(PDO::FETCH_ASSOC);
         $lastmod = ($res['lastmod'] != '') ? $res['lastmod'] : 'unbekannt';
 
-        $qry = $this->db->prepareAndExecute(sql: "SELECT MIN(YEAR(p.datumVon)) AS minJahr, MAX(YEAR(p.datumBis)) AS maxJahr FROM jahresprogramm p " . $cond . $addCond);
+        $qry = $this->db->prepareAndExecute(
+            sql: "SELECT MIN(YEAR(p.datumVon)) AS minJahr, MAX(YEAR(p.datumBis)) AS maxJahr FROM jahresprogramm p " . $cond . $addCond
+        );
         $res = $qry->fetch(PDO::FETCH_ASSOC);
         $minJahr = ($res['minJahr'] != '') ? $res['minJahr'] : date("Y");
         $maxJahr = ($res['maxJahr'] != '') ? $res['maxJahr'] : date("Y");
-        $currJahr = (isset($this->showPage->arrVars[3]) && is_numeric($this->showPage->arrVars[3]) && $this->showPage->arrVars[3] >= $minJahr && $this->showPage->arrVars[3] <= $maxJahr) ? $this->showPage->arrVars[3] : date("Y");
+        $currJahr = (isset($this->showPage->arrVars[3]) && is_numeric(
+                $this->showPage->arrVars[3]
+            ) && $this->showPage->arrVars[3] >= $minJahr && $this->showPage->arrVars[3] <= $maxJahr) ? $this->showPage->arrVars[3] : date(
+            "Y"
+        );
         if ($currJahr < $minJahr || $currJahr > $maxJahr) {
             $currJahr = $minJahr;
         }
@@ -134,7 +152,11 @@ class jp extends FrontendView
         if ($res->anz == 0) {
             $liste = "<p class=\"no-entry\">Es sind keine Anlässe erfasst.</p>";
         } else {
-            $liste .= "<table cellspacing=\"0\" class=\"normtable\">\n<thead>\n" . $this->showPage->dynTableHeader($fArr, $orderby, $ox) . "</thead>\n<tbody>\n";
+            $liste .= "<table cellspacing=\"0\" class=\"normtable\">\n<thead>\n" . $this->showPage->dynTableHeader(
+                    $fArr,
+                    $orderby,
+                    $ox
+                ) . "</thead>\n<tbody>\n";
 
             $i = 0;
             $sql = "

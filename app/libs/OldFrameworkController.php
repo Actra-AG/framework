@@ -1,8 +1,10 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @copyright Actra AG - https://www.actra.ch
+ * @license   MIT
  */
+
+declare(strict_types=1);
 
 namespace app\libs;
 

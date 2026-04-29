@@ -1,13 +1,15 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @copyright Actra AG - https://www.actra.ch
+ * @license   MIT
  */
 
-namespace site\view\frontend\php;
+declare(strict_types=1);
+
+namespace app\view\frontend\php;
 
 use actra\yuf\html\HtmlDocument;
-use site\view\FrontendView;
+use app\view\FrontendView;
 
 class eidg07start extends FrontendView
 {
@@ -26,7 +28,6 @@ class eidg07start extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-
     }
 
     public function oldExecute()
@@ -39,7 +40,6 @@ class eidg07start extends FrontendView
             $ldate = '';
             $eidgnews = '<ul>';
             while ($res = $qry->fetch(PDO::FETCH_ASSOC)) {
-
                 if ($ldate == $res['datum'] || $ldate == '') {
                     $href = 'newsDetails-' . $res['ID'] . '.html';
                     $eidgnews .= '<li><span><a href="' . $href . '">' . $res['titel'] . '</a></span> <em>' . $res['datum'] . '</em></li>';
@@ -69,7 +69,7 @@ LIMIT 0,1
         $res = $qry->fetch(PDO::FETCH_ASSOC);
         $href = 'eidg07foto-' . $res['albumID'] . '-' . $res['fotoID'] . '.html';
         $src = '/galerie/tnfoto' . $res['fotoID'] . '.jpg';
-        $foto = '<a href="'.$href.'"><img src="'.$src.'" width="125" height="90" alt="" /></a>';
+        $foto = '<a href="' . $href . '"><img src="' . $src . '" width="125" height="90" alt="" /></a>';
 
         $this->placeholders['foto'] = $foto;
         $this->placeholders['datum'] = (new DateTimeImmutable())->format(format: 'd.m.Y');

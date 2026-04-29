@@ -1,14 +1,16 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @copyright Actra AG - https://www.actra.ch
+ * @license   MIT
  */
 
-namespace site\view\frontend\php;
+declare(strict_types=1);
+
+namespace app\view\frontend\php;
 
 use actra\yuf\html\HtmlDocument;
 use app\libs\db\DbNewsRepository;
-use site\view\FrontendView;
+use app\view\FrontendView;
 
 class start extends FrontendView
 {

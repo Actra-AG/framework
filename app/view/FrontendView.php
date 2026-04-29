@@ -3,7 +3,7 @@
  * @copyright Actra AG, Embrach, Switzerland, www.actra.ch
  */
 
-namespace site\view;
+namespace app\view;
 
 use actra\yuf\auth\AccessRightCollection;
 use actra\yuf\core\BaseView;

@@ -1,13 +1,15 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @copyright Actra AG - https://www.actra.ch
+ * @license   MIT
  */
 
-namespace site\view\frontend\php;
+declare(strict_types=1);
+
+namespace app\view\frontend\php;
 
 use actra\yuf\html\HtmlDocument;
-use site\view\FrontendView;
+use app\view\FrontendView;
 
 class eidg07foto extends FrontendView
 {
@@ -26,7 +28,6 @@ class eidg07foto extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-
     }
 
     public function oldExecute()
@@ -40,16 +41,15 @@ class eidg07foto extends FrontendView
         if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/galerie/foto' . $fotoID . '.jpg')) {
             $imgArr = getimagesize($_SERVER['DOCUMENT_ROOT'] . '/galerie/foto' . $fotoID . '.jpg');
             $imgsize = $imgArr[3];
-
         }
 
         $sql = "SELECT titel FROM alben WHERE ID=?";
-        $qry = $this->db->prepareAndExecute($sql, array($katID));
+        $qry = $this->db->prepareAndExecute($sql, [$katID]);
         $res = $qry->fetch(PDO::FETCH_ASSOC);
         $title = $res['titel'];
 
         $sql = "SELECT text FROM fotos WHERE ID =?";
-        $qry = $this->db->prepareAndExecute($sql, array($fotoID));
+        $qry = $this->db->prepareAndExecute($sql, [$fotoID]);
         $res = $qry->fetch(PDO::FETCH_ASSOC);
         if ($res['text'] != '') {
             $text = '<p>' . nl2br($res['text']) . '</p>';

@@ -1,5 +1,6 @@
 <?php
-namespace site\view\frontend\php;
+
+namespace app\view\frontend\php;
 
 use classes\bsvb;
 use classes\FormMailer;

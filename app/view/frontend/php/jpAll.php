@@ -1,13 +1,15 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @copyright Actra AG - https://www.actra.ch
+ * @license   MIT
  */
 
-namespace site\view\frontend\php;
+declare(strict_types=1);
+
+namespace app\view\frontend\php;
 
 use actra\yuf\html\HtmlDocument;
-use site\view\FrontendView;
+use app\view\FrontendView;
 
 class jpAll extends FrontendView
 {
@@ -26,12 +28,10 @@ class jpAll extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-
     }
 
     public function oldExecute()
     {
-
         $sql = "SELECT DATE_FORMAT(MAX(lastmod), '%d.%m.%Y %T') AS lastmod, MIN(datumVon) AS minDate, MAX(datumBis) AS maxDate FROM jahresprogramm WHERE confirmed!='0000-00-00 00:00:00'";
         $qry = $this->db->prepareAndExecute($sql);
         $res = $qry->fetch(PDO::FETCH_ASSOC);
@@ -76,15 +76,15 @@ class jpAll extends FrontendView
         $years .= "</ul>\n</div>";
 
         $monthArr = [
-            1  => 'Januar',
-            2  => 'Februar',
-            3  => 'März',
-            4  => 'April',
-            5  => 'Mai',
-            6  => 'Juni',
-            7  => 'Juli',
-            8  => 'August',
-            9  => 'September',
+            1 => 'Januar',
+            2 => 'Februar',
+            3 => 'März',
+            4 => 'April',
+            5 => 'Mai',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'August',
+            9 => 'September',
             10 => 'Oktober',
             11 => 'November',
             12 => 'Dezember',
@@ -112,7 +112,6 @@ class jpAll extends FrontendView
         if ($res->anz == 0) {
             $list = "<p class=\"no-entry\">Es sind keine Anlässe erfasst.</p>";
         } else {
-
             $fArr['p.datum']['attributes'] = '';
             $fArr['p.datum']['order'] = 0;
             $fArr['p.datum']['ox'] = '';
@@ -135,7 +134,11 @@ class jpAll extends FrontendView
 
             $ox = "";
             $orderby = "p.datumVon, p.datumBis, p.zeit";
-            $list .= "<table cellspacing=\"0\" class=\"normtable\">\n<thead>\n" . $this->showPage->dynTableHeader($fArr, $orderby, $ox) . "</thead>\n<tbody>\n";
+            $list .= "<table cellspacing=\"0\" class=\"normtable\">\n<thead>\n" . $this->showPage->dynTableHeader(
+                    $fArr,
+                    $orderby,
+                    $ox
+                ) . "</thead>\n<tbody>\n";
             $i = 0;
             $sql = "
 			SELECT

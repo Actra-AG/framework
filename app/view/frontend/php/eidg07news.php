@@ -1,13 +1,15 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @copyright Actra AG - https://www.actra.ch
+ * @license   MIT
  */
 
-namespace site\view\frontend\php;
+declare(strict_types=1);
+
+namespace app\view\frontend\php;
 
 use actra\yuf\html\HtmlDocument;
-use site\view\FrontendView;
+use app\view\FrontendView;
 
 class eidg07news extends FrontendView
 {
@@ -26,7 +28,6 @@ class eidg07news extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-
     }
 
     public function oldExecute()
@@ -35,7 +36,6 @@ class eidg07news extends FrontendView
         $qry = $this->db->prepareAndExecute($sql);
         if ($qry->rowCount() == 0) {
             $eidgnews = '<p class="noentry">keine Neuigkeiten</p>';
-
         } else {
             $eidgnews = '';
             $lastday = '';
@@ -47,7 +47,7 @@ class eidg07news extends FrontendView
                     $eidgnews .= '<h3>' . $res['datum'] . '</h3><ul>';
                 }
                 $href = 'newsDetails-' . $res['ID'] . '.html';
-                $eidgnews .= '<li><span><a href="'.$href.'">' . $res['titel'] . '</a></span> <em>' . $res['zeit'] . '</em></li>';
+                $eidgnews .= '<li><span><a href="' . $href . '">' . $res['titel'] . '</a></span> <em>' . $res['zeit'] . '</em></li>';
                 $lastday = $res['datum'];
             }
             $eidgnews .= '</ul>';

@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace app\libs\db;
 
 use actra\yuf\html\HtmlDataObject;
+use app\view\frontend\php\newsDetails;
 use DateTimeImmutable;
-use site\view\frontend\php\newsDetails;
 
 readonly class DbNews
 {

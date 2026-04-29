@@ -1,13 +1,15 @@
 <?php
 /**
- * @author    Christof Moser <framework@actra.ch>
- * @copyright Actra AG, Rümlang, Switzerland
+ * @copyright Actra AG - https://www.actra.ch
+ * @license   MIT
  */
 
-namespace site\view\frontend\php;
+declare(strict_types=1);
+
+namespace app\view\frontend\php;
 
 use actra\yuf\html\HtmlDocument;
-use site\view\FrontendView;
+use app\view\FrontendView;
 
 class newsArchiv extends FrontendView
 {
@@ -26,7 +28,6 @@ class newsArchiv extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-
     }
 
     public function oldExecute()
@@ -69,7 +70,6 @@ WHERE
         if ($res->anz == 0) {
             $news = "<p>Es gibt keine archivierten Neuigkeiten.</p>";
         } else {
-
             $pagination = $this->showPage->getPagenavi("newsArchiv", $res->anz, $pos);
             $news .= $pagination;
             $entriesPerPage = (int)$this->showPage->config['lists']['entriesPerPage'];
@@ -91,7 +91,6 @@ WHERE
 
             $qry = $this->db->prepareAndExecute($sql, $paramsArr);
             while ($res = $qry->fetchObject()) {
-
                 $news .= "<div class=\"startnews group\"><h3>{$res-> titel}</h3>{$res -> teaser}";
                 if ($res->text != "") {
                     $href = "newsDetails-{$res -> ID}.html";
