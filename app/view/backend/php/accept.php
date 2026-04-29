@@ -43,7 +43,7 @@ class accept extends BackendView
 
     protected function getPageTitle(): HtmlText
     {
-        return HtmlText::encoded(textContent: 'Registrierungsantrag freigegeben');
+        return HtmlText::encoded(textContent: 'Registrierung akzeptieren');
     }
 
     protected function prepareHtmlDocument(HtmlDocument $htmlDocument): void

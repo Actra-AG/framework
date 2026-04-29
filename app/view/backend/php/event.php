@@ -84,7 +84,7 @@ class event extends BackendView
 
     protected function getPageTitle(): HtmlText
     {
-        return HtmlText::encoded(textContent: 'Eventdetails');
+        return HtmlText::encoded(textContent: 'Details zum Anlass');
     }
 
     protected function prepareHtmlDocument(HtmlDocument $htmlDocument): void

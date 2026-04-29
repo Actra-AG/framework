@@ -1,5 +1,8 @@
 {
     "require": {
         "actra/backend": "*"
-    }
+    },
+  "scripts":{
+    "list-users": "php local/list-users.php"
+  }
 }

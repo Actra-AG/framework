@@ -43,7 +43,7 @@ class deny extends BackendView
 
     protected function getPageTitle(): HtmlText
     {
-        return HtmlText::encoded(textContent: 'Registrierungsantrag ablehnen');
+        return HtmlText::encoded(textContent: 'Zugriff verweigern');
     }
 
     protected function prepareHtmlDocument(HtmlDocument $htmlDocument): void

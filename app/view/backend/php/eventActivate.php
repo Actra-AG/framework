@@ -43,7 +43,7 @@ class eventActivate extends BackendView
 
     protected function getPageTitle(): HtmlText
     {
-        return HtmlText::encoded(textContent: 'Event aktivieren');
+        return HtmlText::encoded(textContent: 'Anlass publizieren');
     }
 
     protected function prepareHtmlDocument(HtmlDocument $htmlDocument): void

@@ -81,16 +81,16 @@
         },
         {
             "name": "actra/yuf",
-            "version": "v1.0.2",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Actra-AG/yuf",
-                "reference": "2e979a46a5ce0fd3346f4e15bbfdf6fe2797233a"
+                "reference": "b51d57173c5b18a835263323aac33322d23f1958"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Actra-AG/yuf/zipball/2e979a46a5ce0fd3346f4e15bbfdf6fe2797233a",
-                "reference": "2e979a46a5ce0fd3346f4e15bbfdf6fe2797233a",
+                "url": "https://api.github.com/repos/Actra-AG/yuf/zipball/b51d57173c5b18a835263323aac33322d23f1958",
+                "reference": "b51d57173c5b18a835263323aac33322d23f1958",
                 "shasum": ""
             },
             "require": {
@@ -128,7 +128,7 @@
                 "php",
                 "smart"
             ],
-            "time": "2026-04-27T18:54:27+00:00"
+            "time": "2026-04-28T18:03:23+00:00"
         }
     ],
     "packages-dev": [],

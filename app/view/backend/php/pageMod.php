@@ -43,7 +43,7 @@ class pageMod extends BackendView
 
     protected function getPageTitle(): HtmlText
     {
-        return HtmlText::encoded(textContent: 'Seite bearbeiten');
+        return HtmlText::encoded(textContent: 'Seiteninhalt bearbeiten');
     }
 
     protected function prepareHtmlDocument(HtmlDocument $htmlDocument): void

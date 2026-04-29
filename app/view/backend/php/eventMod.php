@@ -43,7 +43,7 @@ class eventMod extends BackendView
 
     protected function getPageTitle(): HtmlText
     {
-        return HtmlText::encoded(textContent: 'Event bearbeiten');
+        return HtmlText::encoded(textContent: 'Anlass bearbeiten');
     }
 
     protected function prepareHtmlDocument(HtmlDocument $htmlDocument): void
