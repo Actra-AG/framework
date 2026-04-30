@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace app\view\frontend\php;
 
+use actra\yuf\exception\NotFoundException;
 use actra\yuf\html\HtmlDocument;
+use app\libs\db\DbNewsRepository;
 use app\view\FrontendView;
 
 class newsDetails extends FrontendView
@@ -16,7 +18,7 @@ class newsDetails extends FrontendView
     protected function getActiveNavigationItems(): array
     {
         return [
-            1 => 'start'
+          1 => 'start'
         ];
     }
 
@@ -27,21 +29,24 @@ class newsDetails extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-        $ID = (int)($this->getPathVar(nr: 1) ?? 0);
-
-        $sql = "SELECT *, DATE_FORMAT(datum, '%d.%m.%Y') AS datumD FROM news WHERE ID=?";
-        $qry = $this->db->prepareAndExecute($sql, [$ID]);
-        if ($qry->rowCount() == 0) {
-            $this->redirect("start.html");
-            return;
+        $inputID = $this->getPathVar(nr: 1);
+        if ($inputID === null) {
+            throw new NotFoundException();
         }
-        $res = $qry->fetchObject();
+        $dbNews = DbNewsRepository::selectByID(ID: (int)$inputID);
+        if ($dbNews === null) {
+            throw new NotFoundException();
+        }
 
-        $news = "<h4><em>{$res->datumD}</em></h4>\n{$res->htmlContent}";
-        $news .= "<p class=\"backlink\">&laquo; <a href=\"javascript:history.back();\">zurück</a></p>";
-
+        $news = '<h4><em>' . $dbNews->date->format(format: 'd.m.Y') . '</em></h4>' . $dbNews->htmlContent;
+        $news .= '<p class="backlink">&laquo; <a href="javascript:history.back();">zurück</a></p>';
         $replacements = $htmlDocument->replacements;
-        $replacements->addEncodedText(identifier: 'titel', content: $res->titel);
+        $replacements->addEncodedText(identifier: 'titel', content: $dbNews->title);
         $replacements->addEncodedText(identifier: 'news', content: $news);
+    }
+
+    public static function getPath(int $ID): string
+    {
+        return 'newsDetails-' . $ID . '.html';
     }
 }

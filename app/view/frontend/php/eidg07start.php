@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace app\view\frontend\php;
 
+use actra\backend\libs\db\DB;
 use actra\yuf\html\HtmlDocument;
 use app\view\FrontendView;
 
@@ -28,17 +29,19 @@ class eidg07start extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-        $sql = "SELECT * FROM fotos WHERE katID IN (SELECT ID FROM alben WHERE typ=2) ORDER BY RAND() LIMIT 1";
-        $qry = $this->db->prepareAndExecute($sql);
-        $res = $qry->fetchObject();
-        $foto = ($res) ? "<img src=\"/galerie/foto{$res->ID}_s.jpg\" alt=\"\" />" : '';
+        $res = DB::get()->select(
+            sql: \"SELECT * FROM fotos WHERE katID IN (SELECT ID FROM alben WHERE typ=2) ORDER BY RAND() LIMIT 1\"
+        );
+        $item = $res[0] ?? null;
+        $foto = ($item) ? \"<img src=\\"/galerie/foto{$item->ID}_s.jpg\\" alt=\\"\\" />\" : '';
 
-        $sql = "SELECT *, DATE_FORMAT(datum, '%d.%m.%Y') AS datumD FROM news WHERE eidg=1 ORDER BY datum DESC, ID DESC LIMIT 1";
-        $qry = $this->db->prepareAndExecute($sql);
-        $res = $qry->fetchObject();
+        $res = DB::get()->select(
+            sql: \"SELECT *, DATE_FORMAT(datum, '%d.%m.%Y') AS datumD FROM news WHERE eidg=1 ORDER BY datum DESC, ID DESC LIMIT 1\"
+        );
+        $item = $res[0] ?? null;
 
-        $datum = ($res) ? $res->datumD : '';
-        $eidgnews = ($res) ? "<h5>{$res->titel}</h5>\n{$res->teaser}<p><a href=\"eidg07news.html\">weitere Informationen</a></p>" : 'Zurzeit keine News vorhanden';
+        $datum = ($item) ? $item->datumD : '';
+        $eidgnews = ($item) ? \"<h5>{$item->titel}</h5>\n{$item->teaser}<p><a href=\\"eidg07news.html\\">weitere Informationen</a></p>\" : 'Zurzeit keine News vorhanden';
 
         $replacements = $htmlDocument->replacements;
         $replacements->addEncodedText(identifier: 'foto', content: $foto);

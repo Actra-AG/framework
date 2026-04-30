@@ -11,6 +11,7 @@ namespace app\view\backend\php;
 use actra\backend\BackendView;
 use actra\yuf\auth\AccessRightCollection;
 use actra\yuf\core\InputParameterCollection;
+use actra\yuf\exception\NotFoundException;
 use actra\yuf\html\HtmlDocument;
 use actra\yuf\html\HtmlText;
 use actra\yuf\layout\NavigationItem;
@@ -25,23 +26,23 @@ class board extends BackendView
     public function __construct()
     {
         parent::__construct(
-            inputParameterCollection: new InputParameterCollection(),
-            maxAllowedPathVars: 1,
-            activeHtmlIdList: [
-                'board',
-            ],
-            useNavigator: true
+          inputParameterCollection: new InputParameterCollection(),
+          maxAllowedPathVars: 1,
+          activeHtmlIdList: [
+            'board',
+          ],
+          useNavigator: true
         );
     }
 
     public static function getNavigationItem(): NavigationItem
     {
         return new NavigationItem(
-            navKey: 'board',
-            href: board::getPath() . '?reset',
-            svgPath: '',
-            title: 'Vorstand',
-            requiredAccessRights: board::getRequiredAccessRights()
+          navKey: 'board',
+          href: board::getPath() . '?reset',
+          svgPath: '',
+          title: 'Vorstand',
+          requiredAccessRights: board::getRequiredAccessRights()
         );
     }
 
@@ -53,7 +54,7 @@ class board extends BackendView
     public static function getRequiredAccessRights(): AccessRightCollection
     {
         return AccessRightCollection::createFromStringArray(input: [
-            AuthRightEnum::BOARD_MEMBER->value,
+          AuthRightEnum::BOARD_MEMBER->value,
         ]);
     }
 
@@ -65,26 +66,30 @@ class board extends BackendView
     protected function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
         $dbEventCollection = DbEventRepository::select(dbQuery: DbEventRepository::getBoardEventQuery());
-        $inputYear = (int)$this->getPathVar(nr: 1);
-        $selectedYear = (
-            $inputYear < $dbEventCollection->getMinYear()
-            || $inputYear > $dbEventCollection->getMaxYear()
-        ) ? (int)date(format: 'Y') : $inputYear;
+        $availableYears = $dbEventCollection->getAvailableYears();
+        $inputYear = $this->getPathVar(nr: 1);
+        if ($inputYear === null) {
+            $selectedYear = (int)max(value: $availableYears);
+        } elseif (!in_array(needle: $inputYear, haystack: $availableYears)) {
+            throw new NotFoundException();
+        } else {
+            $selectedYear = (int)$inputYear;
+        }
         $replacements = $htmlDocument->replacements;
         $replacements->addBool(
-            identifier: 'isBoard',
-            booleanValue: AuthUserHelper::isBoard()
+          identifier: 'isBoard',
+          booleanValue: AuthUserHelper::isBoard()
         );
         $replacements->addEncodedText(
-            identifier: 'yearNavigation',
-            content: $dbEventCollection->renderYearNavigation(
-                selectedYear: $selectedYear,
-                path: board::getPath(year: 0)
-            )
+          identifier: 'yearNavigation',
+          content: $dbEventCollection->renderYearNavigation(
+            selectedYear: $selectedYear,
+            path: board::getPath(year: 0)
+          )
         );
         $replacements->addEncodedText(
-            identifier: 'list',
-            content: new BoardEventTable(selectedYear: $selectedYear)->render()
+          identifier: 'list',
+          content: new BoardEventTable(selectedYear: $selectedYear)->render()
         );
     }
 }

@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace app\view\frontend\php;
 
+use actra\backend\libs\db\DB;
 use actra\yuf\html\HtmlDocument;
 use app\view\FrontendView;
 
@@ -30,14 +31,15 @@ class eidg07news extends FrontendView
     {
         $eidgnews = '';
 
-        $sql = "SELECT *, DATE_FORMAT(datum, '%d.%m.%Y') AS datumD FROM news WHERE eidg=1 ORDER BY datum DESC, ID DESC";
-        $qry = $this->db->prepareAndExecute($sql);
-        while ($res = $qry->fetch(\PDO::FETCH_ASSOC)) {
-            $eidgnews .= "<div class=\"eidgnews group\"><h4>{$res['titel']} <em>{$res['datumD']}</em></h4>\n{$res['teaser']}";
-            if ($res['htmlContent'] != '') {
-                $eidgnews .= "<p><a href=\"newsDetails-{$res['ID']}.html\">weitere Informationen</a></p>";
+        $res = DB::get()->select(
+            sql: \"SELECT *, DATE_FORMAT(datum, '%d.%m.%Y') AS datumD FROM news WHERE eidg=1 ORDER BY datum DESC, ID DESC\"
+        );
+        foreach ($res as $val) {
+            $eidgnews .= \"<div class=\\"eidgnews group\\"><h4>{$val->titel} <em>{$val->datumD}</em></h4>\n{$val->teaser}\";
+            if ($val->htmlContent != '') {
+                $eidgnews .= \"<p><a href=\\"newsDetails-{$val->ID}.html\\">weitere Informationen</a></p>\";
             }
-            $eidgnews .= "</div>\n";
+            $eidgnews .= \"</div>\n\";
         }
 
         $htmlDocument->replacements->addEncodedText(identifier: 'eidgnews', content: $eidgnews);

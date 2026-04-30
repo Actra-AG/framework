@@ -1,44 +1,130 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="{tst:text value='language'}">
 <head>
-	<meta charset="{tst:text value='charset'}">
-	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-	<title>{tst:text value='title'} | {tst:snippet name='siteName.txt'}</title>
-	<meta name="author" content="Actra AG Webagentur">
-	<meta name="robots" content="noindex,nofollow">
+    <meta charset="{tst:text value='charset'}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{tst:text value='title'} | {tst:snippet name='siteName.txt'}</title>
+    <meta name="description" content="">
+    <meta name="robots" content="noindex,nofollow">
+    <style>
+        html {
+            font-size: 0.9375rem;
+        }
+
+        body {
+            margin: 0;
+            padding: 1.5rem;
+            color: #333;
+            line-height: 1.5;
+            font-family: system-ui;
+            background: #f6f6f6;
+        }
+
+        .error {
+            margin-inline: auto;
+            padding: 2rem 2rem 0;
+            background: #fff;
+            border-radius: 0.5em;
+            box-shadow: rgba(0 0 0 / 0.1) 0 1px 3px 0,
+            rgba(0 0 0 / 0.06) 0 1px 2px 0;
+            overflow: hidden;
+        }
+
+        h1 {
+            margin: 0 0 1.5rem;
+            font-size: 1.728rem;
+            line-height: 0.8683;
+            font-weight: 400;
+            color: #c00;
+        }
+
+        .debug {
+            margin-bottom: 1rem;
+        }
+
+        .debug dl {
+            margin: 0;
+            padding: 0 0 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .debug dl + dl {
+            padding-top: 1rem;
+            border-block-start: 1px solid rgba(0 0 0 / 0.07);
+        }
+
+        .debug dt {
+            text-transform: uppercase;
+            font-size: 0.889rem;
+            line-height: 1.688;
+            font-weight: 600;
+        }
+
+        .debug dd {
+            margin: 0;
+        }
+
+        .stacktrace {
+            margin: 0 -2rem;
+            padding: 2rem;
+            background: #2b333d;
+        }
+
+        .stacktrace pre {
+            margin: 0;
+            padding: 0;
+            background: #2b333d;
+            color: rgba(255 255 255 / 0.87);
+            font-family: monospace;
+            font-size: 0.889rem;
+            line-height: 1.6873;
+            overflow: auto;
+        }
+
+        /* #MEDIA QUERIES
+        *******************************************************************************/
+
+        /* >= 860px
+        *******************************************************************************/
+        @media screen and (width >= 860px) {
+            .debug dl {
+                flex-direction: row;
+            }
+
+            .debug dt {
+                text-transform: unset;
+                font-size: 1rem;
+                line-height: 1.5;
+                flex-basis: 10em;
+            }
+        }
+    </style>
 </head>
 <body class="{tst:text value='bodyClassName'}">
-<main>
-	<div class="debug">
-		<h2>{tst:text value='title'}</h2>
-		<h3>Information</h3>
-		<div class="debug-details">
-			<dl>
-				<dt>Type</dt>
-				<dd>{tst:text value='title'}</dd>
-			</dl>
-			<dl>
-				<dt>Message</dt>
-				<dd>{tst:text value='errorMessage'}</dd>
-			</dl>
-			<dl>
-				<dt>File</dt>
-				<dd>{tst:text value='errorFile'}</dd>
-			</dl>
-			<dl>
-				<dt>Line</dt>
-				<dd>{tst:text value='errorLine'}</dd>
-			</dl>
-			<dl>
-				<dt>Error</dt>
-				<dd>{tst:text value='errorCode'}</dd>
-			</dl>
-		</div>
-		<div class="debug-stacktrace">
-			<h3>Stack trace</h3>
-			<pre>{tst:text value='backtrace'}</pre>
-		</div>
-	</div>
-</main>
+<div class="error">
+    <h1>{tst:text value='title'}</h1>
+    <div class="debug">
+        <dl>
+            <dt>Message</dt>
+            <dd>{tst:text value='errorMessage'}</dd>
+        </dl>
+        <dl>
+            <dt>File</dt>
+            <dd>{tst:text value='errorFile'}</dd>
+        </dl>
+        <dl>
+            <dt>Line</dt>
+            <dd>{tst:text value='errorLine'}</dd>
+        </dl>
+        <dl>
+            <dt>Error</dt>
+            <dd>{tst:text value='errorCode'}</dd>
+        </dl>
+    </div>
+    <div class="stacktrace">
+        <pre>{tst:text value='backtrace'}</pre>
+    </div>
+</div>
 </body>
 </html>

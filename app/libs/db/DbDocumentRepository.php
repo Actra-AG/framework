@@ -17,7 +17,7 @@ class DbDocumentRepository
     public static function getDbQuery(): DbQuery
     {
         return DbQuery::createFromSqlQuery(
-            query: '
+          query: '
                 SELECT document.ID,
                        document.dateiname AS fileName,
                        document.titel as title,
@@ -33,10 +33,11 @@ class DbDocumentRepository
     private static function createItem(stdClass $item): DbDocument
     {
         return new DbDocument(
-            ID: $item->ID,
-            eventID: $item->eventID,
-            title: $item->title,
-            extension: $item->extension
+          ID: $item->ID,
+          eventID: $item->eventID,
+          title: $item->title,
+          fileName: $item->fileName,
+          extension: $item->extension
         );
     }
 
@@ -44,14 +45,14 @@ class DbDocumentRepository
     {
         $dbDocumentCollection = new DbDocumentCollection();
         foreach (
-            $dbQuery->selectFromDb(
-                db: DB::get(),
-                offset: 0,
-                rowCount: 1000
-            ) as $item
+          $dbQuery->selectFromDb(
+            db: DB::get(),
+            offset: 0,
+            rowCount: 1000
+          ) as $item
         ) {
             $dbDocumentCollection->add(
-                dbDocument: DbDocumentRepository::createItem(item: $item)
+              dbDocument: DbDocumentRepository::createItem(item: $item)
             );
         }
 
@@ -62,8 +63,8 @@ class DbDocumentRepository
     {
         $dbQuery = DbDocumentRepository::getDbQuery();
         $dbQuery->addWherePart(
-            wherePart: 'document.ID=?',
-            parameters: [$ID]
+          wherePart: 'document.ID=?',
+          parameters: [$ID]
         );
         $dbDocumentCollection = DbDocumentRepository::select(dbQuery: $dbQuery);
 
@@ -71,14 +72,14 @@ class DbDocumentRepository
     }
 
     public static function insert(
-        int $eventID,
-        string $title,
-        string $fileName,
-        string $mimeType
+      int $eventID,
+      string $title,
+      string $fileName,
+      string $mimeType
     ): int {
         $db = DB::get();
         $db->execute(
-            sql: '
+          sql: '
                 INSERT INTO dokumente
                 SET objekt=?,
                     objektID=?,
@@ -87,59 +88,59 @@ class DbDocumentRepository
                     type=?,
                     views=?
             ',
-            parameters: [
-                'anlass',
-                $eventID,
-                $title,
-                $fileName,
-                $mimeType,
-                0,
-            ]
+          parameters: [
+            'anlass',
+            $eventID,
+            $title,
+            $fileName,
+            $mimeType,
+            0,
+          ]
         );
         return $db->lastInsertId();
     }
 
     public static function update(
-        int $ID,
-        string $title
+      int $ID,
+      string $title
     ): void {
         DB::get()->execute(
-            sql: '
+          sql: '
                 UPDATE dokumente
                 SET titel=?
                 WHERE ID=?
             ',
-            parameters: [
-                $title,
-                $ID,
-            ]
+          parameters: [
+            $title,
+            $ID,
+          ]
         );
     }
 
     public static function increaseViews(int $ID): void
     {
         DB::get()->execute(
-            sql: '
+          sql: '
                 UPDATE dokumente
                 SET views=views+1
                 WHERE ID=?
             ',
-            parameters: [
-                $ID,
-            ]
+          parameters: [
+            $ID,
+          ]
         );
     }
 
     public static function delete(int $ID): void
     {
         DB::get()->execute(
-            sql: '
+          sql: '
                 DELETE FROM dokumente
                 WHERE ID=?
             ',
-            parameters: [
-                $ID,
-            ]
+          parameters: [
+            $ID,
+          ]
         );
     }
 
@@ -147,11 +148,11 @@ class DbDocumentRepository
     {
         $dbQuery = DbDocumentRepository::getDbQuery();
         $dbQuery->addWherePart(
-            wherePart: 'document.objekt=? AND objektID=?',
-            parameters: [
-                'anlass',
-                $eventID,
-            ]
+          wherePart: 'document.objekt=? AND objektID=?',
+          parameters: [
+            'anlass',
+            $eventID,
+          ]
         );
         $dbQuery->addOrderPart(column: 'document.titel');
 

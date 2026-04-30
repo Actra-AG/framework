@@ -4,8 +4,11 @@
  * @license   MIT
  */
 
+declare(strict_types=1);
+
 namespace app\settings;
 
+use actra\yuf\auth\AuthSession;
 use actra\yuf\html\HtmlDataObject;
 use app\libs\backend\AuthUserHelper;
 
@@ -82,23 +85,28 @@ enum EventCategoryEnum: string
     {
         $htmlDataObject = new HtmlDataObject();
         $htmlDataObject->addTextElement(
-            propertyName: 'title',
-            content: $this->getTitle(),
-            isEncodedForRendering: true
+          propertyName: 'title',
+          content: $this->getTitle(),
+          isEncodedForRendering: true
         );
         $htmlDataObject->addTextElement(
-            propertyName: 'shortTitle',
-            content: $this->getShortTitle(),
-            isEncodedForRendering: true
+          propertyName: 'shortTitle',
+          content: $this->getShortTitle(),
+          isEncodedForRendering: true
         );
         return $htmlDataObject;
+    }
+
+    public function isPublic(): bool
+    {
+        return ($this !== EventCategoryEnum::VORSTAND);
     }
 
     public function userCanAccess(): bool
     {
         return (
-            $this !== EventCategoryEnum::VORSTAND
-            || AuthUserHelper::isBoard()
+          $this !== EventCategoryEnum::VORSTAND
+          || (AuthSession::isLoggedIn() && AuthUserHelper::isBoard())
         );
     }
 }

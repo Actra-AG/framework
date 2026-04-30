@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace app\view\frontend\php;
 
+use actra\backend\libs\db\DB;
 use actra\yuf\html\HtmlDocument;
 use app\view\FrontendView;
 
@@ -30,11 +31,12 @@ class eidg07album extends FrontendView
     {
         $eidgalbum = '';
 
-        $sql = "SELECT * FROM alben WHERE typ=2 ORDER BY titel";
-        $qry = $this->db->prepareAndExecute($sql);
-        while ($res = $qry->fetch(\PDO::FETCH_ASSOC)) {
-            $href = "eidg07fotos-{$res['ID']}.html";
-            $eidgalbum .= "<li><a href=\"{$href}\">{$res['titel']}</a></li>\n";
+        $res = DB::get()->select(
+            sql: \"SELECT * FROM alben WHERE typ=2 ORDER BY titel\"
+        );
+        foreach ($res as $val) {
+            $href = \"eidg07fotos-{$val->ID}.html\";
+            $eidgalbum .= \"<li><a href=\\"{$href}\\">{$val->titel}</a></li>\n\";
         }
 
         $htmlDocument->replacements->addEncodedText(

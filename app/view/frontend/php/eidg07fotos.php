@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace app\view\frontend\php;
 
+use actra\backend\libs\db\DB;
 use actra\yuf\html\HtmlDocument;
 use app\view\FrontendView;
 
@@ -30,20 +31,24 @@ class eidg07fotos extends FrontendView
     {
         $katID = (int)($this->getPathVar(nr: 1) ?? 0);
 
-        $sql = "SELECT titel FROM alben WHERE ID=?";
-        $album = $this->db->prepareAndExecute($sql, [$katID]);
-        $res = $album->fetchObject();
+        $res = DB::get()->select(
+            sql: \"SELECT titel FROM alben WHERE ID=?\",
+            parameters: [$katID]
+        );
+        $item = $res[0] ?? null;
         
         $replacements = $htmlDocument->replacements;
-        $replacements->addEncodedText(identifier: 'title', content: $res->titel);
+        $replacements->addEncodedText(identifier: 'title', content: $item ? $item->titel : '');
 
         $fotos = '';
 
-        $sql = "SELECT * FROM fotos WHERE katID=? ORDER BY ID";
-        $qry = $this->db->prepareAndExecute($sql, [$katID]);
-        while ($res = $qry->fetch(\PDO::FETCH_ASSOC)) {
-            $href = "eidg07foto-{$katID}-{$res['ID']}.html";
-            $fotos .= "<li><a href=\"{$href}\"><img src=\"/galerie/foto{$res['ID']}_s.jpg\" alt=\"\" /></a></li>\n";
+        $res = DB::get()->select(
+            sql: \"SELECT * FROM fotos WHERE katID=? ORDER BY ID\",
+            parameters: [$katID]
+        );
+        foreach ($res as $val) {
+            $href = \"eidg07foto-{$katID}-{$val->ID}.html\";
+            $fotos .= \"<li><a href=\\"{$href}\\"><img src=\\"/galerie/foto{$val->ID}_s.jpg\\" alt=\\"\\" /></a></li>\n\";
         }
 
         $replacements->addEncodedText(identifier: 'fotos', content: $fotos);

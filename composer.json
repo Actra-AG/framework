@@ -1,6 +1,7 @@
 {
     "require": {
-        "actra/backend": "*"
+        "actra/backend": "*",
+      "ext-mbstring": "*"
     },
   "scripts":{
     "list-users": "php local/list-users.php"

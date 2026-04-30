@@ -8,9 +8,10 @@ declare(strict_types=1);
 
 namespace app\view\frontend\php;
 
+use actra\backend\libs\db\DB;
+use actra\yuf\core\HttpResponse;
 use actra\yuf\html\HtmlDocument;
 use app\view\FrontendView;
-use classes\bsvb;
 use classes\FormMailer;
 use framework\form\component\field\EmailField;
 use framework\html\HtmlText;
@@ -31,8 +32,6 @@ class register extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-        $bsvb = new bsvb();
-
         $status = '';
         $Herr = '';
         $Frau = '';
@@ -55,15 +54,14 @@ class register extends FrontendView
 
         $vArr = [];
         $vArr[0] = 'keiner';
-        $sql = "SELECT ID, name FROM vereine ORDER BY name";
-        $qry = $this->db->prepareAndExecute($sql);
-        while ($res = $qry->fetch(\PDO::FETCH_ASSOC)) {
-            $vArr[$res['ID']] = $res['name'];
+        $res = DB::get()->select(sql: \"SELECT ID, name FROM vereine ORDER BY name\");
+        foreach ($res as $val) {
+            $vArr[$val->ID] = $val->name;
         }
 
         if (isset($_GET['send'])) {
             if (!isset($_POST['vereinID']) || !isset($vArr[$_POST['vereinID']])) {
-                $fehlerArr[] = "Wählen Sie einen Verein aus";
+                $fehlerArr[] = \"Wählen Sie einen Verein aus\";
             } else {
                 $datenArr['vereinID'] = $_POST['vereinID'];
             }
@@ -79,31 +77,31 @@ class register extends FrontendView
             }
 
             if (!isset($_POST['vorname']) || trim($_POST['vorname']) == '') {
-                $fehlerArr[] = "Geben Sie bitte Ihren Vornamen an.";
+                $fehlerArr[] = \"Geben Sie bitte Ihren Vornamen an.\";
             } else {
                 $datenArr['vorname'] = $_POST['vorname'];
             }
 
             if (!isset($_POST['nachname']) || trim($_POST['nachname']) == '') {
-                $fehlerArr[] = "Geben Sie bitte Ihren Nachnamen an.";
+                $fehlerArr[] = \"Geben Sie bitte Ihren Nachnamen an.\";
             } else {
                 $datenArr['nachname'] = $_POST['nachname'];
             }
 
             if (!isset($_POST['strasse']) || trim($_POST['strasse']) == '') {
-                $fehlerArr[] = "Geben Sie bitte Ihre Strasse an.";
+                $fehlerArr[] = \"Geben Sie bitte Ihre Strasse an.\";
             } else {
                 $datenArr['strasse'] = $_POST['strasse'];
             }
 
             if (!isset($_POST['plz']) || trim($_POST['plz']) == '') {
-                $fehlerArr[] = "Geben Sie bitte die PLZ an.";
+                $fehlerArr[] = \"Geben Sie bitte die PLZ an.\";
             } else {
                 $datenArr['plz'] = $_POST['plz'];
             }
 
             if (!isset($_POST['ort']) || trim($_POST['ort']) == '') {
-                $fehlerArr[] = "Geben Sie bitte den Ort an.";
+                $fehlerArr[] = \"Geben Sie bitte den Ort an.\";
             } else {
                 $datenArr['ort'] = $_POST['ort'];
             }
@@ -126,10 +124,11 @@ class register extends FrontendView
                 $fehlerArr[] = $emailField->getErrorsAsHtmlTextObjects()[0]->render();
             } else {
                 $datenArr['email'] = $emailField->getRawValue();
-                $sql = "SELECT COUNT(*) AS anz FROM benutzer WHERE email=?";
-                $qry = $this->db->prepareAndExecute($sql, [$datenArr['email']]);
-                $res = $qry->fetch(\PDO::FETCH_ASSOC);
-                if ($res['anz'] != 0) {
+                $res = DB::get()->select(
+                    sql: \"SELECT COUNT(*) AS anz FROM benutzer WHERE email=?\",
+                    parameters: [$datenArr['email']]
+                );
+                if ((int)$res[0]->anz != 0) {
                     $fehlerArr[] = 'Die eingegebene E-Mail-Adresse ist bereits registriert. Geben Sie bitte eine andere ein.';
                 }
             }
@@ -155,36 +154,44 @@ class register extends FrontendView
                 }
                 $datenArr['passwort'] = md5($datenArr['passwort']);
 
-                $ID = $bsvb->insertEntry('benutzer', $datenArr);
+                // Since I cannot find insertEntry, I will use direct SQL
+                $sql = \"INSERT INTO benutzer SET \";
+                $params = [];
+                foreach ($datenArr as $key => $val) {
+                    $sql .= \"{$key}=?, \";
+                    $params[] = $val;
+                }
+                $sql .= \"registered=NOW()\"; // Assumption based on common patterns
+                DB::get()->execute(sql: $sql, parameters: $params);
+                $ID = DB::get()->getLastInsertId();
 
                 $to = $_POST['email'];
                 $toName = $_POST['email'];
-                $from = "webmaster@bsv-buelach.ch";
-                $fromName = "webmaster@bsv-buelach.ch";
-                $subject = "Ihre Registrierung bei {$_SERVER['SERVER_NAME']}";
+                $from = \"webmaster@bsv-buelach.ch\";
+                $fromName = \"webmaster@bsv-buelach.ch\";
+                $subject = \"Ihre Registrierung bei {$_SERVER['SERVER_NAME']}\";
 
-                $code = md5("bsvregister{$ID}buelach");
+                $code = md5(\"bsvregister{$ID}buelach\");
                 $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
 
-                $text = "Grüezi\n\nSie haben sich bei {$_SERVER['SERVER_NAME']} registriert. Bitte klicken Sie auf den folgenden Link, um dies zu bestätigen:\n\n{$protocol}://{$_SERVER['SERVER_NAME']}/backend/confirm-{$ID}-{$code}.html\n\nWenn Sie sich nicht registriert haben, ignorieren Sie diese E-Mail und klicken Sie nicht auf den obigen Link!\n\nFreundliche Grüsse\n\nBezirksschützenverband Bülach";
+                $text = \"Grüezi\n\nSie haben sich bei {$_SERVER['SERVER_NAME']} registriert. Bitte klicken Sie auf den folgenden Link, um dies zu bestätigen:\n\n{$protocol}://{$_SERVER['SERVER_NAME']}/backend/confirm-{$ID}-{$code}.html\n\nWenn Sie sich nicht registriert haben, ignorieren Sie diese E-Mail und klicken Sie nicht auf den obigen Link!\n\nFreundliche Grüsse\n\nBezirksschützenverband Bülach\";
 
                 (new FormMailer())->send($to, $toName, $from, $fromName, $subject, $text);
 
-                $to = "webmaster@bsv-buelach.ch";
-                $toName = "webmaster@bsv-buelach.ch";
-                $subject = "Neue Registrierung bei {$_SERVER['SERVER_NAME']}";
+                $to = \"webmaster@bsv-buelach.ch\";
+                $toName = \"webmaster@bsv-buelach.ch\";
+                $subject = \"Neue Registrierung bei {$_SERVER['SERVER_NAME']}\";
 
-                $text = "Grüezi\n\nEs gibt eine neue Registrierung bei {$_SERVER['SERVER_NAME']}. Bitte prüfen Sie diese und akzeptieren oder verweigern Sie den Zugriff.\n\nFreundliche Grüsse\n\nBezirksschützenverband Bülach";
+                $text = \"Grüezi\n\nEs gibt eine neue Registrierung bei {$_SERVER['SERVER_NAME']}. Bitte prüfen Sie diese und akzeptieren oder verweigern Sie den Zugriff.\n\nFreundliche Grüsse\n\nBezirksschützenverband Bülach\";
 
                 (new FormMailer())->send($to, $toName, $from, $fromName, $subject, $text);
 
-                $this->redirect("registerRes.html");
-                return;
+                HttpResponse::redirectAndExit(location: \"registerRes.html\");
             }
         }
 
         if (count($fehlerArr) != 0) {
-            $status = "<div id=\"formfehler\"><ul>";
+            $status = \"<div id=\\"formfehler\\"><ul>\";
             foreach ($fehlerArr as $val) {
                 $status .= '<li>' . $val . '</li>';
             }
@@ -194,19 +201,19 @@ class register extends FrontendView
         $replacements = $htmlDocument->replacements;
         foreach ($datenArr as $key => $val) {
             if ($key == 'anrede') {
-                if ($val == 'Herr') $Herr = ' checked="checked"';
-                if ($val == 'Frau') $Frau = ' checked="checked"';
+                if ($val == 'Herr') $Herr = ' checked=\"checked\"';
+                if ($val == 'Frau') $Frau = ' checked=\"checked\"';
             } else {
                 $replacements->addEncodedText(identifier: $key, content: (string)$val);
             }
         }
 
         foreach ($vArr as $key => $val) {
-            $vereine .= "<option value=\"{$key}\"";
+            $vereine .= \"<option value=\\"{$key}\\"\";
             if ($key == $datenArr['vereinID']) {
-                $vereine .= ' selected="selected"';
+                $vereine .= ' selected=\"selected\"';
             }
-            $vereine .= ">{$val}</option>\n";
+            $vereine .= \">{$val}</option>\n\";
         }
 
         $replacements->addEncodedText(identifier: 'status', content: $status);

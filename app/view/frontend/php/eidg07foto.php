@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace app\view\frontend\php;
 
+use actra\backend\libs\db\DB;
 use actra\yuf\html\HtmlDocument;
 use app\view\FrontendView;
 
@@ -31,22 +32,26 @@ class eidg07foto extends FrontendView
         $katID = (int)($this->getPathVar(nr: 1) ?? 0);
         $fotoID = (int)($this->getPathVar(nr: 2) ?? 0);
 
-        $sql = "SELECT titel FROM alben WHERE ID=?";
-        $qry = $this->db->prepareAndExecute($sql, [$katID]);
-        $res = $qry->fetchObject();
+        $res = DB::get()->select(
+            sql: \"SELECT titel FROM alben WHERE ID=?\",
+            parameters: [$katID]
+        );
+        $item = $res[0] ?? null;
         
         $replacements = $htmlDocument->replacements;
-        $replacements->addEncodedText(identifier: 'title', content: $res->titel);
+        $replacements->addEncodedText(identifier: 'title', content: $item ? $item->titel : '');
 
-        $sql = "SELECT * FROM fotos WHERE ID=?";
-        $qry = $this->db->prepareAndExecute($sql, [$fotoID]);
-        $res = $qry->fetchObject();
+        $res = DB::get()->select(
+            sql: \"SELECT * FROM fotos WHERE ID=?\",
+            parameters: [$fotoID]
+        );
+        $item = $res[0] ?? null;
 
-        $size = getimagesize($_SERVER['DOCUMENT_ROOT'] . "/galerie/foto{$fotoID}.jpg");
+        $size = getimagesize($_SERVER['DOCUMENT_ROOT'] . \"/galerie/foto{$fotoID}.jpg\");
 
         $replacements->addEncodedText(identifier: 'katid', content: (string)$katID);
         $replacements->addEncodedText(identifier: 'fotoid', content: (string)$fotoID);
-        $replacements->addEncodedText(identifier: 'imgsize', content: $size[3]);
-        $replacements->addEncodedText(identifier: 'text', content: nl2br($res->text));
+        $replacements->addEncodedText(identifier: 'imgsize', content: $size[3] ?? '');
+        $replacements->addEncodedText(identifier: 'text', content: $item ? nl2br($item->text) : '');
     }
 }

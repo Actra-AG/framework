@@ -13,15 +13,29 @@ use app\libs\common\Helper;
 readonly class DbDocument
 {
     public function __construct(
-        public int $ID,
-        public int $eventID,
-        public string $title,
-        public string $extension
+      public int $ID,
+      public int $eventID,
+      public string $title,
+      public string $fileName,
+      public string $extension
     ) {
     }
 
     public function getFilePath(): string
     {
         return Helper::getDocumentDirectory() . $this->ID . '.' . $this->extension;
+    }
+
+    public function getDocumentHref(): string
+    {
+        return implode(
+          separator: '/',
+          array: [
+            'dokumente',
+            $this->ID,
+            Helper::createDocumentToken(documentID: $this->ID),
+            urlencode(string: $this->fileName)
+          ]
+        );
     }
 }

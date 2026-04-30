@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace app\view\frontend\php;
 
+use actra\backend\libs\db\DB;
 use actra\yuf\html\HtmlDocument;
 use app\view\FrontendView;
 
@@ -27,32 +28,33 @@ class newsArchiv extends FrontendView
 
     public function prepareHtmlDocument(HtmlDocument $htmlDocument): void
     {
-        $year = $this->getPathVar(nr: 1) ?? date("Y");
+        $year = (int)($this->getPathVar(nr: 1) ?? date(\"Y\"));
 
-        $sql = "SELECT DISTINCT YEAR(datum) AS jahr FROM news ORDER BY jahr DESC";
-        $qry = $this->db->prepareAndExecute($sql);
-        $yearsArr = $qry->fetchAll(\PDO::FETCH_COLUMN);
-
-        $news = '<ul class="jahresnavi group">';
-        foreach ($yearsArr as $val) {
-            $news .= "<li><a href=\"newsArchiv-{$val}.html\"";
-            if ($val == $year) {
-                $news .= ' class="active"';
+        $res = DB::get()->select(
+            sql: \"SELECT DISTINCT YEAR(datum) AS jahr FROM news ORDER BY jahr DESC\"
+        );
+        
+        $news = '<ul class=\"jahresnavi group\">';
+        foreach ($res as $val) {
+            $news .= \"<li><a href=\\"newsArchiv-{$val->jahr}.html\\"\";
+            if ($val->jahr == $year) {
+                $news .= ' class=\"active\"';
             }
-            $news .= ">{$val}</a></li>\n";
+            $news .= \">{$val->jahr}</a></li>\n\";
         }
-        $news .= "</ul>\n";
+        $news .= \"</ul>\n\";
 
-        $sql = "SELECT *, DATE_FORMAT(datum, '%d.%m.%Y') AS datumD FROM news WHERE YEAR(datum)=? ORDER BY datum DESC, ID DESC";
-        $paramsArr = [$year];
-        $qry = $this->db->prepareAndExecute($sql, $paramsArr);
+        $res = DB::get()->select(
+            sql: \"SELECT *, DATE_FORMAT(datum, '%d.%m.%Y') AS datumD FROM news WHERE YEAR(datum)=? ORDER BY datum DESC, ID DESC\",
+            parameters: [$year]
+        );
 
-        while ($res = $qry->fetch(\PDO::FETCH_ASSOC)) {
-            $news .= "<div class=\"eidgnews group\"><h4>{$res['titel']} <em>{$res['datumD']}</em></h4>\n{$res['teaser']}";
-            if ($res['htmlContent'] != '') {
-                $news .= "<p><a href=\"newsDetails-{$res['ID']}.html\">weitere Informationen</a></p>";
+        foreach ($res as $val) {
+            $news .= \"<div class=\\"eidgnews group\\"><h4>{$val->titel} <em>{$val->datumD}</em></h4>\n{$val->teaser}\";
+            if ($val->htmlContent != '') {
+                $news .= \"<p><a href=\\"newsDetails-{$val->ID}.html\\">weitere Informationen</a></p>\";
             }
-            $news .= "</div>\n";
+            $news .= \"</div>\n\";
         }
 
         $htmlDocument->replacements->addEncodedText(identifier: 'news', content: $news);

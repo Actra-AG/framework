@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace app\view\frontend\php;
 
+use actra\backend\libs\db\DB;
+use actra\yuf\core\HttpResponse;
 use actra\yuf\html\HtmlDocument;
 use app\view\FrontendView;
 
@@ -30,14 +32,15 @@ class kontaktRes extends FrontendView
     {
         $toID = (int)($this->getPathVar(nr: 1) ?? 1);
 
-        $sql = "SELECT vorname, nachname FROM benutzer WHERE ID=? AND kontakt=1";
-        $qry = $this->db->prepareAndExecute($sql, [$toID]);
-        if ($qry->rowCount() == 0) {
-            $this->redirect("vorstand.html");
-            return;
+        $res = DB::get()->select(
+            sql: \"SELECT vorname, nachname FROM benutzer WHERE ID=? AND kontakt=1\",
+            parameters: [$toID]
+        );
+        if (count($res) === 0) {
+            HttpResponse::redirectAndExit(location: \"vorstand.html\");
         }
-        $res = $qry->fetchObject();
+        $item = $res[0];
 
-        $htmlDocument->replacements->addEncodedText(identifier: 'title', content: "Kontakt zu {$res->vorname} {$res->nachname}");
+        $htmlDocument->replacements->addEncodedText(identifier: 'title', content: \"Kontakt zu {$item->vorname} {$item->nachname}\");
     }
 }

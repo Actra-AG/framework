@@ -16,7 +16,7 @@ class Registration extends FrontendView
     protected function getActiveNavigationItems(): array
     {
         return [
-            1 => ''
+            1 => 'start'
         ];
     }
 

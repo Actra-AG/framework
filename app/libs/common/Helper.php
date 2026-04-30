@@ -32,17 +32,17 @@ class Helper
     }
 
     public static function saveDocument(
-        FileDataModel $fileDataModel,
-        int $ID,
-        string $extension
+      FileDataModel $fileDataModel,
+      int $ID,
+      string $extension
     ): void {
         $documentDirectory = Helper::getDocumentDirectory();
         if (!is_dir(filename: $documentDirectory)) {
             mkdir(directory: $documentDirectory);
         }
         rename(
-            from: $fileDataModel->tmp_name,
-            to: $documentDirectory . $ID . '.' . $extension
+          from: $fileDataModel->tmp_name,
+          to: $documentDirectory . $ID . '.' . $extension
         );
     }
 
@@ -64,16 +64,16 @@ class Helper
     {
         foreach ($dbEvent->eventCategoryCollection->list() as $eventCategoryEnum) {
             DbEventCategoryRepository::delete(
-                eventID: $dbEvent->ID,
-                eventCategoryEnum: $eventCategoryEnum
+              eventID: $dbEvent->ID,
+              eventCategoryEnum: $eventCategoryEnum
             );
         }
         foreach (
-            DbDocumentRepository::select(
-                dbQuery: DbDocumentRepository::getDbQueryForEventDocuments(
-                    eventID: $dbEvent->ID
-                )
-            )->list() as $dbDocument
+          DbDocumentRepository::select(
+            dbQuery: DbDocumentRepository::getDbQueryForEventDocuments(
+              eventID: $dbEvent->ID
+            )
+          )->list() as $dbDocument
         ) {
             Helper::deleteDocument(dbDocument: $dbDocument);
         }
@@ -100,9 +100,34 @@ class Helper
             $files[] = $file;
         }
         asort(
-            array: $files,
-            flags: SORT_NATURAL | SORT_FLAG_CASE
+          array: $files,
+          flags: SORT_NATURAL | SORT_FLAG_CASE
         );
         return $files;
+    }
+
+    public static function dynTableHeader($fArr, $orderby = '', $ox = ''): string
+    {
+        $th = "<tr>\n";
+        foreach ($fArr as $key => $val) {
+            $th .= "<th scope=\"col\" {$val['attributes']}>";
+            if ($val['order'] == 1) {
+                $nox = $val['ox'];
+                if ($orderby == $key && $ox == $val['ox']) {
+                    if ($val['ox'] == "ASC") {
+                        $nox = "DESC";
+                    } else {
+                        $nox = "ASC";
+                    }
+                }
+                $th .= "<a href=\"?orderby={$key}&amp;ox={$nox}\">{$val['value']}</a>";
+            } else {
+                $th .= $val['value'];
+            }
+            $th .= "</th>\n";
+        }
+        $th .= "</tr>\n";
+
+        return $th;
     }
 }

@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace app\view\backend\php;
 
 use actra\backend\BackendView;
-use actra\backend\libs\auth\MyAuthUser;
 use actra\yuf\auth\AccessRightCollection;
 use actra\yuf\core\HttpResponse;
 use actra\yuf\core\InputParameter;
@@ -36,49 +35,49 @@ class event extends BackendView
     {
         $inputParameterCollection = new InputParameterCollection();
         $inputParameterCollection->add(
-            inputParameter: new InputParameter(
-                name: event::PARAM_REMOVE,
-                isRequired: false
-            )
+          inputParameter: new InputParameter(
+            name: event::PARAM_REMOVE,
+            isRequired: false
+          )
         );
         $inputParameterCollection->add(
-            inputParameter: new InputParameter(
-                name: event::PARAM_ADDED,
-                isRequired: false
-            )
+          inputParameter: new InputParameter(
+            name: event::PARAM_ADDED,
+            isRequired: false
+          )
         );
         $inputParameterCollection->add(
-            inputParameter: new InputParameter(
-                name: event::PARAM_CHANGED,
-                isRequired: false
-            )
+          inputParameter: new InputParameter(
+            name: event::PARAM_CHANGED,
+            isRequired: false
+          )
         );
         $inputParameterCollection->add(
-            inputParameter: new InputParameter(
-                name: event::PARAM_REJECT,
-                isRequired: false
-            )
+          inputParameter: new InputParameter(
+            name: event::PARAM_REJECT,
+            isRequired: false
+          )
         );
         $inputParameterCollection->add(
-            inputParameter: new InputParameter(
-                name: event::REMOVE_DOCUMENT,
-                isRequired: false
-            )
+          inputParameter: new InputParameter(
+            name: event::REMOVE_DOCUMENT,
+            isRequired: false
+          )
         );
         parent::__construct(
-            inputParameterCollection: $inputParameterCollection,
-            maxAllowedPathVars: 1,
-            activeHtmlIdList: [
-                'events',
-            ],
-            useNavigator: true
+          inputParameterCollection: $inputParameterCollection,
+          maxAllowedPathVars: 1,
+          activeHtmlIdList: [
+            'events',
+          ],
+          useNavigator: true
         );
     }
 
     public static function getRequiredAccessRights(): AccessRightCollection
     {
         return AccessRightCollection::createFromStringArray(input: [
-            AuthRightEnum::BACKEND_ACCESS->value,
+          AuthRightEnum::BACKEND_ACCESS->value,
         ]);
     }
 
@@ -93,25 +92,24 @@ class event extends BackendView
         if ($dbEvent === null) {
             throw new NotFoundException();
         }
-        $myAuthUser = MyAuthUser::get();
         if (
-            $this->getInputString(keyName: event::PARAM_REMOVE) !== null
-            && $dbEvent->userCanEdit()
+          $this->getInputString(keyName: event::PARAM_REMOVE) !== null
+          && $dbEvent->userCanEdit()
         ) {
             Helper::deleteEvent(dbEvent: $dbEvent);
             HttpResponse::redirectAndExit(relativeOrAbsoluteUri: events::getPath() . '?' . events::PARAM_REMOVED);
         }
         if (
-            $this->getInputString(keyName: event::PARAM_REJECT) !== null
-            && $dbEvent->canReject()
+          $this->getInputString(keyName: event::PARAM_REJECT) !== null
+          && $dbEvent->canReject()
         ) {
             DbEventRepository::deny(ID: $dbEvent->ID);
             $dbEvent = DbEventRepository::selectByID(ID: $dbEvent->ID);
         }
         $removeDocument = $this->getInputInteger(keyName: event::REMOVE_DOCUMENT);
         if (
-            $removeDocument !== null
-            && $dbEvent->userCanEdit()
+          $removeDocument !== null
+          && $dbEvent->userCanEdit()
         ) {
             $dbDocument = DbDocumentRepository::selectByID(ID: $removeDocument);
             if ($dbDocument->eventID === $dbEvent->ID) {
@@ -120,51 +118,51 @@ class event extends BackendView
         }
         $replacements = $htmlDocument->replacements;
         $replacements->addEncodedText(
-            identifier: 'modHref',
-            content: $dbEvent->userCanEdit() ? eventMod::getPath(ID: $dbEvent->ID) : ''
+          identifier: 'modHref',
+          content: $dbEvent->userCanEdit() ? eventMod::getPath(ID: $dbEvent->ID) : ''
         );
         $replacements->addEncodedText(
-            identifier: 'activateHref',
-            content: $dbEvent->canActivate() ? eventActivate::getPath(ID: $dbEvent->ID) : ''
+          identifier: 'activateHref',
+          content: $dbEvent->canActivate() ? eventActivate::getPath(ID: $dbEvent->ID) : ''
         );
         $replacements->addEncodedText(
-            identifier: 'deactivateHref',
-            content: $dbEvent->canReject() ? '?' . event::PARAM_REJECT : ''
+          identifier: 'deactivateHref',
+          content: $dbEvent->canReject() ? '?' . event::PARAM_REJECT : ''
         );
         $replacements->addEncodedText(
-            identifier: 'removeHref',
-            content: $dbEvent->userCanEdit() ? '?' . event::PARAM_REMOVE : ''
+          identifier: 'removeHref',
+          content: $dbEvent->userCanEdit() ? '?' . event::PARAM_REMOVE : ''
         );
         $replacements->addBool(
-            identifier: 'added',
-            booleanValue: $this->getInputString(keyName: event::PARAM_ADDED) !== null
+          identifier: 'added',
+          booleanValue: $this->getInputString(keyName: event::PARAM_ADDED) !== null
         );
         $replacements->addBool(
-            identifier: 'changed',
-            booleanValue: $this->getInputString(keyName: event::PARAM_CHANGED) !== null
+          identifier: 'changed',
+          booleanValue: $this->getInputString(keyName: event::PARAM_CHANGED) !== null
         );
         $replacements->addBool(
-            identifier: 'isAccepted',
-            booleanValue: $dbEvent->isAccepted()
+          identifier: 'isAccepted',
+          booleanValue: $dbEvent->isAccepted()
         );
         $replacements->addBool(
-            identifier: 'isRejected',
-            booleanValue: $dbEvent->isRejected()
+          identifier: 'isRejected',
+          booleanValue: $dbEvent->isRejected()
         );
         $replacements->addDataObject(
-            identifier: 'event',
-            htmlDataObject: $dbEvent->render()
+          identifier: 'event',
+          htmlDataObject: $dbEvent->render()
         );
         $replacements->addEncodedText(
-            identifier: 'addDocumentHref',
-            content: $dbEvent->userCanEdit() ? documentAdd::getPath(eventID: $dbEvent->ID) : ''
+          identifier: 'addDocumentHref',
+          content: $dbEvent->userCanEdit() ? documentAdd::getPath(eventID: $dbEvent->ID) : ''
         );
         $replacements->addEncodedText(
-            identifier: 'documents',
-            content: new EventDocumentTable(
-                eventID: $dbEvent->ID,
-                userCanEdit: $dbEvent->userCanEdit()
-            )->render()
+          identifier: 'documents',
+          content: new EventDocumentTable(
+            eventID: $dbEvent->ID,
+            userCanEdit: $dbEvent->userCanEdit()
+          )->render()
         );
     }
 

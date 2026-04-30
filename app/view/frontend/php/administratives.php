@@ -16,7 +16,7 @@ class administratives extends FrontendView
     protected function getActiveNavigationItems(): array
     {
         return [
-            1 => 'administratives'
+          1 => 'administratives'
         ];
     }
 

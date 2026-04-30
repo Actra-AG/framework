@@ -14,14 +14,15 @@ use FilesystemIterator;
 
 abstract class FrontendView extends BaseView
 {
-    public function __construct()
+    public function __construct(int $maxAllowedPathVars = 0)
     {
         parent::__construct(
-            requiredViewGroupName: 'frontend',
-            ipWhitelist: [],
-            authUser: null,
-            requiredAccessRights: AccessRightCollection::createEmpty(),
-            inputParameterCollection: new InputParameterCollection()
+          requiredViewGroupName: 'frontend',
+          ipWhitelist: [],
+          authUser: null,
+          requiredAccessRights: AccessRightCollection::createEmpty(),
+          inputParameterCollection: new InputParameterCollection(),
+          maxAllowedPathVars: $maxAllowedPathVars
         );
     }
 
@@ -31,25 +32,25 @@ abstract class FrontendView extends BaseView
         $this->prepareHtmlDocument(htmlDocument: $htmlDocument);
         $replacements = $htmlDocument->replacements;
         $replacements->addEncodedText(
-            identifier: 'pageTitle',
-            content: $this->getPageTitle()
+          identifier: 'pageTitle',
+          content: $this->getPageTitle()
         );
         $replacements->addEncodedText(
-            identifier: 'randomHeaderImage',
-            content: $this->selectRandomHeaderImage()
+          identifier: 'randomHeaderImage',
+          content: $this->selectRandomHeaderImage()
         );
         $activeNavigationItems = $this->getActiveNavigationItems();
         $replacements->addHtmlDataObjectCollection(
-            identifier: 'navigation',
-            htmlDataObjectCollection: Navigation::render(
-                activeNavigationItems: $activeNavigationItems,
-                level: 1
-            )
+          identifier: 'navigation',
+          htmlDataObjectCollection: Navigation::render(
+            activeNavigationItems: $activeNavigationItems,
+            level: 1
+          )
         );
         foreach ($activeNavigationItems as $key => $activeNavigationItem) {
             $htmlDocument->setActiveHtmlId(
-                key: $key,
-                val: $activeNavigationItem
+              key: $key,
+              val: $activeNavigationItem
             );
         }
     }
@@ -64,9 +65,9 @@ abstract class FrontendView extends BaseView
     {
         $relativeDir = '/images/head/';
         $files = iterator_to_array(
-            iterator: new FilesystemIterator(
-                directory: $_SERVER['DOCUMENT_ROOT'] . $relativeDir
-            )
+          iterator: new FilesystemIterator(
+            directory: $_SERVER['DOCUMENT_ROOT'] . $relativeDir
+          )
         );
         $randomFile = array_rand(array: $files);
         return $relativeDir . $files[$randomFile]->getFilename();

@@ -21,7 +21,7 @@ class DbEventRepository
     public static function getDbQuery(): DbQuery
     {
         return DbQuery::createFromSqlQuery(
-            query: '
+          query: '
                 SELECT event.ID,
                        event.registered,
                        event.lastmod as lastModified,
@@ -55,14 +55,14 @@ class DbEventRepository
     {
         $dbEventCollection = new DbEventCollection();
         foreach (
-            $dbQuery->selectFromDb(
-                db: DB::get(),
-                offset: 0,
-                rowCount: 1000
-            ) as $item
+          $dbQuery->selectFromDb(
+            db: DB::get(),
+            offset: 0,
+            rowCount: 1000
+          ) as $item
         ) {
             $dbEventCollection->add(
-                dbEvent: DbEventRepository::createItem(item: $item)
+              dbEvent: DbEventRepository::createItem(item: $item)
             );
         }
 
@@ -73,12 +73,12 @@ class DbEventRepository
     {
         $dbQuery = DbEventRepository::getDbQuery();
         $dbQuery->addWherePart(
-            wherePart: 'event.confirmed IS NULL AND event.denied IS NULL',
-            parameters: []
+          wherePart: 'event.confirmed IS NULL AND event.denied IS NULL',
+          parameters: []
         );
         $dbQuery->addOrderPart(
-            column: 'event.registered',
-            ascending: false
+          column: 'event.registered',
+          ascending: false
         );
         return DbEventRepository::select(dbQuery: $dbQuery);
     }
@@ -86,28 +86,28 @@ class DbEventRepository
     private static function createItem(stdClass $item): DbEvent
     {
         return new DbEvent(
-            ID: $item->ID,
-            registered: new DateTimeImmutable(datetime: $item->registered),
-            lastModified: new DateTimeImmutable(datetime: $item->lastModified),
-            confirmed: $item->confirmed === null ? null : new DateTimeImmutable(datetime: $item->confirmed),
-            denied: $item->denied === null ? null : new DateTimeImmutable(datetime: $item->denied),
-            registeredByUserID: $item->registered_by,
-            registeredByName: $item->firstName . ' ' . $item->lastName,
-            registeredByEmail: $item->registeredByEmail,
-            clubID: $item->clubID,
-            clubName: $item->clubName,
-            dateFrom: new DateTimeImmutable(datetime: $item->dateFrom),
-            dateTo: new DateTimeImmutable(datetime: $item->dateTo),
-            timeFormatted: $item->time,
-            title: $item->title,
-            location: $item->location,
-            notes: $item->notes,
-            export: $item->export === 1,
-            timeFrom: new DateTimeImmutable(datetime: $item->dateFrom . ' ' . $item->timeFrom),
-            timeTo: new DateTimeImmutable(datetime: $item->dateTo . ' ' . $item->timeTo),
-            eventCategoryCollection: EventCategoryCollection::createFromRawList(
-                rawList: (string)$item->eventCategories
-            )
+          ID: $item->ID,
+          registered: new DateTimeImmutable(datetime: $item->registered),
+          lastModified: new DateTimeImmutable(datetime: $item->lastModified),
+          confirmed: $item->confirmed === null ? null : new DateTimeImmutable(datetime: $item->confirmed),
+          denied: $item->denied === null ? null : new DateTimeImmutable(datetime: $item->denied),
+          registeredByUserID: $item->registered_by,
+          registeredByName: $item->firstName . ' ' . $item->lastName,
+          registeredByEmail: $item->registeredByEmail,
+          clubID: $item->clubID,
+          clubName: $item->clubName,
+          dateFrom: new DateTimeImmutable(datetime: $item->dateFrom),
+          dateTo: new DateTimeImmutable(datetime: $item->dateTo),
+          timeFormatted: $item->time,
+          title: $item->title,
+          location: $item->location,
+          notes: $item->notes,
+          export: $item->export === 1,
+          timeFrom: new DateTimeImmutable(datetime: $item->dateFrom . ' ' . $item->timeFrom),
+          timeTo: new DateTimeImmutable(datetime: $item->dateTo . ' ' . $item->timeTo),
+          eventCategoryCollection: EventCategoryCollection::createFromRawList(
+            rawList: (string)$item->eventCategories
+          )
         );
     }
 
@@ -115,14 +115,39 @@ class DbEventRepository
     {
         $dbQuery = DbEventRepository::getDbQuery();
         $dbQuery->addWherePart(
-            wherePart: 'event.ID IN (SELECT eventID FROM eventCategory WHERE categoryName=?)',
-            parameters: [
-                EventCategoryEnum::VORSTAND->value,
-            ]
+          wherePart: 'event.ID IN (SELECT eventID FROM eventCategory WHERE categoryName=?)',
+          parameters: [
+            EventCategoryEnum::VORSTAND->value,
+          ]
         );
         $dbQuery->addWherePart(
-            wherePart: 'event.confirmed IS NOT NULL',
-            parameters: []
+          wherePart: 'event.confirmed IS NOT NULL',
+          parameters: []
+        );
+        return $dbQuery;
+    }
+
+    public static function getAllPublicEventsCollection(): DbQuery
+    {
+        $inParts = [];
+        foreach (EventCategoryEnum::cases() as $eventCategoryEnum) {
+            if (!$eventCategoryEnum->isPublic()) {
+                continue;
+            }
+            $inParts[] = $eventCategoryEnum->value;
+        }
+        $dbQuery = DbEventRepository::getDbQuery();
+        $dbQuery->addWherePart(
+          wherePart: 'event.ID IN (SELECT eventID FROM eventCategory WHERE categoryName IN (' . DB::get(
+          )->createInQuery(paramArr: $inParts) . '))',
+          parameters: $inParts
+        );
+        $dbQuery->addWherePart(
+          wherePart: 'event.confirmed IS NOT NULL',
+          parameters: []
+        );
+        $dbQuery->addOrderPart(
+          column: 'defaultOrdering'
         );
         return $dbQuery;
     }
@@ -131,8 +156,8 @@ class DbEventRepository
     {
         $dbQuery = DbEventRepository::getDbQuery();
         $dbQuery->addWherePart(
-            wherePart: 'event.registered_by=?',
-            parameters: [$memberID]
+          wherePart: 'event.registered_by=?',
+          parameters: [$memberID]
         );
 
         return $dbQuery;
@@ -142,8 +167,8 @@ class DbEventRepository
     {
         $dbQuery = DbEventRepository::getDbQuery();
         $dbQuery->addWherePart(
-            wherePart: 'event.ID=?',
-            parameters: [$ID]
+          wherePart: 'event.ID=?',
+          parameters: [$ID]
         );
         $dbEventCollection = DbEventRepository::select(dbQuery: $dbQuery);
 
@@ -153,49 +178,49 @@ class DbEventRepository
     public static function deny(int $ID): void
     {
         DB::get()->execute(
-            sql: '
+          sql: '
                 UPDATE jahresprogramm
                 SET denied=NOW(),
                     confirmed=NULL
                 WHERE ID=?
             ',
-            parameters: [
-                $ID
-            ]
+          parameters: [
+            $ID
+          ]
         );
     }
 
     public static function confirm(int $ID): void
     {
         DB::get()->execute(
-            sql: '
+          sql: '
                 UPDATE jahresprogramm
                 SET confirmed=NOW(),
                     denied=NULL
                 WHERE ID=?
             ',
-            parameters: [
-                $ID,
-            ]
+          parameters: [
+            $ID,
+          ]
         );
     }
 
     public static function insert(
-        MyAuthUser $myAuthUser,
-        int $clubID,
-        DateTimeImmutable $dateFrom,
-        DateTimeImmutable $dateTo,
-        string $time,
-        string $title,
-        string $location,
-        string $notes,
-        bool $export,
-        DateTimeImmutable $timeFrom,
-        DateTimeImmutable $timeTo,
+      MyAuthUser $myAuthUser,
+      int $clubID,
+      DateTimeImmutable $dateFrom,
+      DateTimeImmutable $dateTo,
+      string $time,
+      string $title,
+      string $location,
+      string $notes,
+      bool $export,
+      DateTimeImmutable $timeFrom,
+      DateTimeImmutable $timeTo,
     ): int {
         $db = DB::get();
         $db->execute(
-            sql: '
+          sql: '
                 INSERT INTO jahresprogramm
                 SET lastmod=NOW(),
                     registered_by=?,
@@ -210,38 +235,38 @@ class DbEventRepository
                     zeitVon=?,
                     zeitBis=?
             ',
-            parameters: [
-                $myAuthUser->ID,
-                $clubID,
-                $dateFrom->format(format: 'Y-m-d'),
-                $dateTo->format(format: 'Y-m-d'),
-                $time,
-                $title,
-                $location,
-                $notes,
-                $export ? 1 : 0,
-                $timeFrom->format(format: 'H:i'),
-                $timeTo->format(format: 'H:i'),
-            ]
+          parameters: [
+            $myAuthUser->ID,
+            $clubID,
+            $dateFrom->format(format: 'Y-m-d'),
+            $dateTo->format(format: 'Y-m-d'),
+            $time,
+            $title,
+            $location,
+            $notes,
+            $export ? 1 : 0,
+            $timeFrom->format(format: 'H:i'),
+            $timeTo->format(format: 'H:i'),
+          ]
         );
         return $db->lastInsertId();
     }
 
     public static function update(
-        int $ID,
-        int $clubID,
-        DateTimeImmutable $dateFrom,
-        DateTimeImmutable $dateTo,
-        string $time,
-        string $title,
-        string $location,
-        string $notes,
-        bool $export,
-        DateTimeImmutable $timeFrom,
-        DateTimeImmutable $timeTo,
+      int $ID,
+      int $clubID,
+      DateTimeImmutable $dateFrom,
+      DateTimeImmutable $dateTo,
+      string $time,
+      string $title,
+      string $location,
+      string $notes,
+      bool $export,
+      DateTimeImmutable $timeFrom,
+      DateTimeImmutable $timeTo,
     ): void {
         DB::get()->execute(
-            sql: '
+          sql: '
                 UPDATE jahresprogramm
                 SET lastmod=NOW(),
                     vereinID=?,
@@ -256,32 +281,32 @@ class DbEventRepository
                     zeitBis=?
                 WHERE ID=?
             ',
-            parameters: [
-                $clubID,
-                $dateFrom->format(format: 'Y-m-d'),
-                $dateTo->format(format: 'Y-m-d'),
-                $time,
-                $title,
-                $location,
-                $notes,
-                $export ? 1 : 0,
-                $timeFrom->format(format: 'H:i'),
-                $timeTo->format(format: 'H:i'),
-                $ID,
-            ]
+          parameters: [
+            $clubID,
+            $dateFrom->format(format: 'Y-m-d'),
+            $dateTo->format(format: 'Y-m-d'),
+            $time,
+            $title,
+            $location,
+            $notes,
+            $export ? 1 : 0,
+            $timeFrom->format(format: 'H:i'),
+            $timeTo->format(format: 'H:i'),
+            $ID,
+          ]
         );
     }
 
     public static function delete(int $ID): void
     {
         DB::get()->execute(
-            sql: '
+          sql: '
                 DELETE FROM jahresprogramm
                 WHERE ID=?
             ',
-            parameters: [
-                $ID,
-            ]
+          parameters: [
+            $ID,
+          ]
         );
     }
 }
